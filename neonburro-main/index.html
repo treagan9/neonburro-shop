@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Neon Burro - Digital Craftsmanship from Colorado</title>
+    <meta name="title" content="Neon Burro - Digital Craftsmanship from Colorado" />
+    <meta name="description" content="We build exceptional web experiences with mountain-inspired creativity. Custom development & design from Ridgway, CO." />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/main-sms-burro.png" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://neonburro.com/" />
+    <meta property="og:title" content="Neon Burro - Digital Craftsmanship from Colorado" />
+    <meta property="og:description" content="We build exceptional web experiences with mountain-inspired creativity. Custom development & design from Ridgway, CO." />
+    <meta property="og:image" content="https://neonburro.com/main-sms-burro.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Neon Burro - Digital Agency" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://neonburro.com/" />
+    <meta property="twitter:title" content="Neon Burro - Digital Craftsmanship from Colorado" />
+    <meta property="twitter:description" content="We build exceptional web experiences with mountain-inspired creativity. Custom development & design from Ridgway, CO." />
+    <meta property="twitter:image" content="https://neonburro.com/main-sms-burro.png" />
+    
+    <!-- SMS / iMessage specific -->
+    <meta property="og:site_name" content="Neon Burro" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Additional SEO -->
+    <meta name="keywords" content="web development, digital agency, Colorado, Ridgway, React, custom websites, digital transformation" />
+    <meta name="author" content="Neon Burro" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://neonburro.com/" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#00FFFF" />
+  </head>
+  <body>
+    <!-- 
+    ================================================
+    NETLIFY FORMS - HIDDEN FORMS FOR BUILD DETECTION
+    ================================================
+    These forms MUST match exactly what your React code submits.
+    All fields are type="text" to accept string values.
+    ================================================
+    -->
+    
+    <!-- ========================================= -->
+    <!-- INVOICE / PAYMENT FORMS - SIMPLIFIED -->
+    <!-- ========================================= -->
+    
+    <!-- MAIN FORM: Payment Complete - Captures ALL payment data in one submission -->
+    <form name="payment-complete" netlify netlify-honeypot="bot-field" hidden>
+      <!-- Session & Tracking -->
+      <input type="text" name="sessionId" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="action" />
+      
+      <!-- Customer Information -->
+      <input type="text" name="firstName" />
+      <input type="text" name="projectName" />
+      <input type="email" name="email" />
+      <input type="text" name="phone" />
+      <input type="text" name="clientType" />
+      
+      <!-- Package/Service Details -->
+      <input type="text" name="packageType" />
+      <input type="text" name="packageName" />
+      <input type="text" name="hours" />
+      <input type="text" name="total" />
+      <input type="text" name="isServicePackage" />
+      <input type="text" name="isVip" />
+      <input type="text" name="wantsHostingDetails" />
+      
+      <!-- Payment Information -->
+      <input type="text" name="paymentMethod" />
+      <input type="text" name="paymentStatus" />
+      <input type="text" name="paymentIntentId" />
+      
+      <!-- Billing Details (for card payments) -->
+      <input type="text" name="cardholderName" />
+      <input type="text" name="address" />
+      <input type="text" name="city" />
+      <input type="text" name="state" />
+      <input type="text" name="zip" />
+      <input type="text" name="country" />
+      
+      <!-- Analytics -->
+      <input type="text" name="totalTimeSpent" />
+      <input type="text" name="completedAt" />
+    </form>
+    
+    <!-- Payment Success - For post-payment tracking -->
+    <form name="payment-success" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="sessionId" />
+      <input type="text" name="receiptNumber" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="firstName" />
+      <input type="text" name="projectName" />
+      <input type="email" name="email" />
+      <input type="text" name="phone" />
+      <input type="text" name="total" />
+      <input type="text" name="packageName" />
+      <input type="text" name="hours" />
+      <input type="text" name="isServicePackage" />
+      <input type="text" name="isVip" />
+      <input type="text" name="clientType" />
+      <input type="text" name="paymentMethod" />
+      <input type="text" name="paymentIntentId" />
+    </form>
+    
+    <!-- VIP Purchase Alert - Special alerts for VIP packages -->
+    <form name="vip-purchase-alert" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="sessionId" />
+      <input type="text" name="timestamp" />
+      <input type="text" name="firstName" />
+      <input type="email" name="email" />
+      <input type="text" name="phone" />
+      <input type="text" name="total" />
+      <input type="text" name="urgency" />
+    </form>
+    
+    <!-- Email Receipt Request - Receipt email tracking -->
+    <form name="email-receipt-request" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="sessionId" />
+      <input type="text" name="receiptNumber" />
+      <input type="email" name="recipientEmail" />
+      <input type="email" name="originalEmail" />
+      <input type="text" name="firstName" />
+      <input type="text" name="projectName" />
+      <input type="text" name="total" />
+      <input type="text" name="packageDetails" />
+      <input type="text" name="isAdditionalEmail" />
+      <input type="text" name="timestamp" />
+    </form>
+    
+    <!-- Receipt Download - Download tracking -->
+    <form name="receipt-download" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="sessionId" />
+      <input type="text" name="receiptNumber" />
+      <input type="email" name="email" />
+      <input type="text" name="format" />
+      <input type="text" name="timestamp" />
+    </form>
+    
+    <!-- ========================================= -->
+    <!-- OTHER SITE FORMS -->
+    <!-- ========================================= -->
+    
+    <!-- Work Access Form -->
+    <form name="work-access-form" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="company" />
+      <textarea name="reason"></textarea>
+      <input type="text" name="hasNDA" />
+    </form>
+    
+    <!-- Contact Form -->
+    <form name="contact-form" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="company" />
+      <input type="text" name="source" />
+      <input type="text" name="projectType" />
+      <input type="text" name="budget" />
+      <input type="text" name="timeline" />
+      <textarea name="description"></textarea>
+      <input type="text" name="contactMethod" />
+      <input type="text" name="phone" />
+      <input type="text" name="bestTime" />
+      <textarea name="additionalInfo"></textarea>
+    </form>
+    
+    <!-- Application Form -->
+    <form name="burro-application" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="phone" />
+      <input type="text" name="location" />
+      <input type="text" name="experience" />
+      <input type="text" name="portfolio" />
+      <input type="text" name="skills" />
+      <textarea name="whyBurro"></textarea>
+      <textarea name="dreamProject"></textarea>
+      <input type="text" name="availability" />
+      <input type="text" name="source" />
+      <textarea name="additionalInfo"></textarea>
+    </form>
+    
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

@@ -1,0 +1,116 @@
+/* Geist fonts are imported in main.jsx, no need for Google Fonts */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Brand Colors */
+  --brand-primary: #00E5E5;
+  --brand-primary-dark: #00B8B8;
+  --brand-primary-light: #4DFFFF;
+  --accent-neon: #39FF14;
+  --accent-warm: #FF6B00;
+  --dark-void: #000000;
+  --dark-black: #0A0A0A;
+  --dark-gray: #1A1A1A;
+}
+
+html {
+  overflow-x: hidden;
+  background: var(--dark-void);
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+  background: var(--dark-black);
+  min-height: 100vh;
+  font-family: 'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #FFFFFF;
+  line-height: 1.5;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Geist Sans', 'Inter', -apple-system, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+code, pre, .mono {
+  font-family: 'Geist Mono', 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Selection */
+::selection {
+  background: rgba(0, 229, 229, 0.3);
+  color: var(--brand-primary-light);
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  background: var(--dark-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 229, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 229, 0.5);
+}
+
+/* Scanlines - very subtle with brand color */
+.scanlines::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 229, 229, 0.01) 2px,
+      rgba(0, 229, 229, 0.01) 4px
+    );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Utility classes */
+.font-mono {
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animation utilities */
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(0, 229, 229, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(0, 229, 229, 0.8));
+  }
+}

@@ -1,0 +1,18 @@
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18.18.0"
+
+# Specific redirect for invoice page to use the custom HTML with proper meta tags
+[[redirects]]
+  from = "/invoice"
+  to = "/invoice.html"
+  status = 200
+
+# Catch-all redirect for all other routes (SPA behavior)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
