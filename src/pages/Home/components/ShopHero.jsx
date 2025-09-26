@@ -68,13 +68,13 @@ const ShopHero = () => {
   return (
     <Box
       position="relative"
-      minH={{ base: '85vh', md: '90vh' }}
+      minH={{ base: "100dvh", md: "100vh" }}
       display="flex"
       alignItems="center"
       overflow="hidden"
       bg={colors.dark.void}
-      pt={{ base: 20, md: 28, lg: 32 }}
-      pb={{ base: 8, md: 12, lg: 16 }}
+      pt={{ base: 24, md: 32 }}
+      pb={{ base: 16, md: 20 }}
     >
       {/* Simple background gradient */}
       <Box
@@ -104,8 +104,17 @@ const ShopHero = () => {
         />
       ))}
 
-      <Container maxW="1200px" px={{ base: 4, md: 8 }} position="relative">
-        <VStack spacing={{ base: 8, md: 10 }} textAlign="center" align="center">
+      <Container 
+        maxW="1400px"
+        px={{ base: 6, md: 8 }}
+        position="relative"
+      >
+        <VStack 
+          spacing={{ base: 12, md: 14 }} 
+          align={{ base: "center", md: "flex-start" }} 
+          textAlign={{ base: "center", md: "left" }} 
+          maxW="1100px"
+        >
           
           {/* Main Content */}
           <VStack spacing={{ base: 4, md: 6 }} maxW="800px">
