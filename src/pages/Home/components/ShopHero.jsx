@@ -111,9 +111,10 @@ const ShopHero = () => {
       >
         <VStack 
           spacing={{ base: 12, md: 14 }} 
-          align={{ base: "center", md: "flex-start" }} 
-          textAlign={{ base: "center", md: "left" }} 
-          maxW="1100px"
+          align="center" 
+          textAlign="center" 
+          maxW="900px"
+          mx="auto"
         >
           
           {/* Main Content */}
@@ -124,7 +125,7 @@ const ShopHero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              fontSize={{ base: "4xl", sm: "5xl", md: "5xl", lg: "6xl", xl: "7xl" }}
+              fontSize={{ base: "4xl", sm: "5xl", md: "5xl", lg: "6xl", xl: "6xl" }}
               fontFamily="'Inter', system-ui, sans-serif"
               fontWeight="800"
               color="white"
@@ -177,10 +178,10 @@ const ShopHero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              maxW="600px"
+              maxW="650px"
             >
               <Text
-                fontSize={{ base: "lg", md: "xl", lg: "xl" }}
+                fontSize={{ base: "lg", md: "xl" }}
                 color="gray.200"
                 lineHeight="1.7"
               >
