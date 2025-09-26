@@ -50,12 +50,12 @@ const ShopHero = () => {
   const highlights = [
     {
       icon: FiStar,
-      text: 'Limited drops',
+      text: 'Hand-picked',
       color: colors.neon.amber
     },
     {
       icon: FiMapPin,
-      text: 'Colorado made',
+      text: 'Rare finds',
       color: colors.neon.lime
     },
     {
@@ -183,17 +183,9 @@ const ShopHero = () => {
                 fontSize={{ base: "lg", md: "xl", lg: "xl" }}
                 color="gray.200"
                 lineHeight="1.7"
-                mb={4}
               >
-                Limited drops. Premium quality. Built for creators who understand 
-                that the best work happens where digital meets the mountains.
-              </Text>
-              <Text
-                fontSize={{ base: "md", md: "lg" }}
-                color="gray.400"
-                lineHeight="1.6"
-              >
-                Each piece tells the story of the Colorado collective behind your favorite digital experiences.
+                Hand-picked drops. Rare finds. Crafted for creators who understand 
+                that the best ideas emerge where digital culture meets mountain mindset.
               </Text>
             </MotionBox>
           </VStack>
@@ -345,7 +337,7 @@ const ShopHero = () => {
                 fontSize={{ base: "xs", md: "sm" }}
                 color="gray.500"
               >
-                New drops monthly • Limited quantities • Colorado crafted
+                Curated monthly • Hand-picked pieces • Rare culture finds
               </Text>
             </VStack>
           </MotionBox>
