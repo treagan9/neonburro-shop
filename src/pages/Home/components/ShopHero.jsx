@@ -173,7 +173,7 @@ const ShopHero = () => {
                 color="gray.300"
                 lineHeight="1.6"
               >
-                Curated to inspire, crafted to impress, and revealed only when 
+                Curated to inspire, crafted to impress and revealed only when 
                 the time feels right. Each piece chosen for those who understand 
                 that the best things are built to last a lifetime.
               </Text>
