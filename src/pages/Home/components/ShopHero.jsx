@@ -1,6 +1,6 @@
 import { Box, Container, Heading, Text, VStack, HStack, Button, keyframes } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiArrowDown, FiStar, FiMapPin, FiPackage } from 'react-icons/fi';
+import { FiArrowDown, FiStar, FiHeart, FiClock } from 'react-icons/fi';
 
 const MotionBox = motion(Box);
 const MotionHeading = motion(Heading);
@@ -49,19 +49,19 @@ const ShopHero = () => {
 
   const highlights = [
     {
+      icon: FiHeart,
+      text: 'Lifetime quality',
+      color: colors.neon.coral
+    },
+    {
       icon: FiStar,
-      text: 'Hand-picked',
+      text: 'Stories included',
       color: colors.neon.amber
     },
     {
-      icon: FiMapPin,
-      text: 'Rare finds',
+      icon: FiClock,
+      text: 'Perfectly timed',
       color: colors.neon.lime
-    },
-    {
-      icon: FiPackage,
-      text: 'Premium quality',
-      color: colors.neon.cyan
     }
   ];
 
@@ -84,7 +84,7 @@ const ShopHero = () => {
         transform="translate(-50%, -50%)"
         width="1200px"
         height="600px"
-        bg={`radial-gradient(ellipse at center, ${colors.neon.cyan}08 0%, transparent 50%)`}
+        bg={`radial-gradient(ellipse at center, ${colors.neon.violet}08 0%, transparent 50%)`}
         pointerEvents="none"
       />
 
@@ -95,7 +95,7 @@ const ShopHero = () => {
           position="absolute"
           width="2px"
           height="2px"
-          bg={i % 2 === 0 ? colors.neon.cyan : colors.neon.amber}
+          bg={i % 2 === 0 ? colors.neon.violet : colors.neon.coral}
           left={`${15 + i * 25}%`}
           top={`${20 + i * 20}%`}
           opacity={0.4}
@@ -125,7 +125,7 @@ const ShopHero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              fontSize={{ base: "4xl", sm: "5xl", md: "5xl", lg: "6xl", xl: "6xl" }}
+              fontSize={{ base: "4xl", sm: "5xl", md: "5xl", lg: "6xl", xl: "7xl" }}
               fontFamily="'Inter', system-ui, sans-serif"
               fontWeight="800"
               color="white"
@@ -138,7 +138,7 @@ const ShopHero = () => {
                 as="span"
                 position="relative"
                 display="inline-block"
-                background={`linear-gradient(135deg, ${colors.neon.cyan} 0%, ${colors.neon.amber} 50%, ${colors.neon.lime} 100%)`}
+                background={`linear-gradient(135deg, ${colors.neon.violet} 0%, ${colors.neon.coral} 50%, ${colors.neon.amber} 100%)`}
                 backgroundClip="text"
                 sx={{
                   WebkitBackgroundClip: "text",
@@ -148,28 +148,7 @@ const ShopHero = () => {
                 animation={`${neonGlow} 4s ease-in-out infinite`}
                 filter="saturate(1.4)"
               >
-                Digital Culture.
-              </Box>
-              <br />
-              <Box
-                as="span"
-                color="white"
-                position="relative"
-                mt={2}
-                _after={{
-                  content: '""',
-                  position: 'absolute',
-                  bottom: '-8px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  width: '60px',
-                  height: '3px',
-                  bg: colors.neon.violet,
-                  borderRadius: 'full',
-                  boxShadow: `0 0 20px ${colors.neon.violet}`,
-                }}
-              >
-                Mountain Made.
+                The Neon Drop
               </Box>
             </MotionHeading>
 
@@ -178,15 +157,25 @@ const ShopHero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              maxW="650px"
+              maxW="700px"
             >
               <Text
-                fontSize={{ base: "lg", md: "xl" }}
+                fontSize={{ base: "lg", md: "xl", lg: "2xl" }}
                 color="gray.200"
                 lineHeight="1.7"
+                fontWeight="500"
+                mb={4}
               >
-                Hand-picked drops. Rare finds. Crafted for creators who understand 
-                that the best ideas emerge where digital culture meets mountain mindset.
+                Rare finds with stories worth keeping.
+              </Text>
+              <Text
+                fontSize={{ base: "md", md: "lg", lg: "xl" }}
+                color="gray.300"
+                lineHeight="1.6"
+              >
+                Curated to inspire, crafted to impress, and revealed only when 
+                the time feels right. Each piece chosen for those who understand 
+                that the best things are built to last a lifetime.
               </Text>
             </MotionBox>
           </VStack>
@@ -331,14 +320,16 @@ const ShopHero = () => {
                 }}
                 transition="all 0.2s"
               >
-                Shop Collection
+                Explore the Drop
               </Button>
 
               <Text
                 fontSize={{ base: "xs", md: "sm" }}
                 color="gray.500"
+                textAlign="center"
+                maxW="400px"
               >
-                Curated monthly • Hand-picked pieces • Rare culture finds
+                Thoughtfully sourced • Built to last • Stories that matter • Revealed when ready
               </Text>
             </VStack>
           </MotionBox>
