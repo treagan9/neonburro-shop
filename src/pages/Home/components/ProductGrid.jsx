@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Heading, Text, VStack, Image } from '@chakra-ui/react';
+import { Box, Container, Grid, Heading, Text, VStack, Badge } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,74 +25,97 @@ const ProductGrid = () => {
 
   const products = [
     {
-      id: 'prod_organic_tee',
-      name: 'Organic Cotton Tee',
-      price: 45,
-      featuredImage: '/images/products/tee-organic-main.jpg',
-      color: '#00D9FF',
+      id: 'titanium_chopsticks',
+      name: 'Titanium, Copper & Wood Chopsticks',
+      subtitle: 'with Travel Sleeve',
+      price: 89,
+      description: 'Metal meets wood in everyday art. Built to travel, made to last.',
+      featuredImage: '/images/products/chopsticks-main.jpg',
+      color: '#00E5E5',
+      category: 'Craft'
     },
     {
-      id: 'prod_bamboo_shirt',
-      name: 'Bamboo Blend Shirt',
-      price: 55,
-      featuredImage: '/images/products/tee-bamboo-main.jpg',
-      color: '#39FF14',
+      id: 'neon_burro_sweater',
+      name: 'The Neon Burro Sweater',
+      subtitle: 'Unisex Open Knit 3D',
+      price: 199,
+      description: 'Pure Merino wool where mountain air meets digital craft.',
+      featuredImage: '/images/products/sweater-main.jpg',
+      color: '#FFE500',
+      category: 'Apparel',
+      featured: true
     },
     {
-      id: 'prod_hemp_tee',
-      name: 'Hemp Heritage Tee',
+      id: 'gift_card',
+      name: 'The Gift Card',
+      subtitle: 'Digital Services Access',
       price: 50,
-      featuredImage: '/images/products/tee-hemp-main.jpg',
-      color: '#FF6B35',
-    },
-    {
-      id: 'prod_neon_bidet',
-      name: 'Neon Bidet 3000',
-      price: 299,
-      featuredImage: '/images/products/bidet-neon-main.jpg',
-      color: '#E2FF00',
-    },
-    {
-      id: 'prod_nomad_cap',
-      name: 'Digital Nomad Cap',
-      price: 35,
-      featuredImage: '/images/products/cap-main.jpg',
-      color: '#00D9FF',
-    },
-    {
-      id: 'prod_mountain_beanie',
-      name: 'Mountain Beanie',
-      price: 30,
-      featuredImage: '/images/products/beanie-main.jpg',
-      color: '#FF00FF',
-    },
-    {
-      id: 'prod_magic_socks',
-      name: 'Mismatched Magic Socks',
-      price: 25,
-      featuredImage: '/images/products/socks-main.jpg',
+      description: 'A portal to digital services and creative possibilities.',
+      featuredImage: '/images/products/giftcard-main.jpg',
       color: '#39FF14',
+      category: 'Digital'
     },
     {
-      id: 'prod_wisdom_booklet',
-      name: 'Digital Wisdom Booklet',
-      price: 20,
-      featuredImage: '/images/products/booklet-main.jpg',
+      id: 'neon_abstract_tees',
+      name: 'Neon Abstract T-Shirts',
+      subtitle: 'Bold Lines Collection',
+      price: 45,
+      description: 'Glowing shapes and bold lines. Everyday wear with neon pulse.',
+      featuredImage: '/images/products/abstract-tee-main.jpg',
       color: '#FF6B35',
+      category: 'Apparel'
     },
     {
-      id: 'prod_sacred_bundle',
-      name: 'Sacred Bundle',
-      price: 40,
-      featuredImage: '/images/products/sacred-bundle-main.jpg',
+      id: 'burro_thoughts_tees',
+      name: 'Burro Thoughts T-Shirts',
+      subtitle: 'Conversation Starters',
+      price: 42,
+      description: 'Soft fabric carrying phrases that spark curiosity and conversation.',
+      featuredImage: '/images/products/thoughts-tee-main.jpg',
       color: '#8B5CF6',
+      category: 'Apparel'
     },
     {
-      id: 'prod_tenugui',
-      name: 'Tenugui Towel',
-      price: 28,
-      featuredImage: '/images/products/tenugui-main.jpg',
-      color: '#00D9FF',
+      id: 'burro_coin_gold',
+      name: 'Burro Coin · 24k Gold',
+      subtitle: 'Limited Edition',
+      price: 299,
+      description: 'Pure gold pressed into symbol. Made to keep, collect, and pass on.',
+      featuredImage: '/images/products/coin-gold-main.jpg',
+      color: '#FFE500',
+      category: 'Collectible',
+      limited: true
+    },
+    {
+      id: 'paper_boy_cap',
+      name: 'Burro Paper Boy Winter Cap',
+      subtitle: '100% Wool Classic',
+      price: 65,
+      description: 'Classic style rebuilt in pure wool. Warmth with subtle Burro mark.',
+      featuredImage: '/images/products/paperboy-cap-main.jpg',
+      color: '#00E5E5',
+      category: 'Apparel'
+    },
+    {
+      id: 'burro_socks_pack',
+      name: 'Burro Socks · Two Pack',
+      subtitle: 'Merino & Alpaca',
+      price: 38,
+      description: 'Premium fibers in durable comfort. Never boring, always soft.',
+      featuredImage: '/images/products/socks-pack-main.jpg',
+      color: '#39FF14',
+      category: 'Apparel'
+    },
+    {
+      id: 'burro_raffle',
+      name: 'The $9 Burro Raffle',
+      subtitle: 'Ticket to Possibility',
+      price: 9,
+      description: 'Enter for the chance to claim a rare piece, chosen by fate.',
+      featuredImage: '/images/products/raffle-ticket-main.jpg',
+      color: '#FF00FF',
+      category: 'Experience',
+      special: true
     }
   ];
 
@@ -106,20 +129,34 @@ const ProductGrid = () => {
   };
 
   return (
-    <Box py={{ base: 16, md: 24 }} bg="dark.black">
-      <Container maxW="1200px">
+    <Box py={{ base: 16, md: 24 }} bg="#0A0A0A">
+      <Container maxW="1400px">
         <VStack spacing={{ base: 12, md: 16 }}>
           {/* Section Header */}
           <VStack spacing={4} textAlign="center">
             <Heading
-              fontSize={{ base: "2xl", md: "4xl" }}
+              fontSize={{ base: "3xl", md: "5xl" }}
               color="white"
               fontWeight="800"
+              letterSpacing="-0.02em"
             >
-              The Collection
+              The Neon Burro{' '}
+              <Box
+                as="span"
+                bgGradient="linear(to-r, #00E5E5, #FFE500)"
+                bgClip="text"
+              >
+                Collection
+              </Box>
             </Heading>
-            <Text color="gray.400" fontSize={{ base: "sm", md: "md" }}>
-              Each piece tells a story of digital innovation meets mountain tradition
+            <Text 
+              color="gray.300" 
+              fontSize={{ base: "md", md: "lg" }}
+              maxW="600px"
+              lineHeight="1.7"
+            >
+              Where digital innovation meets mountain tradition. Each piece tells a story 
+              of craft, creativity, and the collective spirit.
             </Text>
           </VStack>
 
@@ -146,11 +183,11 @@ const ProductGrid = () => {
                   cursor="pointer"
                   position="relative"
                   bg="rgba(255, 255, 255, 0.02)"
-                  borderRadius="lg"
+                  borderRadius="xl"
                   overflow="hidden"
-                  transition="all 0.3s"
+                  transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                   _hover={{
-                    transform: 'translateY(-4px)',
+                    transform: 'translateY(-8px)',
                     '&::before': {
                       opacity: 1,
                     }
@@ -159,7 +196,7 @@ const ProductGrid = () => {
                     content: '""',
                     position: 'absolute',
                     inset: '-2px',
-                    borderRadius: 'lg',
+                    borderRadius: 'xl',
                     padding: '2px',
                     background: `linear-gradient(135deg, ${product.color}, #FF00FF, ${product.color}, #00D9FF, ${product.color})`,
                     backgroundSize: '400% 400%',
@@ -172,6 +209,76 @@ const ProductGrid = () => {
                     zIndex: -1,
                   }}
                 >
+                  {/* Badges */}
+                  {(product.featured || product.limited || product.special) && (
+                    <Box position="absolute" top={4} left={4} zIndex={2}>
+                      {product.featured && (
+                        <Badge
+                          bg="#FFE500"
+                          color="#0A0A0A"
+                          px={3}
+                          py={1}
+                          borderRadius="full"
+                          fontSize="xs"
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          letterSpacing="wider"
+                        >
+                          Featured
+                        </Badge>
+                      )}
+                      {product.limited && (
+                        <Badge
+                          bg="#FF6B35"
+                          color="white"
+                          px={3}
+                          py={1}
+                          borderRadius="full"
+                          fontSize="xs"
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          letterSpacing="wider"
+                        >
+                          Limited
+                        </Badge>
+                      )}
+                      {product.special && (
+                        <Badge
+                          bg="#FF00FF"
+                          color="white"
+                          px={3}
+                          py={1}
+                          borderRadius="full"
+                          fontSize="xs"
+                          fontWeight="bold"
+                          textTransform="uppercase"
+                          letterSpacing="wider"
+                        >
+                          Special
+                        </Badge>
+                      )}
+                    </Box>
+                  )}
+
+                  {/* Category Badge */}
+                  <Box position="absolute" top={4} right={4} zIndex={2}>
+                    <Badge
+                      bg={`${product.color}15`}
+                      color={product.color}
+                      px={2}
+                      py={1}
+                      borderRadius="md"
+                      fontSize="2xs"
+                      fontWeight="600"
+                      textTransform="uppercase"
+                      letterSpacing="wider"
+                      border="1px solid"
+                      borderColor={`${product.color}30`}
+                    >
+                      {product.category}
+                    </Badge>
+                  </Box>
+
                   {/* Glow effect on click */}
                   {clickedProduct === product.id && (
                     <Box
@@ -185,51 +292,118 @@ const ProductGrid = () => {
                     />
                   )}
 
-                  {/* Product Image */}
+                  {/* Product Image Placeholder */}
                   <Box
-                    height={{ base: "300px", md: "350px" }}
+                    height={{ base: "280px", md: "320px" }}
                     bg="black"
                     position="relative"
                     overflow="hidden"
                   >
-                    {/* Placeholder - replace with actual images */}
+                    {/* Enhanced placeholder with product character */}
                     <Box
                       width="100%"
                       height="100%"
-                      bg={`linear-gradient(135deg, ${product.color}11 0%, transparent 100%)`}
+                      bg={`linear-gradient(135deg, ${product.color}08 0%, ${product.color}03 50%, transparent 100%)`}
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
+                      position="relative"
                     >
-                      <Text fontSize="8xl" opacity={0.1} color={product.color}>
+                      {/* Large letter based on product */}
+                      <Text 
+                        fontSize="9xl" 
+                        opacity={0.15} 
+                        color={product.color}
+                        fontWeight="800"
+                        fontFamily="mono"
+                      >
                         {product.name.charAt(0)}
                       </Text>
+                      
+                      {/* Subtle grid pattern */}
+                      <Box
+                        position="absolute"
+                        inset={0}
+                        opacity={0.03}
+                        backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 20px)`}
+                      />
                     </Box>
                   </Box>
 
                   {/* Product Info */}
-                  <VStack align="stretch" p={6} spacing={3}>
-                    <Heading
-                      size="md"
-                      color="white"
-                      fontWeight="700"
-                      noOfLines={1}
-                    >
-                      {product.name}
-                    </Heading>
+                  <VStack align="stretch" p={6} spacing={4}>
+                    <VStack align="start" spacing={1}>
+                      <Heading
+                        size="md"
+                        color="white"
+                        fontWeight="700"
+                        lineHeight="1.2"
+                        noOfLines={1}
+                      >
+                        {product.name}
+                      </Heading>
+                      <Text
+                        fontSize="sm"
+                        color={product.color}
+                        fontWeight="500"
+                        textTransform="uppercase"
+                        letterSpacing="wider"
+                      >
+                        {product.subtitle}
+                      </Text>
+                    </VStack>
                     
                     <Text
-                      fontSize="xl"
-                      fontWeight="700"
-                      color="gray.300"
+                      fontSize="sm"
+                      color="gray.400"
+                      lineHeight="1.6"
+                      noOfLines={2}
                     >
-                      ${product.price}
+                      {product.description}
                     </Text>
+                    
+                    <Box>
+                      <Text
+                        fontSize="xl"
+                        fontWeight="800"
+                        color="white"
+                        fontFamily="mono"
+                      >
+                        ${product.price}
+                      </Text>
+                    </Box>
                   </VStack>
                 </Box>
               </MotionBox>
             ))}
           </Grid>
+
+          {/* Bottom CTA */}
+          <VStack spacing={4} textAlign="center" pt={8}>
+            <Text 
+              color="gray.400" 
+              fontSize="md"
+              maxW="500px"
+            >
+              Each piece is crafted with intention, designed to last, and made to be part of your story.
+            </Text>
+            <Box
+              px={4}
+              py={2}
+              borderRadius="full"
+              bg="rgba(255, 255, 255, 0.05)"
+              border="1px solid"
+              borderColor="rgba(255, 255, 255, 0.1)"
+            >
+              <Text 
+                color="gray.500" 
+                fontSize="sm"
+                fontWeight="500"
+              >
+                More pieces arriving soon
+              </Text>
+            </Box>
+          </VStack>
         </VStack>
       </Container>
     </Box>
