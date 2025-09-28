@@ -1,6 +1,6 @@
 import { Box, Container, VStack, HStack, Text, Link, IconButton, Button, Divider, Image, Grid, GridItem, keyframes } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiGithub, FiLinkedin, FiTwitter, FiArrowUp, FiMail, FiMapPin, FiMessageCircle, FiPhone, FiInstagram } from 'react-icons/fi';
+import { FiGithub, FiLinkedin, FiTwitter, FiArrowUp, FiMail, FiMapPin, FiMessageCircle, FiPhone, FiInstagram, FiShoppingBag } from 'react-icons/fi';
 import { useState, useEffect } from 'react';
 
 const MotionBox = motion(Box);
@@ -8,23 +8,25 @@ const MotionBox = motion(Box);
 // Theme colors
 const colors = {
   brand: {
-    primary: '#14F195', // Teal
-    primaryDark: '#0DBF7D',
+    primary: '#00E5E5',
+    teal: '#14F195',
   },
   accent: {
-    banana: '#FFE135', // Banana yellow
-    warm: '#FF6B35', // Warm orange
+    neon: '#39FF14',
+    banana: '#FFE500',
+    warm: '#FF6B00',
+    purple: '#8B5CF6'
   },
   dark: {
     black: '#0A0A0A',
-    gray: '#1A1A1A',
+    space: '#1A1A1A',
   }
 };
 
 // Subtle glow animation
 const glow = keyframes`
-  0%, 100% { filter: drop-shadow(0 0 15px rgba(255, 225, 53, 0.4)); }
-  50% { filter: drop-shadow(0 0 25px rgba(255, 225, 53, 0.7)); }
+  0%, 100% { filter: drop-shadow(0 0 15px rgba(57, 255, 20, 0.4)); }
+  50% { filter: drop-shadow(0 0 25px rgba(57, 255, 20, 0.7)); }
 `;
 
 const Footer = () => {
@@ -49,10 +51,11 @@ const Footer = () => {
   ];
 
   const resourceLinks = [
-    { label: 'Start a Project', href: '/contact/', accent: colors.accent.banana },
-    { label: 'Pulsewell', href: '/subscription/', accent: colors.brand.primary },
-    { label: 'Fuel Up', href: '/invoice/' },
-    { label: 'Base Camp', href: '/members/' },
+    { label: 'Start a Project', href: '/contact/', accent: colors.accent.neon },
+    { label: 'Development Speeds', href: '/services/', accent: colors.brand.primary },
+    { label: 'Power-Ups', href: '/services/#powerups' },
+    { label: 'Fuel Up Hours', href: '/invoice/' },
+    { label: 'Hosting', href: '/hosting/', accent: colors.accent.banana },
     { label: 'Apply to Burro', href: '/apply-to-burro/', accent: colors.accent.warm }
   ];
 
@@ -98,91 +101,19 @@ const Footer = () => {
         width="300px"
         height="300px"
         opacity={0.03}
-        bg={`radial-gradient(circle, ${colors.accent.warm} 0%, transparent 70%)`}
+        bg={`radial-gradient(circle, ${colors.accent.purple} 0%, transparent 70%)`}
         pointerEvents="none"
       />
 
       <Container maxW="1400px" px={{ base: 4, md: 8 }} py={{ base: 12, md: 16 }} position="relative">
-        
-        {/* Main CTA Section */}
-        <Box
-          mb={16}
-          textAlign="center"
-          maxW="600px"
-          mx="auto"
-        >
-          <VStack spacing={5}>
-            <Text
-              fontSize={{ base: "2xl", md: "3xl" }}
-              fontWeight="800"
-              color="white"
-              letterSpacing="-0.02em"
-            >
-              Ready to Build Something
-              <Box 
-                as="span" 
-                display="block"
-                bgGradient={`linear(to-r, ${colors.brand.primary}, ${colors.accent.banana})`}
-                bgClip="text"
-                mt={2}
-              >
-                Extraordinary?
-              </Box>
-            </Text>
-            <Text color="gray.400" fontSize={{ base: "md", md: "lg" }} maxW="400px">
-              Let's transform your vision into digital reality.
-            </Text>
-            <HStack spacing={4}>
-              <Button
-                size="lg"
-                bg={colors.brand.primary}
-                color="black"
-                fontSize="md"
-                fontWeight="700"
-                px={8}
-                borderRadius="full"
-                onClick={() => window.location.href = '/contact/'}
-                _hover={{
-                  bg: colors.brand.primaryDark,
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 10px 30px ${colors.brand.primary}44`
-                }}
-                _active={{
-                  transform: 'translateY(0)'
-                }}
-                transition="all 0.3s"
-              >
-                Start Your Project
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                borderColor={colors.accent.warm}
-                color={colors.accent.warm}
-                fontSize="md"
-                fontWeight="600"
-                px={8}
-                borderRadius="full"
-                onClick={() => window.location.href = '/invoice/'}
-                _hover={{
-                  bg: `${colors.accent.warm}11`,
-                  borderColor: colors.accent.warm,
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 10px 30px ${colors.accent.warm}33`
-                }}
-                transition="all 0.3s"
-              >
-                Add Hours
-              </Button>
-            </HStack>
-          </VStack>
-        </Box>
 
-        {/* Footer Grid - Simplified */}
+        {/* Footer Grid */}
         <Grid
           templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(5, 1fr)' }}
           gap={{ base: 8, lg: 4 }}
           mb={12}
+          width={{ base: "98%", md: "100%" }}
+          mx="auto"
         >
           {/* Brand Column */}
           <GridItem colSpan={{ base: 1, md: 2, lg: 1 }}>
@@ -205,8 +136,8 @@ const Footer = () => {
               </Box>
               
               <VStack align="flex-start" spacing={2}>
-                <HStack spacing={2} color="gray.500" fontSize="sm">
-                  <FiMapPin size={14} />
+                <HStack spacing={2} color="gray.500" fontSize="md">
+                  <FiMapPin size={16} />
                   <Text>Ridgway, Colorado</Text>
                 </HStack>
                 
@@ -216,14 +147,14 @@ const Footer = () => {
                   alignItems="center"
                   gap={2}
                   color="gray.500"
-                  fontSize="sm"
+                  fontSize="md"
                   _hover={{ 
                     color: colors.brand.primary,
                     textDecoration: 'none'
                   }}
                   transition="color 0.2s"
                 >
-                  <FiMail size={14} />
+                  <FiMail size={16} />
                   hello@neonburro.com
                 </Link>
                 
@@ -233,14 +164,14 @@ const Footer = () => {
                   alignItems="center"
                   gap={2}
                   color="gray.500"
-                  fontSize="sm"
+                  fontSize="md"
                   _hover={{ 
                     color: colors.brand.primary,
                     textDecoration: 'none'
                   }}
                   transition="color 0.2s"
                 >
-                  <FiPhone size={14} />
+                  <FiPhone size={16} />
                   (970) 973-8550
                 </Link>
               </VStack>
@@ -252,7 +183,7 @@ const Footer = () => {
             <VStack align="flex-start" spacing={4}>
               <Text 
                 color="white"
-                fontSize="xs" 
+                fontSize="sm" 
                 fontWeight="600"
                 textTransform="uppercase"
                 letterSpacing="wider"
@@ -266,12 +197,13 @@ const Footer = () => {
                     key={link.label}
                     href={link.href}
                     color="gray.400"
-                    fontSize="sm"
+                    fontSize="md"
                     _hover={{ 
                       color: 'white',
-                      textDecoration: 'none'
+                      textDecoration: 'none',
+                      transform: 'translateX(4px)'
                     }}
-                    transition="color 0.2s"
+                    transition="all 0.2s"
                   >
                     {link.label}
                   </Link>
@@ -285,7 +217,7 @@ const Footer = () => {
             <VStack align="flex-start" spacing={4}>
               <Text 
                 color="white"
-                fontSize="xs" 
+                fontSize="sm" 
                 fontWeight="600"
                 textTransform="uppercase"
                 letterSpacing="wider"
@@ -294,25 +226,110 @@ const Footer = () => {
                 Resources
               </Text>
               <VStack align="flex-start" spacing={2}>
-                {resourceLinks.map((link) => (
-                  <Link
-                    key={link.label}
-                    href={link.href}
-                    color={link.accent || "gray.400"}
-                    fontSize="sm"
-                    fontWeight={link.accent ? "600" : "normal"}
-                    position="relative"
-                    _hover={{ 
-                      color: link.accent || colors.brand.primary,
-                      textDecoration: 'none',
-                      transform: 'translateX(4px)',
-                      filter: link.accent ? `drop-shadow(0 0 8px ${link.accent}66)` : 'none'
-                    }}
-                    transition="all 0.2s"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {/* Shop Link - NEW */}
+                <Link
+                  href="https://shop.neonburro.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  fontSize="md"
+                  fontWeight="600"
+                  color={colors.accent.warm}
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
+                  _hover={{ 
+                    color: colors.accent.warm,
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)',
+                    filter: `drop-shadow(0 0 8px ${colors.accent.warm}66)`
+                  }}
+                  transition="all 0.2s"
+                >
+                  <FiShoppingBag size={14} />
+                  Shop Collection
+                </Link>
+
+                {/* Lounge Access - Special Gradient Link */}
+                <Link
+                  href="https://lounge.neonburro.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  fontSize="md"
+                  fontWeight="600"
+                  position="relative"
+                  bgGradient="linear(to-r, #14F195, #8B5CF6)"
+                  bgClip="text"
+                  _hover={{ 
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)',
+                    filter: 'drop-shadow(0 0 12px rgba(20, 241, 149, 0.6))'
+                  }}
+                  transition="all 0.2s"
+                >
+                  Lounge Access
+                </Link>
+                
+                <Link
+                  href="/contact/"
+                  color={colors.accent.neon}
+                  fontSize="md"
+                  fontWeight="600"
+                  _hover={{ 
+                    color: colors.accent.neon,
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)',
+                    filter: `drop-shadow(0 0 8px ${colors.accent.neon}66)`
+                  }}
+                  transition="all 0.2s"
+                >
+                  Start a Project
+                </Link>
+                
+                <Link
+                  href="/invoice/"
+                  color="gray.400"
+                  fontSize="md"
+                  _hover={{ 
+                    color: colors.brand.primary,
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)'
+                  }}
+                  transition="all 0.2s"
+                >
+                  Fuel Up Hours
+                </Link>
+                
+                <Link
+                  href="/hosting/"
+                  color={colors.accent.banana}
+                  fontSize="md"
+                  fontWeight="600"
+                  _hover={{ 
+                    color: colors.accent.banana,
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)',
+                    filter: `drop-shadow(0 0 8px ${colors.accent.banana}66)`
+                  }}
+                  transition="all 0.2s"
+                >
+                  Hosting
+                </Link>
+                
+                <Link
+                  href="/apply-to-burro/"
+                  color={colors.accent.warm}
+                  fontSize="md"
+                  fontWeight="600"
+                  _hover={{ 
+                    color: colors.accent.warm,
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)',
+                    filter: `drop-shadow(0 0 8px ${colors.accent.warm}66)`
+                  }}
+                  transition="all 0.2s"
+                >
+                  Apply to Burro
+                </Link>
               </VStack>
             </VStack>
           </GridItem>
@@ -322,7 +339,7 @@ const Footer = () => {
             <VStack align="flex-start" spacing={4}>
               <Text 
                 color="white"
-                fontSize="xs" 
+                fontSize="sm" 
                 fontWeight="600"
                 textTransform="uppercase"
                 letterSpacing="wider"
@@ -336,12 +353,13 @@ const Footer = () => {
                     key={link.label}
                     href={link.href}
                     color="gray.400"
-                    fontSize="sm"
+                    fontSize="md"
                     _hover={{ 
                       color: 'white',
-                      textDecoration: 'none'
+                      textDecoration: 'none',
+                      transform: 'translateX(4px)'
                     }}
-                    transition="color 0.2s"
+                    transition="all 0.2s"
                   >
                     {link.label}
                   </Link>
@@ -355,7 +373,7 @@ const Footer = () => {
             <VStack align="flex-start" spacing={4}>
               <Text 
                 color="white"
-                fontSize="xs" 
+                fontSize="sm" 
                 fontWeight="600"
                 textTransform="uppercase"
                 letterSpacing="wider"
@@ -394,19 +412,19 @@ const Footer = () => {
                 size="sm"
                 width="full"
                 variant="outline"
-                borderColor={`${colors.accent.banana}44`}
-                color={colors.accent.banana}
+                borderColor={`${colors.accent.neon}44`}
+                color={colors.accent.neon}
                 borderRadius="full"
                 fontWeight="600"
-                fontSize="sm"
+                fontSize="md"
                 leftIcon={<FiMessageCircle size={16} />}
                 onClick={() => window.open('sms:+19709738550', '_self')}
-                bg={`${colors.accent.banana}08`}
+                bg={`${colors.accent.neon}08`}
                 _hover={{
-                  borderColor: colors.accent.banana,
-                  bg: `${colors.accent.banana}15`,
+                  borderColor: colors.accent.neon,
+                  bg: `${colors.accent.neon}15`,
                   transform: 'translateY(-2px)',
-                  boxShadow: `0 5px 20px ${colors.accent.banana}33`
+                  boxShadow: `0 5px 20px ${colors.accent.neon}33`
                 }}
                 transition="all 0.3s"
               >
@@ -418,12 +436,12 @@ const Footer = () => {
 
         <Divider borderColor="whiteAlpha.100" opacity={0.3} />
 
-        {/* Bottom Section - Simplified */}
+        {/* Bottom Section */}
         <Box pt={8}>
-          <VStack spacing={3}>
-            {/* Powered By Section with subtle banana glow on hover */}
+          <VStack spacing={4}>
+            {/* Powered By Section */}
             <HStack spacing={2} align="center">
-              <Text color="gray.500" fontSize="sm">
+              <Text color="gray.500" fontSize="md">
                 Powered by the
               </Text>
               <Box
@@ -433,7 +451,7 @@ const Footer = () => {
                 alignItems="center"
                 _hover={{
                   animation: `${glow} 2s ease-in-out infinite`,
-                  filter: 'drop-shadow(0 0 20px rgba(255, 225, 53, 0.6))'
+                  filter: 'drop-shadow(0 0 20px rgba(57, 255, 20, 0.6))'
                 }}
                 transition="all 0.3s"
               >
@@ -445,19 +463,19 @@ const Footer = () => {
                   filter="brightness(1.1)"
                 />
               </Box>
-              <Text color="gray.500" fontSize="sm">
-                to drive growth
+              <Text color="gray.500" fontSize="md">
+                collective
               </Text>
             </HStack>
             
             {/* Copyright */}
-            <Text color="gray.600" fontSize="xs" textAlign="center">
-              © {currentYear} Neon Burro, LLC. All rights reserved.
+            <Text color="gray.600" fontSize="sm" textAlign="center">
+              © {currentYear} Neon Burro Collective. All rights reserved.
             </Text>
           </VStack>
         </Box>
 
-        {/* Scroll to top button - Cleaner */}
+        {/* Scroll to top button */}
         <AnimatePresence>
           {showScrollTop && (
             <MotionBox
