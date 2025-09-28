@@ -16,8 +16,8 @@ const ProductDetail = () => {
 
   // Product data - in a real app this would come from an API
   const products = {
-    titanium_chopsticks: {
-      id: 'titanium_chopsticks',
+    'titanium-chopsticks': {
+      id: 'titanium-chopsticks',
       name: 'Titanium, Copper & Wood Chopsticks',
       subtitle: 'with Travel Sleeve',
       price: 89,
@@ -38,8 +38,8 @@ const ProductDetail = () => {
       inStock: true,
       quantity: 1
     },
-    neon_burro_sweater: {
-      id: 'neon_burro_sweater',
+    'neon-burro-sweater': {
+      id: 'neon-burro-sweater',
       name: 'The Neon Burro Sweater',
       subtitle: 'Unisex Open Knit 3D',
       price: 199,
@@ -60,8 +60,147 @@ const ProductDetail = () => {
       inStock: true,
       quantity: 1,
       featured: true
+    },
+    'gift-card': {
+      id: 'gift-card',
+      name: 'The Gift Card',
+      subtitle: 'Digital Services Access',
+      price: 50,
+      description: 'A portal to digital services and creative possibilities.',
+      longDescription: 'Give the gift of digital transformation. This card opens doors to our full range of creative services.',
+      images: [
+        '/images/products/giftcard-main.jpg',
+        '/images/products/giftcard-detail.jpg'
+      ],
+      color: '#39FF14',
+      category: 'Digital',
+      materials: ['Digital Delivery', 'No Expiration', 'Transferable'],
+      care: 'Store securely. Digital code will be emailed upon purchase.',
+      story: 'Sometimes the best gift is potential itself. Our gift cards open doors to creative possibilities.',
+      inStock: true,
+      quantity: 1
+    },
+    'neon-abstract-tees': {
+      id: 'neon-abstract-tees',
+      name: 'Neon Abstract T-Shirts',
+      subtitle: 'Bold Lines Collection',
+      price: 45,
+      description: 'Glowing shapes and bold lines. Everyday wear with neon pulse.',
+      longDescription: 'Abstract designs that capture the essence of our digital aesthetic. Each shirt features unique neon-inspired graphics.',
+      images: [
+        '/images/products/abstract-tee-main.jpg',
+        '/images/products/abstract-tee-back.jpg'
+      ],
+      color: '#FF6B35',
+      category: 'Apparel',
+      materials: ['100% Organic Cotton', 'Water-based Inks', 'Pre-shrunk'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      care: 'Machine wash cold. Tumble dry low. Do not iron design.',
+      story: 'Art meets apparel in these bold statement pieces that bring digital energy to everyday wear.',
+      inStock: true,
+      quantity: 1
+    },
+    'burro-thoughts-tees': {
+      id: 'burro-thoughts-tees',
+      name: 'Burro Thoughts T-Shirts',
+      subtitle: 'Conversation Starters',
+      price: 42,
+      description: 'Soft fabric carrying phrases that spark curiosity and conversation.',
+      longDescription: 'Thoughtful phrases and ideas printed on premium fabric. Each design is chosen to inspire discussion.',
+      images: [
+        '/images/products/thoughts-tee-main.jpg',
+        '/images/products/thoughts-tee-detail.jpg'
+      ],
+      color: '#8B5CF6',
+      category: 'Apparel',
+      materials: ['100% Organic Cotton', 'Water-based Inks', 'Pre-shrunk'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      care: 'Machine wash cold. Tumble dry low. Do not iron design.',
+      story: 'Words have power. These shirts carry ideas that matter, sparking conversations that count.',
+      inStock: true,
+      quantity: 1
+    },
+    'burro-coin-gold': {
+      id: 'burro-coin-gold',
+      name: 'Burro Coin · 24k Gold',
+      subtitle: 'Limited Edition',
+      price: 299,
+      description: 'Pure gold pressed into symbol. Made to keep, collect, and pass on.',
+      longDescription: 'A rare collectible pressed in pure 24k gold. Each coin is individually numbered and comes with a certificate of authenticity.',
+      images: [
+        '/images/products/coin-gold-main.jpg',
+        '/images/products/coin-gold-detail.jpg',
+        '/images/products/coin-gold-certificate.jpg'
+      ],
+      color: '#FFE500',
+      category: 'Collectible',
+      materials: ['24k Gold', 'Individual Numbering', 'Certificate of Authenticity'],
+      dimensions: 'Diameter: 1.5" (38mm), Weight: 1oz (28g)',
+      care: 'Store in provided case. Clean with soft cloth only.',
+      story: 'Some things are made to last forever. This coin represents permanence in an ephemeral digital world.',
+      inStock: true,
+      quantity: 1,
+      limited: true
+    },
+    'paper-boy-cap': {
+      id: 'paper-boy-cap',
+      name: 'Burro Paper Boy Winter Cap',
+      subtitle: '100% Wool Classic',
+      price: 65,
+      description: 'Classic style rebuilt in pure wool. Warmth with subtle Burro mark.',
+      longDescription: 'A timeless silhouette crafted from premium wool. Classic newsboy style with modern materials.',
+      images: [
+        '/images/products/paperboy-cap-main.jpg',
+        '/images/products/paperboy-cap-side.jpg'
+      ],
+      color: '#00E5E5',
+      category: 'Apparel',
+      materials: ['100% Merino Wool', 'Cotton Lining', 'Adjustable Sizing'],
+      sizes: ['S/M', 'L/XL'],
+      care: 'Spot clean only. Professional cleaning recommended.',
+      story: 'Sometimes the old ways are the best ways. This classic cap brings timeless style to modern life.',
+      inStock: true,
+      quantity: 1
+    },
+    'burro-socks-pack': {
+      id: 'burro-socks-pack',
+      name: 'Burro Socks · Two Pack',
+      subtitle: 'Merino & Alpaca',
+      price: 38,
+      description: 'Premium fibers in durable comfort. Never boring, always soft.',
+      longDescription: 'A two-pack of premium socks crafted from the finest natural fibers. One Merino wool, one Alpaca blend.',
+      images: [
+        '/images/products/socks-pack-main.jpg',
+        '/images/products/socks-detail.jpg'
+      ],
+      color: '#39FF14',
+      category: 'Apparel',
+      materials: ['Merino Wool Blend', 'Alpaca Blend', 'Reinforced Heel & Toe'],
+      sizes: ['S', 'M', 'L', 'XL'],
+      care: 'Machine wash cold. Air dry recommended.',
+      story: 'Great things come in pairs. These socks prove that even the smallest details matter.',
+      inStock: true,
+      quantity: 1
+    },
+    'burro-raffle': {
+      id: 'burro-raffle',
+      name: 'The $9 Burro Raffle',
+      subtitle: 'Ticket to Possibility',
+      price: 9,
+      description: 'Enter for the chance to claim a rare piece, chosen by fate.',
+      longDescription: 'A unique opportunity to win exclusive Neon Burro pieces. Each raffle entry gives you a chance at items not available for purchase.',
+      images: [
+        '/images/products/raffle-ticket-main.jpg'
+      ],
+      color: '#FF00FF',
+      category: 'Experience',
+      materials: ['Digital Entry', 'Monthly Drawing', 'Exclusive Prizes'],
+      care: 'Check email for raffle results. Winners notified monthly.',
+      story: 'Sometimes the best things in life are left to chance. Take a leap and see where fate leads.',
+      inStock: true,
+      quantity: 1,
+      special: true
     }
-    // Add other products as needed
   };
 
   useEffect(() => {

@@ -25,7 +25,7 @@ const ProductGrid = () => {
 
   const products = [
     {
-      id: 'titanium_chopsticks',
+      id: 'titanium-chopsticks',
       name: 'Titanium, Copper & Wood Chopsticks',
       subtitle: 'with Travel Sleeve',
       price: 89,
@@ -35,7 +35,7 @@ const ProductGrid = () => {
       category: 'Craft'
     },
     {
-      id: 'neon_burro_sweater',
+      id: 'neon-burro-sweater',
       name: 'The Neon Burro Sweater',
       subtitle: 'Unisex Open Knit 3D',
       price: 199,
@@ -46,7 +46,7 @@ const ProductGrid = () => {
       featured: true
     },
     {
-      id: 'gift_card',
+      id: 'gift-card',
       name: 'The Gift Card',
       subtitle: 'Digital Services Access',
       price: 50,
@@ -56,7 +56,7 @@ const ProductGrid = () => {
       category: 'Digital'
     },
     {
-      id: 'neon_abstract_tees',
+      id: 'neon-abstract-tees',
       name: 'Neon Abstract T-Shirts',
       subtitle: 'Bold Lines Collection',
       price: 45,
@@ -66,7 +66,7 @@ const ProductGrid = () => {
       category: 'Apparel'
     },
     {
-      id: 'burro_thoughts_tees',
+      id: 'burro-thoughts-tees',
       name: 'Burro Thoughts T-Shirts',
       subtitle: 'Conversation Starters',
       price: 42,
@@ -76,7 +76,7 @@ const ProductGrid = () => {
       category: 'Apparel'
     },
     {
-      id: 'burro_coin_gold',
+      id: 'burro-coin-gold',
       name: 'Burro Coin · 24k Gold',
       subtitle: 'Limited Edition',
       price: 299,
@@ -87,7 +87,7 @@ const ProductGrid = () => {
       limited: true
     },
     {
-      id: 'paper_boy_cap',
+      id: 'paper-boy-cap',
       name: 'Burro Paper Boy Winter Cap',
       subtitle: '100% Wool Classic',
       price: 65,
@@ -97,7 +97,7 @@ const ProductGrid = () => {
       category: 'Apparel'
     },
     {
-      id: 'burro_socks_pack',
+      id: 'burro-socks-pack',
       name: 'Burro Socks · Two Pack',
       subtitle: 'Merino & Alpaca',
       price: 38,
@@ -107,7 +107,7 @@ const ProductGrid = () => {
       category: 'Apparel'
     },
     {
-      id: 'burro_raffle',
+      id: 'burro-raffle',
       name: 'The $9 Burro Raffle',
       subtitle: 'Ticket to Possibility',
       price: 9,
