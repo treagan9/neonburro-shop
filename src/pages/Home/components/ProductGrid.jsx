@@ -6,7 +6,6 @@ import { keyframes } from '@emotion/react';
 
 const MotionBox = motion(Box);
 
-// Gradient flow animation for hover
 const gradientFlow = keyframes`
   0% {
     background-position: 0% 50%;
@@ -121,289 +120,247 @@ const ProductGrid = () => {
 
   const handleProductClick = (productId) => {
     setClickedProduct(productId);
-    
-    // Create explosion effect
     setTimeout(() => {
-      navigate(`/product/${productId}`);
+      navigate(`/product/${productId}/`);
     }, 300);
   };
 
   return (
-    <Box py={{ base: 16, md: 24 }} bg="#0A0A0A">
+    <Box py={{ base: 16, md: 20 }} bg="#0A0A0A">
       <Container maxW="1400px">
-        <VStack spacing={{ base: 12, md: 16 }}>
-          {/* Section Header */}
-          <VStack spacing={4} textAlign="center">
-            <Heading
-              fontSize={{ base: "3xl", md: "5xl" }}
-              color="white"
-              fontWeight="800"
-              letterSpacing="-0.02em"
+        <Grid
+          templateColumns={{
+            base: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)"
+          }}
+          gap={{ base: 6, md: 8 }}
+          width="100%"
+        >
+          {products.map((product, index) => (
+            <MotionBox
+              key={product.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.05 }}
+              onClick={() => handleProductClick(product.id)}
+              position="relative"
             >
-              The Neon Burro{' '}
               <Box
-                as="span"
-                bgGradient="linear(to-r, #00E5E5, #FFE500)"
-                bgClip="text"
-              >
-                Collection
-              </Box>
-            </Heading>
-            <Text 
-              color="gray.300" 
-              fontSize={{ base: "md", md: "lg" }}
-              maxW="600px"
-              lineHeight="1.7"
-            >
-              Where digital innovation meets mountain tradition. Each piece tells a story 
-              of craft, creativity, and the collective spirit.
-            </Text>
-          </VStack>
-
-          {/* Product Grid */}
-          <Grid
-            templateColumns={{
-              base: "1fr",
-              md: "repeat(2, 1fr)",
-              lg: "repeat(3, 1fr)"
-            }}
-            gap={{ base: 6, md: 8 }}
-            width="100%"
-          >
-            {products.map((product, index) => (
-              <MotionBox
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                onClick={() => handleProductClick(product.id)}
+                cursor="pointer"
                 position="relative"
+                bg="rgba(255, 255, 255, 0.02)"
+                borderRadius="xl"
+                overflow="hidden"
+                transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                _hover={{
+                  transform: 'translateY(-8px)',
+                  '&::before': {
+                    opacity: 1,
+                  }
+                }}
+                _before={{
+                  content: '""',
+                  position: 'absolute',
+                  inset: '-2px',
+                  borderRadius: 'xl',
+                  padding: '2px',
+                  background: `linear-gradient(135deg, ${product.color}, #FF00FF, ${product.color}, #00D9FF, ${product.color})`,
+                  backgroundSize: '400% 400%',
+                  animation: `${gradientFlow} 3s ease infinite`,
+                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  WebkitMaskComposite: 'xor',
+                  maskComposite: 'exclude',
+                  opacity: 0,
+                  transition: 'opacity 0.3s',
+                  zIndex: -1,
+                }}
               >
-                <Box
-                  cursor="pointer"
-                  position="relative"
-                  bg="rgba(255, 255, 255, 0.02)"
-                  borderRadius="xl"
-                  overflow="hidden"
-                  transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                  _hover={{
-                    transform: 'translateY(-8px)',
-                    '&::before': {
-                      opacity: 1,
-                    }
-                  }}
-                  _before={{
-                    content: '""',
-                    position: 'absolute',
-                    inset: '-2px',
-                    borderRadius: 'xl',
-                    padding: '2px',
-                    background: `linear-gradient(135deg, ${product.color}, #FF00FF, ${product.color}, #00D9FF, ${product.color})`,
-                    backgroundSize: '400% 400%',
-                    animation: `${gradientFlow} 3s ease infinite`,
-                    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                    WebkitMaskComposite: 'xor',
-                    maskComposite: 'exclude',
-                    opacity: 0,
-                    transition: 'opacity 0.3s',
-                    zIndex: -1,
-                  }}
-                >
-                  {/* Badges */}
-                  {(product.featured || product.limited || product.special) && (
-                    <Box position="absolute" top={4} left={4} zIndex={2}>
-                      {product.featured && (
-                        <Badge
-                          bg="#FFE500"
-                          color="#0A0A0A"
-                          px={3}
-                          py={1}
-                          borderRadius="full"
-                          fontSize="xs"
-                          fontWeight="bold"
-                          textTransform="uppercase"
-                          letterSpacing="wider"
-                        >
-                          Featured
-                        </Badge>
-                      )}
-                      {product.limited && (
-                        <Badge
-                          bg="#FF6B35"
-                          color="white"
-                          px={3}
-                          py={1}
-                          borderRadius="full"
-                          fontSize="xs"
-                          fontWeight="bold"
-                          textTransform="uppercase"
-                          letterSpacing="wider"
-                        >
-                          Limited
-                        </Badge>
-                      )}
-                      {product.special && (
-                        <Badge
-                          bg="#FF00FF"
-                          color="white"
-                          px={3}
-                          py={1}
-                          borderRadius="full"
-                          fontSize="xs"
-                          fontWeight="bold"
-                          textTransform="uppercase"
-                          letterSpacing="wider"
-                        >
-                          Special
-                        </Badge>
-                      )}
-                    </Box>
-                  )}
-
-                  {/* Category Badge */}
-                  <Box position="absolute" top={4} right={4} zIndex={2}>
-                    <Badge
-                      bg={`${product.color}15`}
-                      color={product.color}
-                      px={2}
-                      py={1}
-                      borderRadius="md"
-                      fontSize="2xs"
-                      fontWeight="600"
-                      textTransform="uppercase"
-                      letterSpacing="wider"
-                      border="1px solid"
-                      borderColor={`${product.color}30`}
-                    >
-                      {product.category}
-                    </Badge>
-                  </Box>
-
-                  {/* Glow effect on click */}
-                  {clickedProduct === product.id && (
-                    <Box
-                      position="absolute"
-                      inset={0}
-                      bg={product.color}
-                      opacity={0.5}
-                      filter="blur(40px)"
-                      animation="pulse 0.3s ease-out"
-                      zIndex={10}
-                    />
-                  )}
-
-                  {/* Product Image Placeholder */}
-                  <Box
-                    height={{ base: "280px", md: "320px" }}
-                    bg="black"
-                    position="relative"
-                    overflow="hidden"
-                  >
-                    {/* Enhanced placeholder with product character */}
-                    <Box
-                      width="100%"
-                      height="100%"
-                      bg={`linear-gradient(135deg, ${product.color}08 0%, ${product.color}03 50%, transparent 100%)`}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      position="relative"
-                    >
-                      {/* Large letter based on product */}
-                      <Text 
-                        fontSize="9xl" 
-                        opacity={0.15} 
-                        color={product.color}
-                        fontWeight="800"
-                        fontFamily="mono"
-                      >
-                        {product.name.charAt(0)}
-                      </Text>
-                      
-                      {/* Subtle grid pattern */}
-                      <Box
-                        position="absolute"
-                        inset={0}
-                        opacity={0.03}
-                        backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 20px)`}
-                      />
-                    </Box>
-                  </Box>
-
-                  {/* Product Info */}
-                  <VStack align="stretch" p={6} spacing={4}>
-                    <VStack align="start" spacing={1}>
-                      <Heading
-                        size="md"
-                        color="white"
-                        fontWeight="700"
-                        lineHeight="1.2"
-                        noOfLines={1}
-                      >
-                        {product.name}
-                      </Heading>
-                      <Text
-                        fontSize="sm"
-                        color={product.color}
-                        fontWeight="500"
+                {(product.featured || product.limited || product.special) && (
+                  <Box position="absolute" top={4} left={4} zIndex={2}>
+                    {product.featured && (
+                      <Badge
+                        bg="#FFE500"
+                        color="#0A0A0A"
+                        px={3}
+                        py={1}
+                        borderRadius="full"
+                        fontSize="xs"
+                        fontWeight="bold"
                         textTransform="uppercase"
                         letterSpacing="wider"
                       >
-                        {product.subtitle}
-                      </Text>
-                    </VStack>
-                    
-                    <Text
-                      fontSize="sm"
-                      color="gray.400"
-                      lineHeight="1.6"
-                      noOfLines={2}
+                        Featured
+                      </Badge>
+                    )}
+                    {product.limited && (
+                      <Badge
+                        bg="#FF6B35"
+                        color="white"
+                        px={3}
+                        py={1}
+                        borderRadius="full"
+                        fontSize="xs"
+                        fontWeight="bold"
+                        textTransform="uppercase"
+                        letterSpacing="wider"
+                      >
+                        Limited
+                      </Badge>
+                    )}
+                    {product.special && (
+                      <Badge
+                        bg="#FF00FF"
+                        color="white"
+                        px={3}
+                        py={1}
+                        borderRadius="full"
+                        fontSize="xs"
+                        fontWeight="bold"
+                        textTransform="uppercase"
+                        letterSpacing="wider"
+                      >
+                        Special
+                      </Badge>
+                    )}
+                  </Box>
+                )}
+
+                <Box position="absolute" top={4} right={4} zIndex={2}>
+                  <Badge
+                    bg={`${product.color}15`}
+                    color={product.color}
+                    px={2}
+                    py={1}
+                    borderRadius="md"
+                    fontSize="2xs"
+                    fontWeight="600"
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                    border="1px solid"
+                    borderColor={`${product.color}30`}
+                  >
+                    {product.category}
+                  </Badge>
+                </Box>
+
+                {clickedProduct === product.id && (
+                  <Box
+                    position="absolute"
+                    inset={0}
+                    bg={product.color}
+                    opacity={0.5}
+                    filter="blur(40px)"
+                    animation="pulse 0.3s ease-out"
+                    zIndex={10}
+                  />
+                )}
+
+                <Box
+                  height={{ base: "280px", md: "320px" }}
+                  bg="black"
+                  position="relative"
+                  overflow="hidden"
+                >
+                  <Box
+                    width="100%"
+                    height="100%"
+                    bg={`linear-gradient(135deg, ${product.color}08 0%, ${product.color}03 50%, transparent 100%)`}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    position="relative"
+                  >
+                    <Text 
+                      fontSize="9xl" 
+                      opacity={0.15} 
+                      color={product.color}
+                      fontWeight="800"
+                      fontFamily="mono"
                     >
-                      {product.description}
+                      {product.name.charAt(0)}
                     </Text>
                     
-                    <Box>
-                      <Text
-                        fontSize="xl"
-                        fontWeight="800"
-                        color="white"
-                        fontFamily="mono"
-                      >
-                        ${product.price}
-                      </Text>
-                    </Box>
-                  </VStack>
+                    <Box
+                      position="absolute"
+                      inset={0}
+                      opacity={0.03}
+                      backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 20px)`}
+                    />
+                  </Box>
                 </Box>
-              </MotionBox>
-            ))}
-          </Grid>
 
-          {/* Bottom CTA */}
-          <VStack spacing={4} textAlign="center" pt={8}>
+                <VStack align="stretch" p={6} spacing={4}>
+                  <VStack align="start" spacing={1}>
+                    <Heading
+                      size="md"
+                      color="white"
+                      fontWeight="700"
+                      lineHeight="1.2"
+                      noOfLines={1}
+                    >
+                      {product.name}
+                    </Heading>
+                    <Text
+                      fontSize="sm"
+                      color={product.color}
+                      fontWeight="500"
+                      textTransform="uppercase"
+                      letterSpacing="wider"
+                    >
+                      {product.subtitle}
+                    </Text>
+                  </VStack>
+                  
+                  <Text
+                    fontSize="sm"
+                    color="gray.400"
+                    lineHeight="1.6"
+                    noOfLines={2}
+                  >
+                    {product.description}
+                  </Text>
+                  
+                  <Box>
+                    <Text
+                      fontSize="xl"
+                      fontWeight="800"
+                      color="white"
+                      fontFamily="mono"
+                    >
+                      ${product.price}
+                    </Text>
+                  </Box>
+                </VStack>
+              </Box>
+            </MotionBox>
+          ))}
+        </Grid>
+
+        <VStack spacing={4} textAlign="center" pt={16}>
+          <Text 
+            color="gray.400" 
+            fontSize="md"
+            maxW="500px"
+          >
+            Each piece is crafted with intention, designed to last, and made to be part of your story.
+          </Text>
+          <Box
+            px={4}
+            py={2}
+            borderRadius="full"
+            bg="rgba(255, 255, 255, 0.05)"
+            border="1px solid"
+            borderColor="rgba(255, 255, 255, 0.1)"
+          >
             <Text 
-              color="gray.400" 
-              fontSize="md"
-              maxW="500px"
+              color="gray.500" 
+              fontSize="sm"
+              fontWeight="500"
             >
-              Each piece is crafted with intention, designed to last, and made to be part of your story.
+              More pieces arriving soon
             </Text>
-            <Box
-              px={4}
-              py={2}
-              borderRadius="full"
-              bg="rgba(255, 255, 255, 0.05)"
-              border="1px solid"
-              borderColor="rgba(255, 255, 255, 0.1)"
-            >
-              <Text 
-                color="gray.500" 
-                fontSize="sm"
-                fontWeight="500"
-              >
-                More pieces arriving soon
-              </Text>
-            </Box>
-          </VStack>
+          </Box>
         </VStack>
       </Container>
     </Box>

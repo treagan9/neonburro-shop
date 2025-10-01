@@ -5,7 +5,6 @@ import { FiArrowDown, FiStar, FiHeart, FiClock } from 'react-icons/fi';
 const MotionBox = motion(Box);
 const MotionHeading = motion(Heading);
 
-// Neon Burro Color System
 const colors = {
   neon: {
     cyan: '#00E5E5',
@@ -22,7 +21,6 @@ const colors = {
   }
 };
 
-// Subtle glow animation
 const neonGlow = keyframes`
   0%, 100% { 
     filter: brightness(1);
@@ -76,7 +74,6 @@ const ShopHero = () => {
       pt={{ base: 24, md: 32 }}
       pb={{ base: 16, md: 20 }}
     >
-      {/* Simple background gradient */}
       <Box
         position="absolute"
         top="50%"
@@ -88,7 +85,6 @@ const ShopHero = () => {
         pointerEvents="none"
       />
 
-      {/* Minimal floating elements */}
       {[...Array(4)].map((_, i) => (
         <Box
           key={i}
@@ -116,10 +112,7 @@ const ShopHero = () => {
           maxW="900px"
           mx="auto"
         >
-          
-          {/* Main Content */}
           <VStack spacing={{ base: 4, md: 6 }} maxW="800px">
-            {/* Main Heading */}
             <MotionHeading
               as="h1"
               initial={{ opacity: 0, y: 20 }}
@@ -152,7 +145,6 @@ const ShopHero = () => {
               </Box>
             </MotionHeading>
 
-            {/* Description */}
             <MotionBox
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -166,21 +158,18 @@ const ShopHero = () => {
                 fontWeight="500"
                 mb={4}
               >
-                Rare finds with stories worth keeping.
+                Built to impress. Made to last. Designed to elevate your energy.
               </Text>
               <Text
                 fontSize={{ base: "md", md: "lg", lg: "xl" }}
                 color="gray.300"
                 lineHeight="1.6"
               >
-                Curated to inspire, crafted to impress and revealed only when 
-                the time feels right. Each piece chosen for those who understand 
-                that the best things are built to last a lifetime.
+                Each piece carries intention—crafted to enhance your presence and amplify your aura.
               </Text>
             </MotionBox>
           </VStack>
 
-          {/* Features */}
           <MotionBox
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -223,7 +212,6 @@ const ShopHero = () => {
                       opacity: 1
                     }}
                   >
-                    {/* Mobile glow */}
                     <Box
                       display={{ base: "block", md: "none" }}
                       position="absolute"
@@ -234,7 +222,6 @@ const ShopHero = () => {
                       transition="opacity 0.3s"
                     />
                     
-                    {/* Mobile design */}
                     <HStack
                       spacing={1.5}
                       color="gray.400"
@@ -249,7 +236,6 @@ const ShopHero = () => {
                       <Text fontWeight="500">{highlight.text.split(' ')[0]}</Text>
                     </HStack>
 
-                    {/* Desktop - icon above text */}
                     <VStack 
                       spacing={2} 
                       align="center"
@@ -291,7 +277,6 @@ const ShopHero = () => {
             </HStack>
           </MotionBox>
 
-          {/* CTA Section */}
           <MotionBox
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
