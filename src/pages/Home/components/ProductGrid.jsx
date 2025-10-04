@@ -231,13 +231,29 @@ const ProductGrid = () => {
                     justifyContent="center"
                     position="relative"
                   >
+                    {/* Actual Product Image */}
+                    <Box
+                      as="img"
+                      src={product.featuredImage}
+                      alt={product.name}
+                      maxW="85%"
+                      maxH="85%"
+                      objectFit="contain"
+                      position="relative"
+                      zIndex={2}
+                      filter={`drop-shadow(0 10px 30px ${product.color}40)`}
+                    />
+                    
+                    {/* Fallback Letter (hidden when image loads) */}
                     <Text 
                       fontSize="9xl" 
-                      opacity={0.25} 
+                      opacity={0.15} 
                       color={product.color}
                       fontWeight="900"
                       fontFamily="mono"
                       filter={`drop-shadow(0 0 30px ${product.color}80)`}
+                      position="absolute"
+                      zIndex={1}
                     >
                       {product.name.charAt(0)}
                     </Text>
@@ -247,6 +263,7 @@ const ProductGrid = () => {
                       inset={0}
                       opacity={0.08}
                       backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 15px)`}
+                      zIndex={0}
                     />
                   </Box>
                 </Box>
