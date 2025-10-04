@@ -24,97 +24,67 @@ const ProductGrid = () => {
 
   const products = [
     {
-      id: 'titanium-chopsticks',
-      name: 'Titanium, Copper & Wood Chopsticks',
-      subtitle: 'with Travel Sleeve',
+      id: 'digital-gift-card',
+      name: 'Neon Burro Digital Gift Card',
+      subtitle: 'Give Creativity & Momentum',
+      price: 50,
+      description: 'More than a balance, an introduction to a team that listens, designs with care and brings ideas to life.',
+      featuredImage: '/images/products/giftcard-main.png',
+      color: '#39FF14',
+      category: 'Digital',
+      featured: true
+    },
+    {
+      id: 'lost-burro-tee',
+      name: 'The Lost Burro · Mystery Luxe T',
+      subtitle: '100% Merino Wool',
+      price: 149,
+      description: 'Mid-heavy weight merino, simple in form yet rich in presence. Designed to be worn, lived in and remembered.',
+      featuredImage: '/images/products/lost-burro-tee-main.png',
+      color: '#8B5CF6',
+      category: 'Apparel',
+      limited: true
+    },
+    {
+      id: 'nibble-wands',
+      name: 'Nibble Wands',
+      subtitle: 'Titanium Copper Wood',
       price: 89,
-      description: 'Metal meets wood in everyday art. Built to travel, made to last.',
-      featuredImage: '/images/products/chopsticks-main.jpg',
+      description: 'Grounded in copper and wood, lifted by titanium. Every meal becomes a mindful ritual.',
+      featuredImage: '/images/products/chopsticks-main.png',
       color: '#00E5E5',
       category: 'Craft'
     },
     {
-      id: 'neon-burro-sweater',
-      name: 'The Neon Burro Sweater',
-      subtitle: 'Unisex Open Knit 3D',
+      id: 'titanium-cup',
+      name: 'Titanium Burro Cup',
+      subtitle: '500ml Pure Titanium',
+      price: 125,
+      description: 'Ultralight, unbreakable, made to last a lifetime. A cup for life, a vessel for the journey.',
+      featuredImage: '/images/products/titanium-cup-main.png',
+      color: '#C0C0C0',
+      category: 'Craft'
+    },
+    {
+      id: 'copper-cup',
+      name: 'Copper Burro Cup',
+      subtitle: '500ml Pure Copper',
+      price: 98,
+      description: 'A natural conductor carrying warmth and energy. Grounded yet vibrant, alive in your hand.',
+      featuredImage: '/images/products/copper-cup-main.png',
+      color: '#FF6B35',
+      category: 'Craft'
+    },
+    {
+      id: 'burro-sweater',
+      name: 'The Burro Sweater',
+      subtitle: 'Open Knit 3D Pattern',
       price: 199,
-      description: 'Pure Merino wool where mountain air meets digital craft.',
-      featuredImage: '/images/products/sweater-main.jpg',
+      description: 'A pattern that moves like hidden rivers, a weight that feels both grounding and alive.',
+      featuredImage: '/images/products/sweater-main.png',
       color: '#FFE500',
       category: 'Apparel',
       featured: true
-    },
-    {
-      id: 'gift-card',
-      name: 'The Gift Card',
-      subtitle: 'Digital Services Access',
-      price: 50,
-      description: 'A portal to digital services and creative possibilities.',
-      featuredImage: '/images/products/giftcard-main.jpg',
-      color: '#39FF14',
-      category: 'Digital'
-    },
-    {
-      id: 'neon-abstract-tees',
-      name: 'Neon Abstract T-Shirts',
-      subtitle: 'Bold Lines Collection',
-      price: 45,
-      description: 'Glowing shapes and bold lines. Everyday wear with neon pulse.',
-      featuredImage: '/images/products/abstract-tee-main.jpg',
-      color: '#FF6B35',
-      category: 'Apparel'
-    },
-    {
-      id: 'burro-thoughts-tees',
-      name: 'Burro Thoughts T-Shirts',
-      subtitle: 'Conversation Starters',
-      price: 42,
-      description: 'Soft fabric carrying phrases that spark curiosity and conversation.',
-      featuredImage: '/images/products/thoughts-tee-main.jpg',
-      color: '#8B5CF6',
-      category: 'Apparel'
-    },
-    {
-      id: 'burro-coin-gold',
-      name: 'Burro Coin · 24k Gold',
-      subtitle: 'Limited Edition',
-      price: 299,
-      description: 'Pure gold pressed into symbol. Made to keep, collect, and pass on.',
-      featuredImage: '/images/products/coin-gold-main.jpg',
-      color: '#FFE500',
-      category: 'Collectible',
-      limited: true
-    },
-    {
-      id: 'paper-boy-cap',
-      name: 'Burro Paper Boy Winter Cap',
-      subtitle: '100% Wool Classic',
-      price: 65,
-      description: 'Classic style rebuilt in pure wool. Warmth with subtle Burro mark.',
-      featuredImage: '/images/products/paperboy-cap-main.jpg',
-      color: '#00E5E5',
-      category: 'Apparel'
-    },
-    {
-      id: 'burro-socks-pack',
-      name: 'Burro Socks · Two Pack',
-      subtitle: 'Merino & Alpaca',
-      price: 38,
-      description: 'Premium fibers in durable comfort. Never boring, always soft.',
-      featuredImage: '/images/products/socks-pack-main.jpg',
-      color: '#39FF14',
-      category: 'Apparel'
-    },
-    {
-      id: 'burro-raffle',
-      name: 'The $9 Burro Raffle',
-      subtitle: 'Ticket to Possibility',
-      price: 9,
-      description: 'Enter for the chance to claim a rare piece, chosen by fate.',
-      featuredImage: '/images/products/raffle-ticket-main.jpg',
-      color: '#FF00FF',
-      category: 'Experience',
-      special: true
     }
   ];
 
@@ -149,12 +119,13 @@ const ProductGrid = () => {
               <Box
                 cursor="pointer"
                 position="relative"
-                bg="rgba(255, 255, 255, 0.02)"
-                borderRadius="xl"
+                bg="rgba(255, 255, 255, 0.03)"
+                borderRadius="3xl"
                 overflow="hidden"
-                transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
                 _hover={{
-                  transform: 'translateY(-8px)',
+                  transform: 'translateY(-12px)',
+                  bg: 'rgba(255, 255, 255, 0.05)',
                   '&::before': {
                     opacity: 1,
                   }
@@ -162,9 +133,9 @@ const ProductGrid = () => {
                 _before={{
                   content: '""',
                   position: 'absolute',
-                  inset: '-2px',
-                  borderRadius: 'xl',
-                  padding: '2px',
+                  inset: '-3px',
+                  borderRadius: '3xl',
+                  padding: '3px',
                   background: `linear-gradient(135deg, ${product.color}, #FF00FF, ${product.color}, #00D9FF, ${product.color})`,
                   backgroundSize: '400% 400%',
                   animation: `${gradientFlow} 3s ease infinite`,
@@ -172,73 +143,61 @@ const ProductGrid = () => {
                   WebkitMaskComposite: 'xor',
                   maskComposite: 'exclude',
                   opacity: 0,
-                  transition: 'opacity 0.3s',
+                  transition: 'opacity 0.4s',
                   zIndex: -1,
                 }}
               >
-                {(product.featured || product.limited || product.special) && (
-                  <Box position="absolute" top={4} left={4} zIndex={2}>
+                {(product.featured || product.limited) && (
+                  <Box position="absolute" top={5} left={5} zIndex={2}>
                     {product.featured && (
                       <Badge
-                        bg="#FFE500"
+                        bg={product.color}
                         color="#0A0A0A"
-                        px={3}
-                        py={1}
+                        px={4}
+                        py={1.5}
                         borderRadius="full"
                         fontSize="xs"
-                        fontWeight="bold"
+                        fontWeight="800"
                         textTransform="uppercase"
                         letterSpacing="wider"
+                        boxShadow={`0 0 20px ${product.color}60`}
                       >
                         Featured
                       </Badge>
                     )}
                     {product.limited && (
                       <Badge
-                        bg="#FF6B35"
+                        bg={product.color}
                         color="white"
-                        px={3}
-                        py={1}
+                        px={4}
+                        py={1.5}
                         borderRadius="full"
                         fontSize="xs"
-                        fontWeight="bold"
+                        fontWeight="800"
                         textTransform="uppercase"
                         letterSpacing="wider"
+                        boxShadow={`0 0 20px ${product.color}60`}
                       >
                         Limited
-                      </Badge>
-                    )}
-                    {product.special && (
-                      <Badge
-                        bg="#FF00FF"
-                        color="white"
-                        px={3}
-                        py={1}
-                        borderRadius="full"
-                        fontSize="xs"
-                        fontWeight="bold"
-                        textTransform="uppercase"
-                        letterSpacing="wider"
-                      >
-                        Special
                       </Badge>
                     )}
                   </Box>
                 )}
 
-                <Box position="absolute" top={4} right={4} zIndex={2}>
+                <Box position="absolute" top={5} right={5} zIndex={2}>
                   <Badge
-                    bg={`${product.color}15`}
+                    bg={`${product.color}25`}
                     color={product.color}
-                    px={2}
-                    py={1}
-                    borderRadius="md"
+                    px={3}
+                    py={1.5}
+                    borderRadius="lg"
                     fontSize="2xs"
-                    fontWeight="600"
+                    fontWeight="700"
                     textTransform="uppercase"
                     letterSpacing="wider"
-                    border="1px solid"
-                    borderColor={`${product.color}30`}
+                    border="2px solid"
+                    borderColor={`${product.color}50`}
+                    backdropFilter="blur(10px)"
                   >
                     {product.category}
                   </Badge>
@@ -249,23 +208,24 @@ const ProductGrid = () => {
                     position="absolute"
                     inset={0}
                     bg={product.color}
-                    opacity={0.5}
-                    filter="blur(40px)"
+                    opacity={0.6}
+                    filter="blur(50px)"
                     animation="pulse 0.3s ease-out"
                     zIndex={10}
                   />
                 )}
 
                 <Box
-                  height={{ base: "280px", md: "320px" }}
-                  bg="black"
+                  height={{ base: "300px", md: "340px" }}
+                  bg={`radial-gradient(circle at center, ${product.color}12 0%, ${product.color}05 40%, transparent 70%)`}
                   position="relative"
                   overflow="hidden"
+                  borderRadius="3xl"
+                  borderBottomRadius={0}
                 >
                   <Box
                     width="100%"
                     height="100%"
-                    bg={`linear-gradient(135deg, ${product.color}08 0%, ${product.color}03 50%, transparent 100%)`}
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -273,10 +233,11 @@ const ProductGrid = () => {
                   >
                     <Text 
                       fontSize="9xl" 
-                      opacity={0.15} 
+                      opacity={0.25} 
                       color={product.color}
-                      fontWeight="800"
+                      fontWeight="900"
                       fontFamily="mono"
+                      filter={`drop-shadow(0 0 30px ${product.color}80)`}
                     >
                       {product.name.charAt(0)}
                     </Text>
@@ -284,18 +245,18 @@ const ProductGrid = () => {
                     <Box
                       position="absolute"
                       inset={0}
-                      opacity={0.03}
-                      backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 20px)`}
+                      opacity={0.08}
+                      backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 15px)`}
                     />
                   </Box>
                 </Box>
 
-                <VStack align="stretch" p={6} spacing={4}>
-                  <VStack align="start" spacing={1}>
+                <VStack align="stretch" p={7} spacing={4}>
+                  <VStack align="start" spacing={2}>
                     <Heading
                       size="md"
                       color="white"
-                      fontWeight="700"
+                      fontWeight="800"
                       lineHeight="1.2"
                       noOfLines={1}
                     >
@@ -304,9 +265,10 @@ const ProductGrid = () => {
                     <Text
                       fontSize="sm"
                       color={product.color}
-                      fontWeight="500"
+                      fontWeight="600"
                       textTransform="uppercase"
                       letterSpacing="wider"
+                      filter={`drop-shadow(0 0 10px ${product.color}40)`}
                     >
                       {product.subtitle}
                     </Text>
@@ -314,19 +276,20 @@ const ProductGrid = () => {
                   
                   <Text
                     fontSize="sm"
-                    color="gray.400"
-                    lineHeight="1.6"
+                    color="gray.300"
+                    lineHeight="1.7"
                     noOfLines={2}
                   >
                     {product.description}
                   </Text>
                   
-                  <Box>
+                  <Box pt={2}>
                     <Text
-                      fontSize="xl"
-                      fontWeight="800"
-                      color="white"
+                      fontSize="2xl"
+                      fontWeight="900"
+                      color={product.color}
                       fontFamily="mono"
+                      filter={`drop-shadow(0 0 15px ${product.color}50)`}
                     >
                       ${product.price}
                     </Text>
@@ -337,26 +300,29 @@ const ProductGrid = () => {
           ))}
         </Grid>
 
-        <VStack spacing={4} textAlign="center" pt={16}>
+        <VStack spacing={5} textAlign="center" pt={20}>
           <Text 
-            color="gray.400" 
-            fontSize="md"
-            maxW="500px"
+            color="gray.300" 
+            fontSize="lg"
+            maxW="600px"
+            lineHeight="1.8"
           >
             Each piece is crafted with intention, designed to last, and made to be part of your story.
           </Text>
           <Box
-            px={4}
-            py={2}
+            px={6}
+            py={3}
             borderRadius="full"
             bg="rgba(255, 255, 255, 0.05)"
-            border="1px solid"
-            borderColor="rgba(255, 255, 255, 0.1)"
+            border="2px solid"
+            borderColor="rgba(255, 255, 255, 0.15)"
+            backdropFilter="blur(10px)"
           >
             <Text 
-              color="gray.500" 
+              color="gray.400" 
               fontSize="sm"
-              fontWeight="500"
+              fontWeight="600"
+              letterSpacing="wide"
             >
               More pieces arriving soon
             </Text>
