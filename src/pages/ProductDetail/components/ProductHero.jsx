@@ -8,76 +8,132 @@ import {
   Badge,
   Button,
   Grid,
-  GridItem 
+  GridItem,
+  Image,
+  Select,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  useToast,
+  RadioGroup,
+  Radio,
+  Stack
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiShare2, FiHeart } from 'react-icons/fi';
+import { FiArrowLeft, FiShoppingCart, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const MotionBox = motion(Box);
 
-const ProductHero = ({ product }) => {
+const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : '');
+  const [selectedTier, setSelectedTier] = useState(product.priceOptions ? product.priceOptions[0] : null);
+  const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
 
-  const handleBack = () => {
-    navigate('/');
+  const getCurrentPrice = () => {
+    if (product.hasVariants && selectedTier) {
+      return selectedTier.price;
+    }
+    return product.price;
   };
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: product.name,
-        text: product.description,
-        url: window.location.href,
+  const handleAddToCart = () => {
+    if (product.sizes && !selectedSize) {
+      toast({
+        title: 'Please select a size',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
       });
-    } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(window.location.href);
+      return;
     }
+
+    if (product.hasVariants && !selectedTier) {
+      toast({
+        title: 'Please select an option',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setIsAdding(true);
+    
+    setTimeout(() => {
+      const productData = {
+        ...product,
+        price: getCurrentPrice(),
+        selectedSize,
+        selectedTier: selectedTier?.label,
+        stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
+        quantity
+      };
+      
+      onAddToCart(productData);
+      setIsAdding(false);
+    }, 300);
+  };
+
+  const handleBuyNow = () => {
+    if (product.sizes && !selectedSize) {
+      toast({
+        title: 'Please select a size',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (product.hasVariants && !selectedTier) {
+      toast({
+        title: 'Please select an option',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const productData = {
+      ...product,
+      price: getCurrentPrice(),
+      selectedSize,
+      selectedTier: selectedTier?.label,
+      stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
+      quantity
+    };
+
+    onBuyNow(productData);
   };
 
   return (
     <Box position="relative" width="100%" pt={{ base: 20, md: 24 }}>
       <Container maxW="1400px" px={{ base: 4, md: 8 }}>
-        {/* Navigation */}
+        {/* Back Button */}
         <MotionBox
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           mb={8}
         >
-          <HStack spacing={4} justify="space-between" align="center">
-            <Button
-              variant="ghost"
-              leftIcon={<FiArrowLeft />}
-              onClick={handleBack}
-              color="gray.400"
-              _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
-              size="lg"
-            >
-              Back to Collection
-            </Button>
-            
-            <HStack spacing={2}>
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={handleShare}
-                color="gray.400"
-                _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
-              >
-                <FiShare2 />
-              </Button>
-              <Button
-                variant="ghost"
-                size="lg"
-                color="gray.400"
-                _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
-              >
-                <FiHeart />
-              </Button>
-            </HStack>
-          </HStack>
+          <Button
+            variant="ghost"
+            leftIcon={<FiArrowLeft />}
+            onClick={() => navigate('/')}
+            color="gray.400"
+            _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+            size="lg"
+          >
+            Back to Collection
+          </Button>
         </MotionBox>
 
         <Grid
@@ -99,7 +155,6 @@ const ProductHero = ({ product }) => {
                 bg="black"
                 aspectRatio={1}
               >
-                {/* Image placeholder with enhanced styling */}
                 <Box
                   width="100%"
                   height="100%"
@@ -109,26 +164,28 @@ const ProductHero = ({ product }) => {
                   justifyContent="center"
                   position="relative"
                 >
-                  <Text 
-                    fontSize="15xl" 
-                    opacity={0.1} 
-                    color={product.color}
-                    fontWeight="800"
-                    fontFamily="mono"
-                  >
-                    {product.name.charAt(0)}
-                  </Text>
-                  
-                  {/* Subtle grid pattern */}
-                  <Box
-                    position="absolute"
-                    inset={0}
-                    opacity={0.03}
-                    backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 30px)`}
-                  />
+                  {product.featuredImage ? (
+                    <Image
+                      src={product.featuredImage}
+                      alt={product.name}
+                      maxW="80%"
+                      maxH="80%"
+                      objectFit="contain"
+                      filter={`drop-shadow(0 20px 40px ${product.color}40)`}
+                    />
+                  ) : (
+                    <Text 
+                      fontSize="15xl" 
+                      opacity={0.1} 
+                      color={product.color}
+                      fontWeight="800"
+                    >
+                      {product.name.charAt(0)}
+                    </Text>
+                  )}
                 </Box>
 
-                {/* Category badge */}
+                {/* Badges */}
                 <Box position="absolute" top={4} left={4}>
                   <Badge
                     bg={`${product.color}15`}
@@ -138,145 +195,273 @@ const ProductHero = ({ product }) => {
                     borderRadius="full"
                     fontSize="sm"
                     fontWeight="600"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                    border="1px solid"
-                    borderColor={`${product.color}30`}
                   >
                     {product.category}
                   </Badge>
                 </Box>
 
-                {/* Featured/Special badges */}
-                {(product.featured || product.limited || product.special) && (
+                {(product.featured || product.limited) && (
                   <Box position="absolute" top={4} right={4}>
-                    {product.featured && (
-                      <Badge
-                        bg="#FFE500"
-                        color="#0A0A0A"
-                        px={3}
-                        py={1}
-                        borderRadius="full"
-                        fontSize="sm"
-                        fontWeight="bold"
-                        textTransform="uppercase"
-                        letterSpacing="wider"
-                      >
-                        Featured
-                      </Badge>
-                    )}
+                    <Badge
+                      bg={product.featured ? "#FFE500" : product.color}
+                      color={product.featured ? "#0A0A0A" : "white"}
+                      px={3}
+                      py={1}
+                      borderRadius="full"
+                      fontSize="sm"
+                      fontWeight="bold"
+                    >
+                      {product.featured ? "Featured" : "Limited"}
+                    </Badge>
                   </Box>
                 )}
               </Box>
             </MotionBox>
           </GridItem>
 
-          {/* Product Details */}
+          {/* Product Details & Purchase */}
           <GridItem>
             <MotionBox
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <VStack align="start" spacing={6} height="100%">
-                {/* Product Title */}
-                <VStack align="start" spacing={2}>
+              <VStack align="start" spacing={6}>
+                {/* Title & Price */}
+                <VStack align="start" spacing={3} width="100%">
                   <Heading
-                    as="h1"
-                    fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+                    fontSize={{ base: "2xl", md: "4xl" }}
                     fontWeight="800"
                     color="white"
                     lineHeight="1.1"
-                    letterSpacing="-0.02em"
                   >
                     {product.name}
                   </Heading>
                   <Text
-                    fontSize={{ base: "lg", md: "xl" }}
+                    fontSize="lg"
                     color={product.color}
                     fontWeight="600"
                     textTransform="uppercase"
-                    letterSpacing="wider"
                   >
                     {product.subtitle}
                   </Text>
-                </VStack>
-
-                {/* Price */}
-                <Box>
+                  
                   <Text
-                    fontSize={{ base: "2xl", md: "3xl" }}
+                    fontSize="3xl"
                     fontWeight="800"
                     color="white"
                     fontFamily="mono"
                   >
-                    ${product.price}
+                    ${getCurrentPrice()}
                   </Text>
-                  <Text
-                    fontSize="sm"
-                    color="gray.500"
-                    mt={1}
-                  >
+                  <Text fontSize="sm" color="gray.500">
                     Free shipping worldwide
                   </Text>
-                </Box>
+                </VStack>
 
                 {/* Description */}
                 <Text
-                  fontSize={{ base: "lg", md: "xl" }}
+                  fontSize="md"
                   color="gray.300"
                   lineHeight="1.7"
-                  maxW="500px"
                 >
-                  {product.longDescription || product.description}
+                  {product.description}
                 </Text>
 
-                {/* Key Features */}
-                <VStack align="start" spacing={3} width="100%">
-                  <Text
-                    fontSize="md"
+                {/* Tier Selection for Digital Gift Card */}
+                {product.hasVariants && product.priceOptions && (
+                  <VStack align="start" spacing={3} width="100%">
+                    <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
+                      Select Package
+                    </Text>
+                    <RadioGroup
+                      value={selectedTier?.id}
+                      onChange={(value) => {
+                        const tier = product.priceOptions.find(opt => opt.id === value);
+                        setSelectedTier(tier);
+                      }}
+                    >
+                      <Stack spacing={3}>
+                        {product.priceOptions.map((option) => (
+                          <Box
+                            key={option.id}
+                            p={4}
+                            borderRadius="lg"
+                            border="2px solid"
+                            borderColor={selectedTier?.id === option.id ? product.color : 'whiteAlpha.200'}
+                            bg={selectedTier?.id === option.id ? `${product.color}10` : 'rgba(255, 255, 255, 0.02)'}
+                            cursor="pointer"
+                            onClick={() => setSelectedTier(option)}
+                            transition="all 0.2s"
+                          >
+                            <HStack justify="space-between" align="start">
+                              <Radio value={option.id} colorScheme="cyan" />
+                              <VStack align="start" flex={1} spacing={1} ml={3}>
+                                <HStack>
+                                  <Text color="white" fontWeight="700" fontSize="md">
+                                    {option.label}
+                                  </Text>
+                                  {option.featured && (
+                                    <Badge bg="#FF6B35" color="white" fontSize="xs">
+                                      Popular
+                                    </Badge>
+                                  )}
+                                </HStack>
+                                <Text color="gray.400" fontSize="xs">
+                                  {option.subtitle}
+                                </Text>
+                                <Text color="gray.300" fontSize="sm">
+                                  {option.description}
+                                </Text>
+                              </VStack>
+                              <Text color={product.color} fontWeight="800" fontSize="xl" fontFamily="mono">
+                                ${option.price}
+                              </Text>
+                            </HStack>
+                          </Box>
+                        ))}
+                      </Stack>
+                    </RadioGroup>
+                  </VStack>
+                )}
+
+                {/* Size Selection */}
+                {product.sizes && (
+                  <VStack align="start" spacing={3} width="100%">
+                    <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
+                      Size
+                    </Text>
+                    <Select
+                      value={selectedSize}
+                      onChange={(e) => setSelectedSize(e.target.value)}
+                      size="lg"
+                      bg="rgba(255, 255, 255, 0.02)"
+                      border="2px solid"
+                      borderColor="whiteAlpha.200"
+                      color="white"
+                      _hover={{ borderColor: product.color }}
+                      _focus={{ borderColor: product.color, boxShadow: `0 0 0 1px ${product.color}` }}
+                    >
+                      {product.sizes.map((size) => (
+                        <option key={size} value={size} style={{ background: '#1A1A1A' }}>
+                          {size}
+                        </option>
+                      ))}
+                    </Select>
+                  </VStack>
+                )}
+
+                {/* Quantity */}
+                {!product.hasVariants && (
+                  <VStack align="start" spacing={3}>
+                    <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
+                      Quantity
+                    </Text>
+                    <NumberInput
+                      value={quantity}
+                      onChange={(valueString) => setQuantity(parseInt(valueString) || 1)}
+                      min={1}
+                      max={10}
+                      size="lg"
+                      maxW="120px"
+                    >
+                      <NumberInputField
+                        bg="rgba(255, 255, 255, 0.02)"
+                        border="2px solid"
+                        borderColor="whiteAlpha.200"
+                        color="white"
+                        _hover={{ borderColor: product.color }}
+                        _focus={{ borderColor: product.color }}
+                      />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper color="gray.400" _hover={{ color: product.color }} />
+                        <NumberDecrementStepper color="gray.400" _hover={{ color: product.color }} />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </VStack>
+                )}
+
+                {/* Action Buttons */}
+                <VStack spacing={3} width="100%">
+                  <Button
+                    size="lg"
+                    width="100%"
+                    bg={product.color}
+                    color="#0A0A0A"
+                    fontWeight="700"
+                    height="56px"
+                    leftIcon={<FiShoppingCart />}
+                    onClick={handleAddToCart}
+                    isLoading={isAdding}
+                    _hover={{
+                      transform: 'translateY(-2px)',
+                      boxShadow: `0 10px 30px ${product.color}44`
+                    }}
+                    borderRadius="full"
+                  >
+                    Add to Cart
+                  </Button>
+
+                  <Button
+                    size="lg"
+                    width="100%"
+                    variant="outline"
+                    borderColor={product.color}
                     color={product.color}
                     fontWeight="600"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
+                    height="56px"
+                    onClick={handleBuyNow}
+                    _hover={{ bg: `${product.color}11` }}
+                    borderRadius="full"
                   >
-                    Key Features
-                  </Text>
-                  <VStack align="start" spacing={2}>
-                    {product.materials.slice(0, 3).map((material, idx) => (
-                      <HStack key={idx} spacing={3}>
-                        <Box
-                          w={2}
-                          h={2}
-                          borderRadius="full"
-                          bg={product.color}
-                          flexShrink={0}
-                          mt={2}
-                        />
-                        <Text color="gray.300" fontSize="md" lineHeight="1.6">
-                          {material}
-                        </Text>
-                      </HStack>
-                    ))}
-                  </VStack>
+                    Buy Now
+                  </Button>
                 </VStack>
 
-                {/* Stock Status */}
-                <HStack spacing={2}>
-                  <Box
-                    w={3}
-                    h={3}
-                    borderRadius="full"
-                    bg={product.inStock ? "#39FF14" : "#FF4444"}
-                  />
-                  <Text
-                    color={product.inStock ? "#39FF14" : "#FF4444"}
-                    fontSize="sm"
-                    fontWeight="600"
-                  >
-                    {product.inStock ? "In Stock" : "Out of Stock"}
-                  </Text>
-                </HStack>
+                {/* Trust Signals */}
+                <VStack spacing={3} width="100%" pt={4}>
+                  <HStack spacing={3} align="start" width="100%">
+                    <Box color={product.color} mt={1}>
+                      <FiTruck size={18} />
+                    </Box>
+                    <VStack align="start" spacing={0}>
+                      <Text color="white" fontWeight="600" fontSize="sm">
+                        Free Worldwide Shipping
+                      </Text>
+                      <Text color="gray.400" fontSize="xs">
+                        No hidden fees
+                      </Text>
+                    </VStack>
+                  </HStack>
+
+                  <HStack spacing={3} align="start" width="100%">
+                    <Box color={product.color} mt={1}>
+                      <FiShield size={18} />
+                    </Box>
+                    <VStack align="start" spacing={0}>
+                      <Text color="white" fontWeight="600" fontSize="sm">
+                        Lifetime Guarantee
+                      </Text>
+                      <Text color="gray.400" fontSize="xs">
+                        Craftsmanship warranty
+                      </Text>
+                    </VStack>
+                  </HStack>
+
+                  <HStack spacing={3} align="start" width="100%">
+                    <Box color={product.color} mt={1}>
+                      <FiRefreshCw size={18} />
+                    </Box>
+                    <VStack align="start" spacing={0}>
+                      <Text color="white" fontWeight="600" fontSize="sm">
+                        30-Day Returns
+                      </Text>
+                      <Text color="gray.400" fontSize="xs">
+                        Full refund guaranteed
+                      </Text>
+                    </VStack>
+                  </HStack>
+                </VStack>
               </VStack>
             </MotionBox>
           </GridItem>

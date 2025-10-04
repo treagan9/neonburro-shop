@@ -1,14 +1,17 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { ChakraProvider } from '@chakra-ui/react'
-import theme from './theme'
-import './index.css'
-import App from './App.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import App from './App.jsx';
+import './index.css';
+import { getStripeKey } from './config/stripe';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <ChakraProvider theme={theme}>
+const stripePromise = loadStripe(getStripeKey());
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <Elements stripe={stripePromise}>
       <App />
-    </ChakraProvider>
-  </StrictMode>,
-)
+    </Elements>
+  </React.StrictMode>,
+);

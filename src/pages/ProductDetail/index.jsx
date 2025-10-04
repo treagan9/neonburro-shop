@@ -1,14 +1,11 @@
-import { Box, Container, VStack, useToast } from '@chakra-ui/react';
+import { Box, Container, VStack } from '@chakra-ui/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getProduct } from '../../data/products';
 import { useCart } from '../../context/CartContext';
 import ProductHero from './components/ProductHero';
-import ProductSpecs from './components/ProductSpecs';
-import ProductGallery from './components/ProductGallery';
-import AddToCart from './components/AddToCart';
-import RelatedProducts from './components/RelatedProducts';
 import ProductStory from './components/ProductStory';
+import RelatedProducts from './components/RelatedProducts';
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -16,7 +13,6 @@ const ProductDetail = () => {
   const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  const toast = useToast();
 
   useEffect(() => {
     setTimeout(() => {
@@ -30,14 +26,6 @@ const ProductDetail = () => {
 
   const handleAddToCart = (productData) => {
     addToCart(productData, productData.quantity || 1);
-    toast({
-      title: 'Added to Cart',
-      description: `${productData.name} has been added to your cart.`,
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-      position: 'top'
-    });
   };
 
   const handleBuyNow = (productData) => {
@@ -73,20 +61,15 @@ const ProductDetail = () => {
 
   return (
     <Box minH="100vh" bg="#0A0A0A">
-      <Container maxW="1400px" px={{ base: 4, md: 8 }}>
-        <VStack spacing={{ base: 12, md: 16 }} py={{ base: 8, md: 12 }}>
-          <ProductHero product={product} />
-          <ProductGallery images={product.images} productName={product.name} />
-          <ProductSpecs product={product} />
-          <AddToCart 
-            product={product} 
-            onAddToCart={handleAddToCart}
-            onBuyNow={handleBuyNow}
-          />
-          <ProductStory product={product} />
-          <RelatedProducts currentProductId={product.id} />
-        </VStack>
-      </Container>
+      <VStack spacing={{ base: 16, md: 20 }}>
+        <ProductHero 
+          product={product}
+          onAddToCart={handleAddToCart}
+          onBuyNow={handleBuyNow}
+        />
+        <ProductStory product={product} />
+        <RelatedProducts currentProductId={product.id} />
+      </VStack>
     </Box>
   );
 };

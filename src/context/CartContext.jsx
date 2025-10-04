@@ -14,7 +14,6 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  // Load cart from localStorage on mount
   useEffect(() => {
     const savedCart = localStorage.getItem('neonburro-cart');
     if (savedCart) {
@@ -22,21 +21,27 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('neonburro-cart', JSON.stringify(cart));
   }, [cart]);
 
   const addToCart = (product, quantity = 1) => {
     setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id);
+      // Create unique ID based on product + size + tier
+      const uniqueId = `${product.id}-${product.selectedSize || 'default'}-${product.selectedTier || 'default'}`;
+      
+      const existingItem = prevCart.find(item => {
+        const itemUniqueId = `${item.id}-${item.selectedSize || 'default'}-${item.selectedTier || 'default'}`;
+        return itemUniqueId === uniqueId;
+      });
       
       if (existingItem) {
-        return prevCart.map(item =>
-          item.id === product.id
+        return prevCart.map(item => {
+          const itemUniqueId = `${item.id}-${item.selectedSize || 'default'}-${item.selectedTier || 'default'}`;
+          return itemUniqueId === uniqueId
             ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+            : item;
+        });
       }
       
       return [...prevCart, { ...product, quantity }];

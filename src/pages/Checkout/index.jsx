@@ -1,4 +1,4 @@
-import { Box, Container, Grid, GridItem, VStack, Heading, Text, Button, useToast } from '@chakra-ui/react';
+import { Box, Container, Grid, GridItem, VStack, Heading, Text, useToast } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
@@ -9,7 +9,7 @@ import CheckoutSuccess from './components/CheckoutSuccess';
 const Checkout = () => {
   const navigate = useNavigate();
   const { cart, getCartTotal, clearCart } = useCart();
-  const [step, setStep] = useState('form'); // 'form' | 'processing' | 'success'
+  const [step, setStep] = useState('form');
   const [orderData, setOrderData] = useState(null);
   const toast = useToast();
 
@@ -23,7 +23,7 @@ const Checkout = () => {
     setStep('processing');
 
     try {
-      // Prepare order data for Netlify form submission
+      // Submit to Netlify form for order tracking
       const orderDetails = {
         'form-name': 'shop-order',
         ...formData,
@@ -32,13 +32,13 @@ const Checkout = () => {
           name: item.name,
           price: item.price,
           quantity: item.quantity,
-          selectedSize: item.selectedSize
+          selectedSize: item.selectedSize,
+          selectedTier: item.selectedTier
         }))),
         total: getCartTotal(),
         timestamp: new Date().toISOString()
       };
 
-      // Submit to Netlify Forms
       await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -50,7 +50,8 @@ const Checkout = () => {
         orderNumber: `NB-${Date.now()}`,
         email: formData.email,
         total: getCartTotal(),
-        items: [...cart]
+        items: [...cart],
+        paymentIntentId: formData.paymentIntentId
       });
 
       // Clear cart
@@ -106,15 +107,15 @@ const Checkout = () => {
           gap={8}
           alignItems="start"
         >
-          {/* Checkout Form */}
           <GridItem>
             <CheckoutForm 
               onSubmit={handleCheckoutSubmit}
               isProcessing={step === 'processing'}
+              cart={cart}
+              total={getCartTotal()}
             />
           </GridItem>
 
-          {/* Order Summary */}
           <GridItem>
             <Box
               position={{ base: 'relative', lg: 'sticky' }}
