@@ -29,7 +29,7 @@ const ProductGrid = () => {
       subtitle: 'Give Creativity & Momentum',
       price: 50,
       description: 'More than a balance, an introduction to a team that listens, designs with care and brings ideas to life.',
-      featuredImage: '/images/products/giftcard-main.png',
+      featuredImage: '/images/products/the-burro-gift-card.png',
       color: '#39FF14',
       category: 'Digital',
       featured: true
@@ -40,7 +40,7 @@ const ProductGrid = () => {
       subtitle: '100% Merino Wool',
       price: 149,
       description: 'Mid-heavy weight merino, simple in form yet rich in presence. Designed to be worn, lived in and remembered.',
-      featuredImage: '/images/products/lost-burro-tee-main.png',
+      featuredImage: '/images/products/teal-mystery-t-shirt-front.png',
       color: '#8B5CF6',
       category: 'Apparel',
       limited: true
@@ -51,7 +51,7 @@ const ProductGrid = () => {
       subtitle: 'Titanium Copper Wood',
       price: 89,
       description: 'Grounded in copper and wood, lifted by titanium. Every meal becomes a mindful ritual.',
-      featuredImage: '/images/products/chopsticks-main.png',
+      featuredImage: '/images/products/chop-sticks-main.png',
       color: '#00E5E5',
       category: 'Craft'
     },
@@ -61,7 +61,7 @@ const ProductGrid = () => {
       subtitle: '500ml Pure Titanium',
       price: 125,
       description: 'Ultralight, unbreakable, made to last a lifetime. A cup for life, a vessel for the journey.',
-      featuredImage: '/images/products/titanium-cup-main.png',
+      featuredImage: '/images/products/titanium-burro-cup.png',
       color: '#C0C0C0',
       category: 'Craft'
     },
@@ -71,7 +71,7 @@ const ProductGrid = () => {
       subtitle: '500ml Pure Copper',
       price: 98,
       description: 'A natural conductor carrying warmth and energy. Grounded yet vibrant, alive in your hand.',
-      featuredImage: '/images/products/copper-cup-main.png',
+      featuredImage: '/images/products/copper-burro-cup.png',
       color: '#FF6B35',
       category: 'Craft'
     },
@@ -81,7 +81,7 @@ const ProductGrid = () => {
       subtitle: 'Open Knit 3D Pattern',
       price: 199,
       description: 'A pattern that moves like hidden rivers, a weight that feels both grounding and alive.',
-      featuredImage: '/images/products/sweater-main.png',
+      featuredImage: '/images/products/the-burro-sweater-front.png',
       color: '#FFE500',
       category: 'Apparel',
       featured: true
