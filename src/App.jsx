@@ -7,14 +7,12 @@ import CartDrawer from './components/cart/CartDrawer';
 import Footer from './components/common/Footer';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
-import Invoice from './pages/Invoice';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import Invoice from './pages/Invoice';
 import './styles/global.css';
-
-// Cart Context Provider
 import { CartProvider } from './context/CartContext';
 
-// Scroll to top component
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -33,9 +31,10 @@ function AppContent() {
       <CartDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/product/:productId" element={<ProductDetail />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Invoice />} />
+        <Route path="/product/:productId/" element={<ProductDetail />} />
+        <Route path="/cart/" element={<Cart />} />
+        <Route path="/checkout/" element={<Checkout />} />
+        <Route path="/invoice/" element={<Invoice />} />
       </Routes>
       <Footer />
     </>

@@ -22,7 +22,7 @@ import { FiShoppingCart, FiHeart, FiTruck, FiShield, FiRefreshCw } from 'react-i
 
 const MotionBox = motion(Box);
 
-const AddToCart = ({ product, onAddToCart }) => {
+const AddToCart = ({ product, onAddToCart, onBuyNow }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : '');
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
@@ -41,7 +41,6 @@ const AddToCart = ({ product, onAddToCart }) => {
 
     setIsAdding(true);
     
-    // Simulate adding to cart
     setTimeout(() => {
       onAddToCart({
         ...product,
@@ -53,8 +52,21 @@ const AddToCart = ({ product, onAddToCart }) => {
   };
 
   const handleBuyNow = () => {
-    // Redirect to checkout with this item
-    window.location.href = '/checkout';
+    if (product.sizes && !selectedSize) {
+      toast({
+        title: 'Please select a size',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    onBuyNow({
+      ...product,
+      selectedSize,
+      quantity
+    });
   };
 
   return (
@@ -67,10 +79,8 @@ const AddToCart = ({ product, onAddToCart }) => {
           viewport={{ once: true }}
         >
           <Grid templateColumns={{ base: '1fr', lg: '2fr 1fr' }} gap={12} alignItems="start">
-            {/* Purchase Options */}
             <GridItem>
               <VStack spacing={8} align="stretch">
-                {/* Section Header */}
                 <VStack spacing={2} align="start">
                   <Heading
                     fontSize={{ base: "2xl", md: "3xl" }}
@@ -85,7 +95,6 @@ const AddToCart = ({ product, onAddToCart }) => {
                   </Text>
                 </VStack>
 
-                {/* Size Selection */}
                 {product.sizes && (
                   <VStack align="start" spacing={3}>
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
@@ -112,7 +121,6 @@ const AddToCart = ({ product, onAddToCart }) => {
                   </VStack>
                 )}
 
-                {/* Quantity Selection */}
                 <VStack align="start" spacing={3}>
                   <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
                     Quantity
@@ -140,7 +148,6 @@ const AddToCart = ({ product, onAddToCart }) => {
                   </NumberInput>
                 </VStack>
 
-                {/* Price Summary */}
                 <Box
                   p={6}
                   bg="rgba(255, 255, 255, 0.02)"
@@ -169,9 +176,7 @@ const AddToCart = ({ product, onAddToCart }) => {
                     )}
                     <Box height="1px" bg="whiteAlpha.200" />
                     <HStack justify="space-between">
-                      <Text color="white" fontSize="lg" fontWeight="700">
-                        Total:
-                      </Text>
+                      <Text color="white" fontSize="lg" fontWeight="700">Total</Text>
                       <Text color={product.color} fontSize="xl" fontWeight="800" fontFamily="mono">
                         ${product.price * quantity}
                       </Text>
@@ -182,7 +187,6 @@ const AddToCart = ({ product, onAddToCart }) => {
                   </VStack>
                 </Box>
 
-                {/* Action Buttons */}
                 <VStack spacing={4} align="stretch">
                   <Button
                     size="lg"
@@ -243,14 +247,9 @@ const AddToCart = ({ product, onAddToCart }) => {
               </VStack>
             </GridItem>
 
-            {/* Guarantees & Info */}
             <GridItem>
               <VStack spacing={6} align="stretch">
-                <Heading
-                  fontSize="xl"
-                  color="white"
-                  fontWeight="700"
-                >
+                <Heading fontSize="xl" color="white" fontWeight="700">
                   Why Choose Neon Burro
                 </Heading>
 
@@ -316,7 +315,6 @@ const AddToCart = ({ product, onAddToCart }) => {
                   </HStack>
                 </VStack>
 
-                {/* Trust Indicators */}
                 <Box
                   p={4}
                   bg={`${product.color}08`}

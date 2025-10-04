@@ -14,30 +14,29 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
+import { getAllProducts } from '../../../data/products';
 
 const MotionBox = motion(Box);
 
-const RelatedProducts = ({ currentProduct, allProducts }) => {
+const RelatedProducts = ({ currentProductId }) => {
   const navigate = useNavigate();
   const [hoveredProduct, setHoveredProduct] = useState(null);
-
-  // Filter out current product and get related items
-  const relatedProducts = Object.values(allProducts)
-    .filter(product => product.id !== currentProduct.id)
-    .slice(0, 3); // Show max 3 related products
+  
+  const allProducts = getAllProducts();
+  const relatedProducts = allProducts
+    .filter(product => product.id !== currentProductId)
+    .slice(0, 3);
 
   const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+    navigate(`/product/${productId}/`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleViewAll = () => {
-    navigate('/');
   };
 
   if (relatedProducts.length === 0) {
     return null;
   }
+
+  const currentProduct = allProducts.find(p => p.id === currentProductId) || allProducts[0];
 
   return (
     <Box width="100%" py={{ base: 8, md: 12 }}>
@@ -49,7 +48,6 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
           viewport={{ once: true }}
         >
           <VStack spacing={8}>
-            {/* Section Header */}
             <VStack spacing={4} textAlign="center">
               <Heading
                 fontSize={{ base: "2xl", md: "3xl" }}
@@ -64,7 +62,6 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
               </Text>
             </VStack>
 
-            {/* Related Products Grid */}
             <Grid
               templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }}
               gap={{ base: 6, md: 8 }}
@@ -94,7 +91,6 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
                       boxShadow: `0 20px 40px ${product.color}22`
                     }}
                   >
-                    {/* Category Badge */}
                     <Box position="absolute" top={4} right={4} zIndex={2}>
                       <Badge
                         bg={`${product.color}15`}
@@ -113,8 +109,7 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
                       </Badge>
                     </Box>
 
-                    {/* Special Badges */}
-                    {(product.featured || product.limited || product.special) && (
+                    {(product.featured || product.limited) && (
                       <Box position="absolute" top={4} left={4} zIndex={2}>
                         {product.featured && (
                           <Badge
@@ -125,46 +120,26 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
                             borderRadius="full"
                             fontSize="xs"
                             fontWeight="bold"
-                            textTransform="uppercase"
-                            letterSpacing="wider"
                           >
                             Featured
                           </Badge>
                         )}
                         {product.limited && (
                           <Badge
-                            bg="#FF6B35"
+                            bg={product.color}
                             color="white"
                             px={3}
                             py={1}
                             borderRadius="full"
                             fontSize="xs"
                             fontWeight="bold"
-                            textTransform="uppercase"
-                            letterSpacing="wider"
                           >
                             Limited
-                          </Badge>
-                        )}
-                        {product.special && (
-                          <Badge
-                            bg="#FF00FF"
-                            color="white"
-                            px={3}
-                            py={1}
-                            borderRadius="full"
-                            fontSize="xs"
-                            fontWeight="bold"
-                            textTransform="uppercase"
-                            letterSpacing="wider"
-                          >
-                            Special
                           </Badge>
                         )}
                       </Box>
                     )}
 
-                    {/* Product Image */}
                     <Box
                       height="250px"
                       bg="black"
@@ -182,30 +157,32 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
                         transition="all 0.3s"
                         transform={hoveredProduct === product.id ? 'scale(1.05)' : 'scale(1)'}
                       >
+                        <Box
+                          as="img"
+                          src={product.featuredImage}
+                          alt={product.name}
+                          maxW="75%"
+                          maxH="75%"
+                          objectFit="contain"
+                          position="relative"
+                          zIndex={2}
+                          filter={`drop-shadow(0 10px 30px ${product.color}40)`}
+                        />
+                        
                         <Text 
                           fontSize="7xl" 
                           opacity={0.12} 
                           color={product.color}
                           fontWeight="800"
                           fontFamily="mono"
-                          transition="all 0.3s"
-                          transform={hoveredProduct === product.id ? 'rotate(5deg)' : 'rotate(0deg)'}
+                          position="absolute"
+                          zIndex={1}
                         >
                           {product.name.charAt(0)}
                         </Text>
-                        
-                        {/* Grid pattern */}
-                        <Box
-                          position="absolute"
-                          inset={0}
-                          opacity={hoveredProduct === product.id ? 0.05 : 0.02}
-                          transition="opacity 0.3s"
-                          backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 20px)`}
-                        />
                       </Box>
                     </Box>
 
-                    {/* Product Info */}
                     <VStack align="stretch" p={6} spacing={3}>
                       <VStack align="start" spacing={1}>
                         <Heading
@@ -262,7 +239,6 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
               ))}
             </Grid>
 
-            {/* View All CTA */}
             <MotionBox
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -282,7 +258,7 @@ const RelatedProducts = ({ currentProduct, allProducts }) => {
                   fontSize="md"
                   px={8}
                   rightIcon={<FiArrowRight />}
-                  onClick={handleViewAll}
+                  onClick={() => navigate('/')}
                   _hover={{
                     bg: `${currentProduct.color}11`,
                     transform: 'translateY(-2px)',
