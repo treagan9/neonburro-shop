@@ -69,7 +69,7 @@ export const products = {
     price: 85,
     stripePriceId: 'price_1SEc9lGWJVsbrWy8WeWz8pPe',
     description: 'Stories woven into fabric. Each design carries its own energy, waiting to reveal itself.',
-    longDescription: 'Every pattern holds a secret. Some speak of seasons that never end, others of journeys through color and light. These are not just shirts—they are wearable mysteries, crafted from mid-heavy weight merino wool that holds close and lasts long. Choose your path, wear your story.',
+    longDescription: 'Every pattern holds a secret. Some speak of seasons that never end, others of journeys through color and light. These are not just shirts—they are wearable mysteries, crafted from mid-heavy weight merino wool that holds close and lasts long. Each design emerged from a moment caught between thought and dream, between what was and what could be. The patterns shift depending on how the light hits, revealing hidden depths in color and form. Choose the design that speaks to your current journey, knowing it will evolve with you. Wear your mystery.',
     images: ['/images/products/t-shirts/mystery-t-shirt-main.png'],
     featuredImage: '/images/products/t-shirts/mystery-t-shirt-main.png',
     color: '#8B5CF6',
@@ -145,7 +145,7 @@ export const products = {
       }
     ],
     care: 'Hand wash in cold water. Lay flat to dry. Do not wring.',
-    story: 'Each design emerges from moments caught between seasons, between thought and action. Wear the one that speaks.',
+    story: 'The Mystery T collection was born from a single question: what if clothing could hold stories the way skin holds scars? Each design emerged from a different moment of transition—autumn spiraling into winter, dawn bleeding into dusk, chaos finding its center. We collaborated with artists who work in the space between seasons, between states of being. The result is eleven designs that refuse to be just one thing. They shift. They evolve. They carry whatever energy you bring to them. Some customers say the patterns look different depending on their mood. We believe them. These are not mass-produced prints. Each one is a small portal, a wearable mystery that invites you to step through and see what you find on the other side.',
     inStock: true,
     quantity: 1,
     featured: true,
