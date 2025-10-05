@@ -210,7 +210,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     </Text>
                   )}
 
-                  {/* Background Letter - Same as ProductGrid */}
+                  {/* Background Letter */}
                   <Text 
                     fontSize="15rem"
                     opacity={0.15} 
@@ -225,7 +225,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     {product.name.charAt(0)}
                   </Text>
 
-                  {/* Striped Pattern - Same as ProductGrid */}
+                  {/* Striped Pattern */}
                   <Box
                     position="absolute"
                     inset={0}
@@ -235,37 +235,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     pointerEvents="none"
                   />
                 </Box>
-
-                {/* Badges */}
-                <Box position="absolute" top={4} left={4}>
-                  <Badge
-                    bg={`${product.color}15`}
-                    color={product.color}
-                    px={3}
-                    py={1}
-                    borderRadius="full"
-                    fontSize="sm"
-                    fontWeight="600"
-                  >
-                    {product.category}
-                  </Badge>
-                </Box>
-
-                {(product.featured || product.limited) && (
-                  <Box position="absolute" top={4} right={4}>
-                    <Badge
-                      bg={product.featured ? "#FFE500" : product.color}
-                      color={product.featured ? "#0A0A0A" : "white"}
-                      px={3}
-                      py={1}
-                      borderRadius="full"
-                      fontSize="sm"
-                      fontWeight="bold"
-                    >
-                      {product.featured ? "Featured" : "Limited"}
-                    </Badge>
-                  </Box>
-                )}
               </Box>
             </MotionBox>
           </GridItem>
