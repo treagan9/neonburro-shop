@@ -22,7 +22,7 @@ import {
   Stack
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiShoppingCart, FiTruck, FiShield, FiRefreshCw } from 'react-icons/fi';
+import { FiArrowLeft, FiShoppingCart, FiTruck, FiTool, FiAlertCircle } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -33,6 +33,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
   const toast = useToast();
   const [selectedSize, setSelectedSize] = useState(product.sizes ? product.sizes[0] : '');
   const [selectedTier, setSelectedTier] = useState(product.priceOptions ? product.priceOptions[0] : null);
+  const [selectedDesign, setSelectedDesign] = useState(product.designs ? product.designs[0] : null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -54,7 +55,17 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
       return;
     }
 
-    if (product.hasVariants && !selectedTier) {
+    if (product.hasVariants && product.variantType === 'design' && !selectedDesign) {
+      toast({
+        title: 'Please select a design',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (product.hasVariants && product.variantType === 'tier' && !selectedTier) {
       toast({
         title: 'Please select an option',
         status: 'warning',
@@ -72,6 +83,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
         price: getCurrentPrice(),
         selectedSize,
         selectedTier: selectedTier?.label,
+        selectedDesign: selectedDesign?.name,
         stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
         quantity
       };
@@ -92,7 +104,17 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
       return;
     }
 
-    if (product.hasVariants && !selectedTier) {
+    if (product.hasVariants && product.variantType === 'design' && !selectedDesign) {
+      toast({
+        title: 'Please select a design',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (product.hasVariants && product.variantType === 'tier' && !selectedTier) {
       toast({
         title: 'Please select an option',
         status: 'warning',
@@ -107,6 +129,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
       price: getCurrentPrice(),
       selectedSize,
       selectedTier: selectedTier?.label,
+      selectedDesign: selectedDesign?.name,
       stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
       quantity
     };
@@ -166,7 +189,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                 >
                   {product.featuredImage ? (
                     <Image
-                      src={product.featuredImage}
+                      src={selectedDesign?.image || product.featuredImage}
                       alt={product.name}
                       maxW="80%"
                       maxH="80%"
@@ -255,7 +278,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     ${getCurrentPrice()}
                   </Text>
                   <Text fontSize="sm" color="gray.500">
-                    Free shipping worldwide
+                    Free shipping in the US
                   </Text>
                 </VStack>
 
@@ -268,8 +291,52 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   {product.description}
                 </Text>
 
+                {/* Design Selection for Mystery T */}
+                {product.hasVariants && product.variantType === 'design' && product.designs && (
+                  <VStack align="start" spacing={3} width="100%">
+                    <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
+                      Select Design
+                    </Text>
+                    <RadioGroup
+                      value={selectedDesign?.id}
+                      onChange={(value) => {
+                        const design = product.designs.find(d => d.id === value);
+                        setSelectedDesign(design);
+                      }}
+                    >
+                      <Stack spacing={3}>
+                        {product.designs.map((design) => (
+                          <Box
+                            key={design.id}
+                            p={4}
+                            borderRadius="lg"
+                            border="2px solid"
+                            borderColor={selectedDesign?.id === design.id ? product.color : 'whiteAlpha.200'}
+                            bg={selectedDesign?.id === design.id ? `${product.color}10` : 'rgba(255, 255, 255, 0.02)'}
+                            cursor="pointer"
+                            onClick={() => setSelectedDesign(design)}
+                            transition="all 0.2s"
+                          >
+                            <HStack justify="space-between" align="start">
+                              <Radio value={design.id} colorScheme="cyan" />
+                              <VStack align="start" flex={1} spacing={1} ml={3}>
+                                <Text color="white" fontWeight="700" fontSize="md">
+                                  {design.name}
+                                </Text>
+                                <Text color="gray.400" fontSize="sm">
+                                  {design.description}
+                                </Text>
+                              </VStack>
+                            </HStack>
+                          </Box>
+                        ))}
+                      </Stack>
+                    </RadioGroup>
+                  </VStack>
+                )}
+
                 {/* Tier Selection for Digital Gift Card */}
-                {product.hasVariants && product.priceOptions && (
+                {product.hasVariants && product.variantType === 'tier' && product.priceOptions && (
                   <VStack align="start" spacing={3} width="100%">
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
                       Select Package
@@ -426,38 +493,38 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     </Box>
                     <VStack align="start" spacing={0}>
                       <Text color="white" fontWeight="600" fontSize="sm">
-                        Free Worldwide Shipping
+                        Free US Shipping
                       </Text>
                       <Text color="gray.400" fontSize="xs">
-                        No hidden fees
+                        Fast, reliable delivery
                       </Text>
                     </VStack>
                   </HStack>
 
                   <HStack spacing={3} align="start" width="100%">
                     <Box color={product.color} mt={1}>
-                      <FiShield size={18} />
+                      <FiTool size={18} />
                     </Box>
                     <VStack align="start" spacing={0}>
                       <Text color="white" fontWeight="600" fontSize="sm">
-                        Lifetime Guarantee
+                        Repair Services
                       </Text>
                       <Text color="gray.400" fontSize="xs">
-                        Craftsmanship warranty
+                        We'll fix what we made
                       </Text>
                     </VStack>
                   </HStack>
 
                   <HStack spacing={3} align="start" width="100%">
                     <Box color={product.color} mt={1}>
-                      <FiRefreshCw size={18} />
+                      <FiAlertCircle size={18} />
                     </Box>
                     <VStack align="start" spacing={0}>
                       <Text color="white" fontWeight="600" fontSize="sm">
-                        30-Day Returns
+                        No Returns
                       </Text>
                       <Text color="gray.400" fontSize="xs">
-                        Full refund guaranteed
+                        May include hidden assets
                       </Text>
                     </VStack>
                   </HStack>
