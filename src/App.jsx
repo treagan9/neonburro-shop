@@ -9,7 +9,6 @@ import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
-import Invoice from './pages/Invoice';
 import './styles/global.css';
 import { CartProvider } from './context/CartContext';
 
@@ -34,7 +33,6 @@ function AppContent() {
         <Route path="/product/:productId/" element={<ProductDetail />} />
         <Route path="/cart/" element={<Cart />} />
         <Route path="/checkout/" element={<Checkout />} />
-        <Route path="/invoice/" element={<Invoice />} />
       </Routes>
       <Footer />
     </>
