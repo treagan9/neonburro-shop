@@ -83,44 +83,7 @@ const ProductGrid = forwardRef((props, ref) => {
                   zIndex: -1,
                 }}
               >
-                {/* Badges */}
-                {(product.featured || product.limited) && (
-                  <Box position="absolute" top={{ base: 3, md: 5 }} left={{ base: 3, md: 5 }} zIndex={2}>
-                    {product.featured && (
-                      <Badge
-                        bg={product.color}
-                        color="#0A0A0A"
-                        px={{ base: 2, md: 4 }}
-                        py={{ base: 1, md: 1.5 }}
-                        borderRadius="full"
-                        fontSize={{ base: "2xs", md: "xs" }}
-                        fontWeight="800"
-                        textTransform="uppercase"
-                        letterSpacing="wider"
-                        boxShadow={`0 0 20px ${product.color}60`}
-                      >
-                        Featured
-                      </Badge>
-                    )}
-                    {product.limited && (
-                      <Badge
-                        bg={product.color}
-                        color="white"
-                        px={{ base: 2, md: 4 }}
-                        py={{ base: 1, md: 1.5 }}
-                        borderRadius="full"
-                        fontSize={{ base: "2xs", md: "xs" }}
-                        fontWeight="800"
-                        textTransform="uppercase"
-                        letterSpacing="wider"
-                        boxShadow={`0 0 20px ${product.color}60`}
-                      >
-                        Limited
-                      </Badge>
-                    )}
-                  </Box>
-                )}
-
+                {/* Category Badge Only */}
                 <Box position="absolute" top={{ base: 3, md: 5 }} right={{ base: 3, md: 5 }} zIndex={2}>
                   <Badge
                     bg={`${product.color}25`}

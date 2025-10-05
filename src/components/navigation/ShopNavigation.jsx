@@ -57,7 +57,7 @@ const ShopNavigation = () => {
             {/* Logo */}
             <Box 
               cursor="pointer" 
-              onClick={() => window.location.href = '/'}
+              onClick={() => window.location.href = 'https://neonburro.com'}
               transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
               _hover={{ 
                 transform: 'translateY(-2px)',
