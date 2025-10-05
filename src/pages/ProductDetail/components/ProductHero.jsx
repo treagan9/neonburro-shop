@@ -1,13 +1,13 @@
 import { 
   Box, 
   Container, 
+  Grid, 
   Heading, 
   Text, 
   VStack, 
   HStack, 
   Badge,
   Button,
-  Grid,
   GridItem,
   Image,
   Select,
@@ -22,7 +22,7 @@ import {
   Stack
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiArrowLeft, FiShoppingCart, FiTruck, FiTool, FiAlertCircle } from 'react-icons/fi';
+import { FiArrowLeft, FiShoppingCart, FiTruck, FiStar, FiPackage } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -84,7 +84,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
         selectedSize,
         selectedTier: selectedTier?.label,
         selectedDesign: selectedDesign?.name,
-        stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
+        stripePriceId: selectedTier?.stripePriceId || selectedDesign?.stripePriceId || product.stripePriceId,
         quantity
       };
       
@@ -130,7 +130,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
       selectedSize,
       selectedTier: selectedTier?.label,
       selectedDesign: selectedDesign?.name,
-      stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
+      stripePriceId: selectedTier?.stripePriceId || selectedDesign?.stripePriceId || product.stripePriceId,
       quantity
     };
 
@@ -503,28 +503,28 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
 
                   <HStack spacing={3} align="start" width="100%">
                     <Box color={product.color} mt={1}>
-                      <FiTool size={18} />
+                      <FiStar size={18} />
                     </Box>
                     <VStack align="start" spacing={0}>
                       <Text color="white" fontWeight="600" fontSize="sm">
-                        Repair Services
+                        Hidden Discoveries
                       </Text>
                       <Text color="gray.400" fontSize="xs">
-                        We'll fix what we made
+                        Each piece may contain surprises
                       </Text>
                     </VStack>
                   </HStack>
 
                   <HStack spacing={3} align="start" width="100%">
                     <Box color={product.color} mt={1}>
-                      <FiAlertCircle size={18} />
+                      <FiPackage size={18} />
                     </Box>
                     <VStack align="start" spacing={0}>
                       <Text color="white" fontWeight="600" fontSize="sm">
-                        No Returns
+                        Final Sale
                       </Text>
                       <Text color="gray.400" fontSize="xs">
-                        May include hidden assets
+                        All sales are final—what you find is yours
                       </Text>
                     </VStack>
                   </HStack>

@@ -1,6 +1,6 @@
 import { Box, Container, Grid, Heading, Text, VStack, Badge } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@emotion/react';
 import { getAllProducts } from '../../../data/products';
@@ -13,7 +13,7 @@ const gradientFlow = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
-const ProductGrid = () => {
+const ProductGrid = forwardRef((props, ref) => {
   const navigate = useNavigate();
   const [clickedProduct, setClickedProduct] = useState(null);
   const products = getAllProducts();
@@ -26,7 +26,13 @@ const ProductGrid = () => {
   };
 
   return (
-    <Box py={{ base: 12, md: 20 }} bg="#0A0A0A">
+    <Box 
+      ref={ref}
+      pt={{ base: 8, md: 12 }}
+      pb={{ base: 12, md: 20 }}
+      bg="#0A0A0A"
+      scrollMarginTop="80px"
+    >
       <Container maxW="1400px" px={{ base: 4, md: 8 }}>
         <Grid
           templateColumns={{
@@ -282,6 +288,8 @@ const ProductGrid = () => {
       </Container>
     </Box>
   );
-};
+});
+
+ProductGrid.displayName = 'ProductGrid';
 
 export default ProductGrid;

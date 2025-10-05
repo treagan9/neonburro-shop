@@ -35,14 +35,7 @@ const float = keyframes`
   50% { transform: translateY(-8px); }
 `;
 
-const ShopHero = () => {
-  const scrollToProducts = () => {
-    window.scrollTo({ 
-      top: window.innerHeight * 0.8, 
-      behavior: 'smooth' 
-    });
-  };
-
+const ShopHero = ({ onScrollToProducts }) => {
   return (
     <Box
       position="relative"
@@ -52,7 +45,7 @@ const ShopHero = () => {
       overflow="hidden"
       bg={colors.dark.void}
       pt={{ base: 24, md: 32 }}
-      pb={{ base: 16, md: 20 }}
+      pb={{ base: 8, md: 12 }}
     >
       {/* Ambient glow */}
       <Box
@@ -158,7 +151,7 @@ const ShopHero = () => {
               fontSize="md"
               fontWeight="bold"
               borderRadius="full"
-              onClick={scrollToProducts}
+              onClick={onScrollToProducts}
               rightIcon={<FiArrowDown />}
               _hover={{
                 transform: 'translateY(-2px)',

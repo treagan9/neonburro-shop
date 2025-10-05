@@ -8,7 +8,7 @@ import {
   Divider,
   Badge
 } from '@chakra-ui/react';
-import { FiPackage } from 'react-icons/fi';
+import { FiPackage, FiStar } from 'react-icons/fi';
 
 const OrderSummary = ({ cart, total }) => {
   return (
@@ -87,6 +87,22 @@ const OrderSummary = ({ cart, total }) => {
                       </Text>
                     </>
                   )}
+                  {item.selectedTier && (
+                    <>
+                      <Text color="gray.600">•</Text>
+                      <Text color="gray.400" fontSize="xs">
+                        {item.selectedTier}
+                      </Text>
+                    </>
+                  )}
+                  {item.selectedDesign && (
+                    <>
+                      <Text color="gray.600">•</Text>
+                      <Text color="gray.400" fontSize="xs" noOfLines={1}>
+                        {item.selectedDesign}
+                      </Text>
+                    </>
+                  )}
                 </HStack>
                 <Badge
                   bg={`${item.color}15`}
@@ -162,20 +178,30 @@ const OrderSummary = ({ cart, total }) => {
           </Text>
         </HStack>
 
-        {/* Trust Badges */}
+        {/* Mystery Value Badge */}
         <Box
           p={4}
-          bg="rgba(0, 229, 229, 0.05)"
+          bg="rgba(57, 255, 20, 0.05)"
           borderRadius="lg"
           border="1px solid"
-          borderColor="rgba(0, 229, 229, 0.2)"
+          borderColor="rgba(57, 255, 20, 0.2)"
+          position="relative"
+          overflow="hidden"
         >
-          <VStack spacing={2}>
-            <Text color="#00E5E5" fontSize="sm" fontWeight="600" textAlign="center">
-              Free Worldwide Shipping
+          <Box
+            position="absolute"
+            top="-10px"
+            right="-10px"
+            opacity={0.1}
+          >
+            <FiStar size={60} color="#39FF14" />
+          </Box>
+          <VStack spacing={2} position="relative">
+            <Text color="#39FF14" fontSize="sm" fontWeight="700" textAlign="center">
+              Free US Shipping
             </Text>
-            <Text color="gray.400" fontSize="xs" textAlign="center" lineHeight="1.5">
-              30-Day Returns • Lifetime Guarantee
+            <Text color="gray.400" fontSize="xs" textAlign="center" lineHeight="1.6">
+              Each piece may contain hidden discoveries. No returns—what you find is yours to keep.
             </Text>
           </VStack>
         </Box>
