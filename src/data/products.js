@@ -12,7 +12,7 @@ export const products = {
         price: 999,
         stripePriceId: 'price_1SEc3AGWJVsbrWy8oqi3ix3g',
         description: 'Perfect for small projects and straightforward builds. One dedicated developer with consistent daily progress updates.',
-        icon: '✨',
+        icon: 'RiSparklingLine',
         color: '#00E5E5'
       },
       { 
@@ -22,7 +22,7 @@ export const products = {
         price: 1999,
         stripePriceId: 'price_1SEc4rGWJVsbrWy8RUpd8wZo',
         description: 'Faster delivery with a small team. Designer + developer working together with daily updates and weekly sprint reviews.',
-        icon: '🔥',
+        icon: 'RiFireLine',
         color: '#FF6B35',
         featured: true
       },
@@ -33,7 +33,7 @@ export const products = {
         price: 2999,
         stripePriceId: 'price_1SEc56GWJVsbrWy8peaOhfB4',
         description: 'Maximum velocity with full team. Daily updates, weekly sprints, and dedicated project management for rapid delivery.',
-        icon: '⭐',
+        icon: 'RiStarLine',
         color: '#FFE500'
       },
       { 
@@ -43,7 +43,7 @@ export const products = {
         price: 5000,
         stripePriceId: 'price_1SEc5TGWJVsbrWy8zdk6DecO',
         description: 'Unlimited access to our entire team. Daily collaboration and continuous sprint cycles for your evolving vision.',
-        icon: '👑',
+        icon: 'RiVipCrownLine',
         color: '#8B5CF6'
       }
     ],
@@ -61,6 +61,96 @@ export const products = {
     featured: true,
     hasVariants: true,
     variantType: 'tier'
+  },
+  'mystery-t': {
+    id: 'mystery-t',
+    name: 'The Mystery T',
+    subtitle: '100% Merino Wool',
+    price: 85,
+    stripePriceId: 'price_1SEc9lGWJVsbrWy8WeWz8pPe',
+    description: 'Stories woven into fabric. Each design carries its own energy, waiting to reveal itself.',
+    longDescription: 'Every pattern holds a secret. Some speak of seasons that never end, others of journeys through color and light. These are not just shirts—they are wearable mysteries, crafted from mid-heavy weight merino wool that holds close and lasts long. Choose your path, wear your story.',
+    images: ['/images/products/t-shirts/mystery-t-shirt-main.png'],
+    featuredImage: '/images/products/t-shirts/mystery-t-shirt-main.png',
+    color: '#8B5CF6',
+    category: 'Apparel',
+    materials: ['100% Merino Wool', 'Mid-Heavy Weight', 'Premium Construction'],
+    sizes: ['Mens S', 'Mens M', 'Mens L', 'Mens XL', 'Womens S', 'Womens M', 'Womens L'],
+    designs: [
+      {
+        id: 'autumn-mountain',
+        name: 'Autumn Mountain',
+        image: '/images/products/t-shirts/autumn-moutnain.png',
+        description: 'Peaks burning gold beneath fading light.'
+      },
+      {
+        id: 'autumn-spiral',
+        name: 'Autumn Spiral',
+        image: '/images/products/t-shirts/autumn.png',
+        description: 'Leaves falling in patterns only time understands.'
+      },
+      {
+        id: 'autumn-real',
+        name: 'Autumn Real',
+        image: '/images/products/t-shirts/autumn-realistic.png',
+        description: 'The forest as it is, untamed and honest.'
+      },
+      {
+        id: 'banana-chocolate',
+        name: 'Banana Chocolate',
+        image: '/images/products/t-shirts/banana-creme-chocolate-tee.png',
+        description: 'Sweet contrasts, bold moves, no apologies.'
+      },
+      {
+        id: 'melon-teal',
+        name: 'Melon Teal',
+        image: '/images/products/t-shirts/melon-teal.png',
+        description: 'Summer cooling into something deeper.'
+      },
+      {
+        id: 'spiral-dye',
+        name: 'Spiral Dye',
+        image: '/images/products/t-shirts/spiral-tie-dye.png',
+        description: 'Chaos organized. Energy visible.'
+      },
+      {
+        id: 'spring-bloom',
+        name: 'Spring Bloom',
+        image: '/images/products/t-shirts/spring.png',
+        description: 'Life returning after long silence.'
+      },
+      {
+        id: 'airship-banana',
+        name: 'Airship Banana',
+        image: '/images/products/t-shirts/the-neon-airship-banana-creme.png',
+        description: 'Flying toward unknown coordinates.'
+      },
+      {
+        id: 'airship-forest',
+        name: 'Airship Forest',
+        image: '/images/products/t-shirts/the-neon-airship-forest-green.png',
+        description: 'Navigating through green mysteries.'
+      },
+      {
+        id: 'white-teal',
+        name: 'White Teal',
+        image: '/images/products/t-shirts/white-teal.png',
+        description: 'Clean lines hiding electric secrets.'
+      },
+      {
+        id: 'winter-frost',
+        name: 'Winter Frost',
+        image: '/images/products/t-shirts/winter.png',
+        description: 'Cold clarity. Sharp beauty. Pure.'
+      }
+    ],
+    care: 'Hand wash in cold water. Lay flat to dry. Do not wring.',
+    story: 'Each design emerges from moments caught between seasons, between thought and action. Wear the one that speaks.',
+    inStock: true,
+    quantity: 1,
+    featured: true,
+    hasVariants: true,
+    variantType: 'design'
   },
   'burro-sweater': {
     id: 'burro-sweater',
@@ -81,26 +171,6 @@ export const products = {
     inStock: true,
     quantity: 1,
     featured: true
-  },
-  'lost-burro-tee': {
-    id: 'lost-burro-tee',
-    name: 'The Lost Burro · Mystery Luxe T',
-    subtitle: '100% Merino Wool',
-    price: 125,
-    stripePriceId: 'price_1SEc9lGWJVsbrWy8WeWz8pPe',
-    description: 'Mid-heavy weight merino, simple in form yet rich in presence. Designed to be worn, lived in and remembered.',
-    longDescription: 'There are stories of a burro who wandered far into the mountains and never came back. Some say he still roams beneath starlight carrying fragments of an energy too bright to name. Others say he left behind quiet traces that only reveal themselves in time. The Mystery Luxe T is cut from mid-heavy weight 100% merino wool, simple in form yet rich in presence. It holds to you with quiet strength, designed to be worn, lived in and remembered. Each piece carries the spirit of the Lost Burro, a reminder that what glows unseen often matters most.',
-    images: ['/images/products/teal-mystery-t-shirt-front.png'],
-    featuredImage: '/images/products/teal-mystery-t-shirt-front.png',
-    color: '#8B5CF6',
-    category: 'Apparel',
-    materials: ['100% Merino Wool', 'Mid-Heavy Weight', 'Premium Construction'],
-    sizes: ['Mens S', 'Mens M', 'Mens L', 'Mens XL', 'Womens S', 'Womens M', 'Womens L'],
-    care: 'Hand wash in cold water. Lay flat to dry. Do not wring.',
-    story: 'The Lost Burro represents what glows unseen. This piece carries that mystery in every thread.',
-    inStock: true,
-    quantity: 1,
-    limited: true
   },
   'nibble-wands': {
     id: 'nibble-wands',
