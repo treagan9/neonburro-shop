@@ -140,7 +140,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
   return (
     <Box position="relative" width="100%" pt={{ base: 20, md: 24 }}>
       <Container maxW="1400px" px={{ base: 4, md: 8 }}>
-        {/* Back Button */}
         <MotionBox
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -164,7 +163,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
           gap={{ base: 8, lg: 16 }}
           alignItems="start"
         >
-          {/* Product Image */}
           <GridItem>
             <MotionBox
               initial={{ opacity: 0, x: -30 }}
@@ -181,13 +179,12 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                 <Box
                   width="100%"
                   height="100%"
-                  bg={`radial-gradient(circle at center, ${product.color}12 0%, ${product.color}05 40%, transparent 70%)`}
+                  bg={`radial-gradient(circle at center, ${product.color}05 0%, ${product.color}02 50%, transparent 100%)`}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
                   position="relative"
                 >
-                  {/* Product Image */}
                   {product.featuredImage ? (
                     <Image
                       src={selectedDesign?.image || product.featuredImage}
@@ -197,7 +194,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                       objectFit="contain"
                       position="relative"
                       zIndex={2}
-                      filter={`drop-shadow(0 20px 40px ${product.color}40)`}
+                      filter={`drop-shadow(0 20px 40px ${product.color}20)`}
                     />
                   ) : (
                     <Text 
@@ -210,14 +207,13 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     </Text>
                   )}
 
-                  {/* Background Letter */}
                   <Text 
                     fontSize="15rem"
-                    opacity={0.15} 
+                    opacity={0.08} 
                     color={product.color}
                     fontWeight="900"
                     fontFamily="mono"
-                    filter={`drop-shadow(0 0 30px ${product.color}80)`}
+                    filter={`drop-shadow(0 0 30px ${product.color}40)`}
                     position="absolute"
                     zIndex={1}
                     pointerEvents="none"
@@ -225,11 +221,10 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     {product.name.charAt(0)}
                   </Text>
 
-                  {/* Striped Pattern */}
                   <Box
                     position="absolute"
                     inset={0}
-                    opacity={0.08}
+                    opacity={0.04}
                     backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 15px)`}
                     zIndex={0}
                     pointerEvents="none"
@@ -239,7 +234,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
             </MotionBox>
           </GridItem>
 
-          {/* Product Details & Purchase */}
           <GridItem>
             <MotionBox
               initial={{ opacity: 0, x: 30 }}
@@ -247,7 +241,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <VStack align="start" spacing={6}>
-                {/* Title & Price */}
                 <VStack align="start" spacing={3} width="100%">
                   <Heading
                     fontSize={{ base: "2xl", md: "4xl" }}
@@ -279,7 +272,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   </Text>
                 </VStack>
 
-                {/* Description */}
                 <Text
                   fontSize="md"
                   color="gray.300"
@@ -288,7 +280,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   {product.description}
                 </Text>
 
-                {/* Design Selection for Mystery T with Thumbnails */}
                 {product.hasVariants && product.variantType === 'design' && product.designs && (
                   <VStack align="start" spacing={3} width="100%">
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
@@ -317,7 +308,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                             <HStack spacing={3} align="center">
                               <Radio value={design.id} colorScheme="cyan" />
                               
-                              {/* Thumbnail */}
                               <Box
                                 flexShrink={0}
                                 width="50px"
@@ -330,7 +320,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                                 <Box
                                   width="100%"
                                   height="100%"
-                                  bg={`linear-gradient(135deg, ${product.color}12 0%, ${product.color}06 50%, transparent 100%)`}
+                                  bg={`linear-gradient(135deg, ${product.color}08 0%, ${product.color}03 50%, transparent 100%)`}
                                   display="flex"
                                   alignItems="center"
                                   justifyContent="center"
@@ -341,7 +331,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                                     maxW="70%"
                                     maxH="70%"
                                     objectFit="contain"
-                                    filter={`drop-shadow(0 3px 10px ${product.color}40)`}
+                                    filter={`drop-shadow(0 3px 10px ${product.color}20)`}
                                   />
                                 </Box>
                               </Box>
@@ -362,7 +352,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   </VStack>
                 )}
 
-                {/* Tier Selection for Digital Gift Card */}
                 {product.hasVariants && product.variantType === 'tier' && product.priceOptions && (
                   <VStack align="start" spacing={3} width="100%">
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
@@ -419,7 +408,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   </VStack>
                 )}
 
-                {/* Size Selection */}
                 {product.sizes && (
                   <VStack align="start" spacing={3} width="100%">
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
@@ -445,7 +433,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   </VStack>
                 )}
 
-                {/* Quantity */}
                 {!product.hasVariants && (
                   <VStack align="start" spacing={3}>
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
@@ -475,7 +462,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   </VStack>
                 )}
 
-                {/* Action Buttons */}
                 <VStack spacing={3} width="100%">
                   <Button
                     size="lg"
@@ -512,7 +498,6 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   </Button>
                 </VStack>
 
-                {/* Trust Signals */}
                 <VStack spacing={3} width="100%" pt={4}>
                   <HStack spacing={3} align="start" width="100%">
                     <Box color={product.color} mt={1}>
