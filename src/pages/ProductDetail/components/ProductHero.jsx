@@ -181,12 +181,13 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                 <Box
                   width="100%"
                   height="100%"
-                  bg={`linear-gradient(135deg, ${product.color}08 0%, ${product.color}03 50%, transparent 100%)`}
+                  bg={`radial-gradient(circle at center, ${product.color}12 0%, ${product.color}05 40%, transparent 70%)`}
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
                   position="relative"
                 >
+                  {/* Product Image */}
                   {product.featuredImage ? (
                     <Image
                       src={selectedDesign?.image || product.featuredImage}
@@ -194,6 +195,8 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                       maxW="80%"
                       maxH="80%"
                       objectFit="contain"
+                      position="relative"
+                      zIndex={2}
                       filter={`drop-shadow(0 20px 40px ${product.color}40)`}
                     />
                   ) : (
@@ -206,6 +209,31 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                       {product.name.charAt(0)}
                     </Text>
                   )}
+
+                  {/* Background Letter - Same as ProductGrid */}
+                  <Text 
+                    fontSize="15rem"
+                    opacity={0.15} 
+                    color={product.color}
+                    fontWeight="900"
+                    fontFamily="mono"
+                    filter={`drop-shadow(0 0 30px ${product.color}80)`}
+                    position="absolute"
+                    zIndex={1}
+                    pointerEvents="none"
+                  >
+                    {product.name.charAt(0)}
+                  </Text>
+
+                  {/* Striped Pattern - Same as ProductGrid */}
+                  <Box
+                    position="absolute"
+                    inset={0}
+                    opacity={0.08}
+                    backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 15px)`}
+                    zIndex={0}
+                    pointerEvents="none"
+                  />
                 </Box>
 
                 {/* Badges */}
@@ -291,7 +319,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                   {product.description}
                 </Text>
 
-                {/* Design Selection for Mystery T */}
+                {/* Design Selection for Mystery T with Thumbnails */}
                 {product.hasVariants && product.variantType === 'design' && product.designs && (
                   <VStack align="start" spacing={3} width="100%">
                     <Text color={product.color} fontWeight="600" fontSize="sm" textTransform="uppercase">
@@ -308,7 +336,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                         {product.designs.map((design) => (
                           <Box
                             key={design.id}
-                            p={4}
+                            p={3}
                             borderRadius="lg"
                             border="2px solid"
                             borderColor={selectedDesign?.id === design.id ? product.color : 'whiteAlpha.200'}
@@ -317,9 +345,39 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                             onClick={() => setSelectedDesign(design)}
                             transition="all 0.2s"
                           >
-                            <HStack justify="space-between" align="start">
+                            <HStack spacing={3} align="center">
                               <Radio value={design.id} colorScheme="cyan" />
-                              <VStack align="start" flex={1} spacing={1} ml={3}>
+                              
+                              {/* Thumbnail */}
+                              <Box
+                                flexShrink={0}
+                                width="50px"
+                                height="50px"
+                                borderRadius="md"
+                                overflow="hidden"
+                                bg="black"
+                                position="relative"
+                              >
+                                <Box
+                                  width="100%"
+                                  height="100%"
+                                  bg={`linear-gradient(135deg, ${product.color}12 0%, ${product.color}06 50%, transparent 100%)`}
+                                  display="flex"
+                                  alignItems="center"
+                                  justifyContent="center"
+                                >
+                                  <Image
+                                    src={design.image}
+                                    alt={design.name}
+                                    maxW="70%"
+                                    maxH="70%"
+                                    objectFit="contain"
+                                    filter={`drop-shadow(0 3px 10px ${product.color}40)`}
+                                  />
+                                </Box>
+                              </Box>
+
+                              <VStack align="start" flex={1} spacing={1}>
                                 <Text color="white" fontWeight="700" fontSize="md">
                                   {design.name}
                                 </Text>
