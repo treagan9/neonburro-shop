@@ -425,6 +425,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 cursor="pointer"
                 onClick={() => setPaymentMethodType('card')}
                 transition="all 0.2s"
+                boxShadow={paymentMethodType === 'card' ? `0 0 20px ${colors.teal}30` : 'none'}
               >
                 <HStack spacing={4}>
                   <Radio value="card" colorScheme="cyan" />
@@ -438,11 +439,12 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                   p={4}
                   borderRadius="lg"
                   border="2px solid"
-                  borderColor={paymentMethodType === 'wallet' ? colors.teal : 'whiteAlpha.200'}
-                  bg={paymentMethodType === 'wallet' ? `${colors.teal}10` : 'transparent'}
+                  borderColor={paymentMethodType === 'wallet' ? colors.green : 'whiteAlpha.200'}
+                  bg={paymentMethodType === 'wallet' ? `${colors.green}10` : 'transparent'}
                   cursor="pointer"
                   onClick={() => setPaymentMethodType('wallet')}
                   transition="all 0.2s"
+                  boxShadow={paymentMethodType === 'wallet' ? `0 0 20px ${colors.green}30` : 'none'}
                 >
                   <HStack spacing={4}>
                     <Radio value="wallet" colorScheme="cyan" />
@@ -468,10 +470,13 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               display="flex"
               alignItems="center"
               transition="all 0.2s"
-              _hover={{ borderColor: colors.teal }}
+              _hover={{ 
+                borderColor: colors.teal,
+                boxShadow: `0 0 15px ${colors.teal}20`
+              }}
               _focusWithin={{ 
                 borderColor: colors.teal,
-                boxShadow: `0 0 0 1px ${colors.teal}`
+                boxShadow: `0 0 20px ${colors.teal}40, 0 0 0 1px ${colors.teal}`
               }}
             >
               <Box width="100%">
@@ -491,10 +496,13 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 display="flex"
                 alignItems="center"
                 transition="all 0.2s"
-                _hover={{ borderColor: colors.teal }}
+                _hover={{ 
+                  borderColor: colors.teal,
+                  boxShadow: `0 0 15px ${colors.teal}20`
+                }}
                 _focusWithin={{ 
                   borderColor: colors.teal,
-                  boxShadow: `0 0 0 1px ${colors.teal}`
+                  boxShadow: `0 0 20px ${colors.teal}40, 0 0 0 1px ${colors.teal}`
                 }}
               >
                 <Box width="100%">
@@ -513,10 +521,13 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 display="flex"
                 alignItems="center"
                 transition="all 0.2s"
-                _hover={{ borderColor: colors.teal }}
+                _hover={{ 
+                  borderColor: colors.teal,
+                  boxShadow: `0 0 15px ${colors.teal}20`
+                }}
                 _focusWithin={{ 
                   borderColor: colors.teal,
-                  boxShadow: `0 0 0 1px ${colors.teal}`
+                  boxShadow: `0 0 20px ${colors.teal}40, 0 0 0 1px ${colors.teal}`
                 }}
               >
                 <Box width="100%">
@@ -601,8 +612,18 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
             )}
             
             <Box 
+              p={1}
+              borderRadius="lg"
+              border="3px solid"
+              borderColor={agreeToTerms ? colors.green : 'whiteAlpha.300'}
+              bg={agreeToTerms ? `${colors.green}08` : 'transparent'}
               filter={!agreeToTerms ? 'grayscale(50%) opacity(0.5)' : 'none'}
               pointerEvents={agreeToTerms ? 'auto' : 'none'}
+              transition="all 0.3s"
+              boxShadow={agreeToTerms ? `0 0 25px ${colors.green}30, inset 0 0 15px ${colors.green}10` : 'none'}
+              _hover={agreeToTerms ? {
+                boxShadow: `0 0 35px ${colors.green}40, inset 0 0 20px ${colors.green}15`
+              } : {}}
             >
               <PaymentRequestButtonElement 
                 options={{
