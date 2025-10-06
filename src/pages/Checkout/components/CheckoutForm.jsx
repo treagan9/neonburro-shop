@@ -66,12 +66,14 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     style: {
       base: {
         color: '#ffffff',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
         fontSize: '16px',
         fontWeight: '400',
-        lineHeight: '52px',
-        '::placeholder': { color: '#6B7280' },
-        iconColor: '#9CA3AF',
+        '::placeholder': { 
+          color: '#6B7280',
+          fontWeight: '400'
+        },
+        iconColor: colors.teal,
       },
       invalid: {
         color: '#EF4444',
@@ -128,7 +130,11 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                   id: item.id,
                   name: item.name,
                   price: item.price,
-                  quantity: item.quantity
+                  quantity: item.quantity,
+                  selectedSize: item.selectedSize || null,
+                  selectedDesign: item.selectedDesign || null,
+                  selectedTier: item.selectedTier || null,
+                  stripePriceId: item.stripePriceId
                 }))
               }),
             });
@@ -214,7 +220,11 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
             id: item.id,
             name: item.name,
             price: item.price,
-            quantity: item.quantity
+            quantity: item.quantity,
+            selectedSize: item.selectedSize || null,
+            selectedDesign: item.selectedDesign || null,
+            selectedTier: item.selectedTier || null,
+            stripePriceId: item.stripePriceId
           }))
         }),
       });
@@ -414,11 +424,12 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 bg={paymentMethodType === 'card' ? `${colors.teal}10` : 'transparent'}
                 cursor="pointer"
                 onClick={() => setPaymentMethodType('card')}
+                transition="all 0.2s"
               >
                 <HStack spacing={4}>
                   <Radio value="card" colorScheme="cyan" />
                   <FiCreditCard color={paymentMethodType === 'card' ? colors.teal : '#9CA3AF'} />
-                  <Text color="white" fontWeight="600">Card</Text>
+                  <Text color="white" fontWeight="600">Credit / Debit Card</Text>
                 </HStack>
               </Box>
 
@@ -431,6 +442,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                   bg={paymentMethodType === 'wallet' ? `${colors.teal}10` : 'transparent'}
                   cursor="pointer"
                   onClick={() => setPaymentMethodType('wallet')}
+                  transition="all 0.2s"
                 >
                   <HStack spacing={4}>
                     <Radio value="wallet" colorScheme="cyan" />
@@ -444,59 +456,74 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
 
         {paymentMethodType === 'card' && (
           <VStack spacing={4} align="stretch">
-            <Box>
+            <FormLabel color="gray.400" fontSize="sm" mb={0}>Card Information</FormLabel>
+            
+            <Box
+              p={4}
+              bg="rgba(255, 255, 255, 0.02)"
+              border="2px solid"
+              borderColor="whiteAlpha.200"
+              borderRadius="lg"
+              minH="56px"
+              display="flex"
+              alignItems="center"
+              transition="all 0.2s"
+              _hover={{ borderColor: colors.teal }}
+              _focusWithin={{ 
+                borderColor: colors.teal,
+                boxShadow: `0 0 0 1px ${colors.teal}`
+              }}
+            >
+              <Box width="100%">
+                <CardNumberElement options={stripeElementStyles} />
+              </Box>
+            </Box>
+            
+            <HStack spacing={4}>
               <Box
+                flex={1}
                 p={4}
-                bg="rgba(255, 255, 255, 0.05)"
+                bg="rgba(255, 255, 255, 0.02)"
                 border="2px solid"
                 borderColor="whiteAlpha.200"
                 borderRadius="lg"
-                borderBottomRadius={0}
-                minH="52px"
+                minH="56px"
                 display="flex"
                 alignItems="center"
+                transition="all 0.2s"
                 _hover={{ borderColor: colors.teal }}
-                _focusWithin={{ borderColor: colors.teal }}
+                _focusWithin={{ 
+                  borderColor: colors.teal,
+                  boxShadow: `0 0 0 1px ${colors.teal}`
+                }}
               >
-                <CardNumberElement options={stripeElementStyles} />
-              </Box>
-              
-              <HStack spacing={0}>
-                <Box
-                  p={4}
-                  bg="rgba(255, 255, 255, 0.05)"
-                  border="2px solid"
-                  borderColor="whiteAlpha.200"
-                  borderRadius="lg"
-                  borderTopRadius={0}
-                  borderRightWidth={0}
-                  flex={1}
-                  minH="52px"
-                  display="flex"
-                  alignItems="center"
-                  _hover={{ borderColor: colors.teal }}
-                  _focusWithin={{ borderColor: colors.teal }}
-                >
+                <Box width="100%">
                   <CardExpiryElement options={stripeElementStyles} />
                 </Box>
-                <Box
-                  p={4}
-                  bg="rgba(255, 255, 255, 0.05)"
-                  border="2px solid"
-                  borderColor="whiteAlpha.200"
-                  borderRadius="lg"
-                  borderTopRadius={0}
-                  flex={1}
-                  minH="52px"
-                  display="flex"
-                  alignItems="center"
-                  _hover={{ borderColor: colors.teal }}
-                  _focusWithin={{ borderColor: colors.teal }}
-                >
+              </Box>
+              
+              <Box
+                flex={1}
+                p={4}
+                bg="rgba(255, 255, 255, 0.02)"
+                border="2px solid"
+                borderColor="whiteAlpha.200"
+                borderRadius="lg"
+                minH="56px"
+                display="flex"
+                alignItems="center"
+                transition="all 0.2s"
+                _hover={{ borderColor: colors.teal }}
+                _focusWithin={{ 
+                  borderColor: colors.teal,
+                  boxShadow: `0 0 0 1px ${colors.teal}`
+                }}
+              >
+                <Box width="100%">
                   <CardCvcElement options={stripeElementStyles} />
                 </Box>
-              </HStack>
-            </Box>
+              </Box>
+            </HStack>
           </VStack>
         )}
 
@@ -507,6 +534,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
             border="2px solid"
             borderColor={termsError && !agreeToTerms ? colors.copper : "transparent"}
             borderRadius="lg"
+            transition="all 0.2s"
           >
             <Checkbox
               isChecked={agreeToTerms}
@@ -514,16 +542,27 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 setAgreeToTerms(e.target.checked);
                 if (termsError) setTermsError(false);
               }}
-              size="md"
-              colorScheme="green"
+              size="lg"
+              colorScheme="cyan"
+              iconColor={colors.green}
+              sx={{
+                '.chakra-checkbox__control': {
+                  borderColor: agreeToTerms ? colors.teal : 'whiteAlpha.300',
+                  bg: agreeToTerms ? colors.teal : 'transparent',
+                  _checked: {
+                    bg: colors.teal,
+                    borderColor: colors.teal,
+                  }
+                }
+              }}
             >
               <Text color="gray.300" fontSize="sm">
                 I agree to{' '}
-                <Link href="https://neonburro.com/terms/" color={colors.teal} isExternal>
+                <Link href="https://neonburro.com/terms/" color={colors.teal} isExternal fontWeight="600">
                   Terms of Service
                 </Link>
                 {' '}and{' '}
-                <Link href="https://neonburro.com/privacy/" color={colors.teal} isExternal>
+                <Link href="https://neonburro.com/privacy/" color={colors.teal} isExternal fontWeight="600">
                   Privacy Policy
                 </Link>
               </Text>
@@ -550,32 +589,33 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
         </Box>
 
         {paymentMethodType === 'wallet' && canMakePayment && paymentRequest && (
-          <Box>
-            <Box filter={!agreeToTerms ? 'grayscale(50%)' : 'none'}>
-              {!agreeToTerms && (
-                <Box
-                  position="absolute"
-                  inset={0}
-                  zIndex={1}
-                  cursor="not-allowed"
-                  onClick={() => setTermsError(true)}
-                />
-              )}
-              
-              <Box pointerEvents={agreeToTerms ? 'auto' : 'none'}>
-                <PaymentRequestButtonElement 
-                  options={{
-                    paymentRequest,
-                    style: {
-                      paymentRequestButton: {
-                        type: 'default',
-                        theme: 'dark',
-                        height: '56px',
-                      },
+          <Box position="relative">
+            {!agreeToTerms && (
+              <Box
+                position="absolute"
+                inset={0}
+                zIndex={2}
+                cursor="not-allowed"
+                onClick={() => setTermsError(true)}
+              />
+            )}
+            
+            <Box 
+              filter={!agreeToTerms ? 'grayscale(50%) opacity(0.5)' : 'none'}
+              pointerEvents={agreeToTerms ? 'auto' : 'none'}
+            >
+              <PaymentRequestButtonElement 
+                options={{
+                  paymentRequest,
+                  style: {
+                    paymentRequestButton: {
+                      type: 'default',
+                      theme: 'dark',
+                      height: '56px',
                     },
-                  }}
-                />
-              </Box>
+                  },
+                }}
+              />
             </Box>
           </Box>
         )}
@@ -597,15 +637,19 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               transform: 'translateY(-2px)',
               boxShadow: `0 15px 50px ${colors.green}40`
             }}
+            _active={{
+              transform: 'translateY(0)'
+            }}
+            transition="all 0.3s"
           >
-            Complete Payment
+            Complete Payment · ${total}
           </Button>
         )}
 
         <HStack justify="center" spacing={2}>
           <FiLock size={14} color="#6B7280" />
           <Text color="gray.400" fontSize="xs">
-            Powered by Stripe
+            Secure checkout powered by Stripe
           </Text>
         </HStack>
       </VStack>

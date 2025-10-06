@@ -52,6 +52,8 @@ export const WEARABLE_PRODUCTS = {
     subtitle: '100% Cotton',
     category: 'Apparel',
     price: 85,
+    stripePriceId: 'price_1SFJylGWJVsbrWy8UhyrPlai',
+    stripeProductId: 'prod_TBhNZl3sGhuZnA',
     featuredImage: '/images/products/t-shirts/melon-teal.png',
     color: '#8B5CF6',
     description: 'Color as ritual. Each dye pattern emerges from intention, carried by cotton that breathes and softens with time.',
