@@ -11,7 +11,6 @@ import {
   HStack,
   Text,
   IconButton,
-  Divider,
   Box
 } from '@chakra-ui/react';
 import { FiMinus, FiPlus, FiX, FiShoppingBag } from 'react-icons/fi';
@@ -24,12 +23,12 @@ const CartDrawer = () => {
 
   const handleCheckout = () => {
     setIsOpen(false);
-    navigate('/checkout');
+    navigate('/checkout/');
   };
 
   const handleViewCart = () => {
     setIsOpen(false);
-    navigate('/cart');
+    navigate('/cart/');
   };
 
   return (
@@ -64,7 +63,7 @@ const CartDrawer = () => {
             <VStack spacing={4} align="stretch">
               {cart.map((item) => (
                 <Box
-                  key={item.id}
+                  key={item.cartItemId}
                   p={4}
                   bg="whiteAlpha.50"
                   borderRadius="lg"
@@ -72,13 +71,40 @@ const CartDrawer = () => {
                   borderColor="whiteAlpha.100"
                 >
                   <HStack justify="space-between" mb={2}>
-                    <Text color="white" fontWeight="600" fontSize="sm">
-                      {item.name}
-                    </Text>
+                    <VStack align="start" spacing={0} flex={1}>
+                      <Text color="white" fontWeight="600" fontSize="sm">
+                        {item.name}
+                      </Text>
+                      {(item.selectedSize || item.selectedDesign || item.selectedTier) && (
+                        <HStack spacing={1} flexWrap="wrap">
+                          {item.selectedSize && (
+                            <Text color="gray.400" fontSize="xs">
+                              {item.selectedSize}
+                            </Text>
+                          )}
+                          {item.selectedDesign && (
+                            <>
+                              {item.selectedSize && <Text color="gray.600" fontSize="xs">•</Text>}
+                              <Text color="gray.400" fontSize="xs" noOfLines={1}>
+                                {item.selectedDesign}
+                              </Text>
+                            </>
+                          )}
+                          {item.selectedTier && (
+                            <>
+                              {(item.selectedSize || item.selectedDesign) && <Text color="gray.600" fontSize="xs">•</Text>}
+                              <Text color="gray.400" fontSize="xs">
+                                {item.selectedTier}
+                              </Text>
+                            </>
+                          )}
+                        </HStack>
+                      )}
+                    </VStack>
                     <IconButton
                       size="xs"
                       icon={<FiX />}
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item.cartItemId)}
                       variant="ghost"
                       colorScheme="red"
                     />
@@ -89,7 +115,7 @@ const CartDrawer = () => {
                       <IconButton
                         size="xs"
                         icon={<FiMinus />}
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                         variant="outline"
                         colorScheme="whiteAlpha"
                       />
@@ -99,7 +125,7 @@ const CartDrawer = () => {
                       <IconButton
                         size="xs"
                         icon={<FiPlus />}
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                         variant="outline"
                         colorScheme="whiteAlpha"
                       />

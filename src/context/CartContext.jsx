@@ -25,40 +25,44 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('neonburro-cart', JSON.stringify(cart));
   }, [cart]);
 
+  // Helper function to create unique cart item ID
+  const createCartItemId = (product) => {
+    const parts = [product.id];
+    if (product.selectedSize) parts.push(product.selectedSize);
+    if (product.selectedTier) parts.push(product.selectedTier);
+    if (product.selectedDesign) parts.push(product.selectedDesign);
+    return parts.join('::');
+  };
+
   const addToCart = (product, quantity = 1) => {
     setCart(prevCart => {
-      // Create unique ID based on product + size + tier
-      const uniqueId = `${product.id}-${product.selectedSize || 'default'}-${product.selectedTier || 'default'}`;
+      const cartItemId = createCartItemId(product);
       
-      const existingItem = prevCart.find(item => {
-        const itemUniqueId = `${item.id}-${item.selectedSize || 'default'}-${item.selectedTier || 'default'}`;
-        return itemUniqueId === uniqueId;
-      });
+      const existingItem = prevCart.find(item => createCartItemId(item) === cartItemId);
       
       if (existingItem) {
-        return prevCart.map(item => {
-          const itemUniqueId = `${item.id}-${item.selectedSize || 'default'}-${item.selectedTier || 'default'}`;
-          return itemUniqueId === uniqueId
+        return prevCart.map(item =>
+          createCartItemId(item) === cartItemId
             ? { ...item, quantity: item.quantity + quantity }
-            : item;
-        });
+            : item
+        );
       }
       
-      return [...prevCart, { ...product, quantity }];
+      return [...prevCart, { ...product, cartItemId, quantity }];
     });
   };
 
-  const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
+  const removeFromCart = (cartItemId) => {
+    setCart(prevCart => prevCart.filter(item => item.cartItemId !== cartItemId));
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = (cartItemId, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(cartItemId);
     } else {
       setCart(prevCart =>
         prevCart.map(item =>
-          item.id === productId ? { ...item, quantity } : item
+          item.cartItemId === cartItemId ? { ...item, quantity } : item
         )
       );
     }
