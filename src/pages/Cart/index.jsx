@@ -64,7 +64,7 @@ const Cart = () => {
           <VStack spacing={4} align="stretch">
             {cart.map((item) => (
               <Box
-                key={item.id}
+                key={item.cartItemId}
                 p={{ base: 4, md: 6 }}
                 bg="rgba(255, 255, 255, 0.03)"
                 border="1px solid"
@@ -155,12 +155,35 @@ const Cart = () => {
                       {item.subtitle}
                     </Text>
                     
-                    {item.selectedSize && (
-                      <HStack spacing={1}>
-                        <Text color="gray.500" fontSize="sm">Size:</Text>
-                        <Text color="gray.300" fontSize="sm" fontWeight="600">
-                          {item.selectedSize}
-                        </Text>
+                    {/* Variant Details */}
+                    {(item.selectedSize || item.selectedDesign || item.selectedTier) && (
+                      <HStack spacing={2} flexWrap="wrap">
+                        {item.selectedSize && (
+                          <>
+                            <Text color="gray.500" fontSize="sm">Size:</Text>
+                            <Text color="gray.300" fontSize="sm" fontWeight="600">
+                              {item.selectedSize}
+                            </Text>
+                          </>
+                        )}
+                        {item.selectedDesign && (
+                          <>
+                            {item.selectedSize && <Text color="gray.600" fontSize="sm">•</Text>}
+                            <Text color="gray.500" fontSize="sm">Design:</Text>
+                            <Text color="gray.300" fontSize="sm" fontWeight="600">
+                              {item.selectedDesign}
+                            </Text>
+                          </>
+                        )}
+                        {item.selectedTier && (
+                          <>
+                            {(item.selectedSize || item.selectedDesign) && <Text color="gray.600" fontSize="sm">•</Text>}
+                            <Text color="gray.500" fontSize="sm">Tier:</Text>
+                            <Text color="gray.300" fontSize="sm" fontWeight="600">
+                              {item.selectedTier}
+                            </Text>
+                          </>
+                        )}
                       </HStack>
                     )}
                     
@@ -169,7 +192,7 @@ const Cart = () => {
                       <IconButton
                         size="sm"
                         icon={<FiMinus />}
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
                         variant="outline"
                         borderColor="whiteAlpha.300"
                         color="white"
@@ -191,7 +214,7 @@ const Cart = () => {
                       <IconButton
                         size="sm"
                         icon={<FiPlus />}
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
                         variant="outline"
                         borderColor="whiteAlpha.300"
                         color="white"
@@ -206,7 +229,7 @@ const Cart = () => {
                     <IconButton
                       size="sm"
                       icon={<FiX />}
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={() => removeFromCart(item.cartItemId)}
                       variant="ghost"
                       color="gray.400"
                       _hover={{ color: 'red.400', bg: 'red.900' }}
