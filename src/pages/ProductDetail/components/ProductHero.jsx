@@ -84,7 +84,9 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
         selectedSize,
         selectedTier: selectedTier?.label,
         selectedDesign: selectedDesign?.name,
-        stripePriceId: selectedTier?.stripePriceId || selectedDesign?.stripePriceId || product.stripePriceId,
+        selectedDesignImage: selectedDesign?.image,
+        featuredImage: selectedDesign?.image || product.featuredImage,
+        stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
         quantity
       };
       
@@ -130,7 +132,9 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
       selectedSize,
       selectedTier: selectedTier?.label,
       selectedDesign: selectedDesign?.name,
-      stripePriceId: selectedTier?.stripePriceId || selectedDesign?.stripePriceId || product.stripePriceId,
+      selectedDesignImage: selectedDesign?.image,
+      featuredImage: selectedDesign?.image || product.featuredImage,
+      stripePriceId: selectedTier?.stripePriceId || product.stripePriceId,
       quantity
     };
 
