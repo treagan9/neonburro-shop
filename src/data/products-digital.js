@@ -1,4 +1,21 @@
 export const DIGITAL_PRODUCTS = {
+  'two-dollar-clue': {
+    id: 'two-dollar-clue',
+    name: 'The $2 Clue',
+    subtitle: 'A Mystery Worth Finding',
+    category: 'Digital',
+    price: 2,
+    stripePriceId: 'price_1SFcYuGWJVsbrWy8yx8X1odc',
+    stripeProductId: 'prod_TC0aVdlDPDax9c',
+    featuredImage: '/images/products/digital/two-dollar-mystery-envelope.png',
+    color: '#FF6B35',
+    description: 'Not everything valuable costs a fortune. Sometimes the smallest spark ignites the biggest journey.',
+    story: 'Two dollars. A curious envelope. A clue that leads somewhere unexpected. Some say it reveals a hidden path through the valley. Others claim it unlocks something forgotten. A few swear it connects to coordinates only visible under neon light. What you find depends on what you seek. The envelope arrives digitally. The mystery arrives when you open it. Where it leads is up to you.',
+    materials: ['Digital Delivery', 'Instant Access', 'Mysterious Content', 'Unexpected Direction'],
+    inStock: true,
+    featured: false
+  },
+
   'digital-gift-card': {
     id: 'digital-gift-card',
     name: 'Neon Burro Digital Gift Card',
