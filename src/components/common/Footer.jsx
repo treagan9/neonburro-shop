@@ -287,7 +287,7 @@ const Footer = () => {
                 </Link>
 
                 <Link
-                  href="https://shop.neonburro.com"
+                  href="https://neonburro.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   fontSize="sm"
