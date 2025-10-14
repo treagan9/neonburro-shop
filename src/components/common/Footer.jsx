@@ -1,6 +1,8 @@
 import { Box, Container, VStack, HStack, Text, Link, IconButton, Button, Divider, Image, Grid, GridItem, keyframes } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiGithub, FiLinkedin, FiTwitter, FiArrowUp, FiMail, FiMapPin, FiMessageCircle, FiPhone, FiInstagram, FiShoppingBag } from 'react-icons/fi';
+import { FiGithub, FiLinkedin, FiArrowUp, FiMail, FiMapPin, FiMessageCircle, FiPhone, FiInstagram, FiShoppingBag } from 'react-icons/fi';
+import { RiTwitterXLine } from 'react-icons/ri';
+import { BiDish } from 'react-icons/bi';
 import { useState, useEffect } from 'react';
 
 const MotionBox = motion(Box);
@@ -75,9 +77,9 @@ const Footer = () => {
 
   const socialLinks = [
     { icon: FiInstagram, href: 'https://www.instagram.com/neonburro', label: 'Instagram' },
-    { icon: FiGithub, href: 'https://github.com/neonburro', label: 'GitHub' },
+    { icon: FiGithub, href: 'https://github.com/tylerburrowbridge', label: 'GitHub' },
     { icon: FiLinkedin, href: 'https://linkedin.com/company/neonburro', label: 'LinkedIn' },
-    { icon: FiTwitter, href: 'https://twitter.com/neonburro', label: 'Twitter' }
+    { icon: RiTwitterXLine, href: 'https://x.com/neonburro', label: 'X' }
   ];
 
   return (
@@ -286,8 +288,9 @@ const Footer = () => {
                   Hosting
                 </Link>
 
+                {/* Subdomain Links */}
                 <Link
-                  href="https://neonburro.com"
+                  href="https://shop.neonburro.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   fontSize="sm"
@@ -308,19 +311,24 @@ const Footer = () => {
                 </Link>
 
                 <Link
-                  href="/collective/"
+                  href="https://order.neonburro.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   fontSize="sm"
-                  fontWeight="700"
-                  bgGradient="linear(to-r, #6366F1, #8B5CF6, #FFE500)"
-                  bgClip="text"
+                  fontWeight="600"
+                  color={colors.accent.warm}
+                  display="flex"
+                  alignItems="center"
+                  gap={2}
                   _hover={{ 
+                    color: '#FF8533',
                     textDecoration: 'none',
-                    transform: 'translateX(4px)',
-                    filter: 'drop-shadow(0 0 12px rgba(99, 102, 241, 0.6))'
+                    transform: 'translateX(4px)'
                   }}
                   transition="all 0.2s"
                 >
-                  The Burros
+                  <BiDish size={14} />
+                  Order Local Food
                 </Link>
 
                 <Link
@@ -339,6 +347,23 @@ const Footer = () => {
                   transition="all 0.2s"
                 >
                   Lounge Access
+                </Link>
+
+                {/* Main site links */}
+                <Link
+                  href="/collective/"
+                  fontSize="sm"
+                  fontWeight="700"
+                  bgGradient="linear(to-r, #6366F1, #8B5CF6, #FFE500)"
+                  bgClip="text"
+                  _hover={{ 
+                    textDecoration: 'none',
+                    transform: 'translateX(4px)',
+                    filter: 'drop-shadow(0 0 12px rgba(99, 102, 241, 0.6))'
+                  }}
+                  transition="all 0.2s"
+                >
+                  The Burros
                 </Link>
                 
                 <Link
