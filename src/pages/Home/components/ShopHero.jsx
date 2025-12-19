@@ -1,9 +1,11 @@
-import { Box, Container, Heading, Text, VStack, Button, keyframes } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
+import { Box, Container, Heading, Text, VStack, HStack, Button, keyframes } from '@chakra-ui/react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import { FiArrowDown } from 'react-icons/fi';
 
 const MotionBox = motion(Box);
 const MotionHeading = motion(Heading);
+const MotionText = motion(Text);
 
 const colors = {
   neon: {
@@ -35,7 +37,28 @@ const float = keyframes`
   50% { transform: translateY(-8px); }
 `;
 
+const pulse = keyframes`
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+`;
+
 const ShopHero = ({ onScrollToProducts }) => {
+  const [taglineIndex, setTaglineIndex] = useState(0);
+  
+  const taglines = [
+    'Merino Wool',
+    'Titanium Craft',
+    'Digital Mysteries',
+    'Limited Pieces'
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTaglineIndex((prev) => (prev + 1) % taglines.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <Box
       position="relative"
@@ -47,7 +70,7 @@ const ShopHero = ({ onScrollToProducts }) => {
       pt={{ base: 24, md: 32 }}
       pb={{ base: 8, md: 12 }}
     >
-      {/* Ambient glow */}
+      {/* Ambient glow - primary */}
       <Box
         position="absolute"
         top="50%"
@@ -59,19 +82,45 @@ const ShopHero = ({ onScrollToProducts }) => {
         pointerEvents="none"
       />
 
+      {/* Secondary glow - adds depth */}
+      <Box
+        position="absolute"
+        top="30%"
+        right="10%"
+        width="400px"
+        height="400px"
+        bg={`radial-gradient(circle, ${colors.neon.coral}06 0%, transparent 60%)`}
+        pointerEvents="none"
+        animation={`${pulse} 6s ease-in-out infinite`}
+      />
+
+      {/* Subtle grid overlay */}
+      <Box
+        position="absolute"
+        inset={0}
+        opacity={0.015}
+        backgroundImage={`
+          linear-gradient(${colors.neon.violet}40 1px, transparent 1px),
+          linear-gradient(90deg, ${colors.neon.violet}40 1px, transparent 1px)
+        `}
+        backgroundSize="60px 60px"
+        pointerEvents="none"
+      />
+
       {/* Floating dots */}
-      {[...Array(4)].map((_, i) => (
+      {[...Array(6)].map((_, i) => (
         <Box
           key={i}
           position="absolute"
-          width="2px"
-          height="2px"
-          bg={i % 2 === 0 ? colors.neon.violet : colors.neon.coral}
-          left={`${15 + i * 25}%`}
-          top={`${20 + i * 20}%`}
-          opacity={0.4}
-          animation={`${float} ${8 + i * 2}s ease-in-out infinite ${i * 1}s`}
+          width={i % 2 === 0 ? "3px" : "2px"}
+          height={i % 2 === 0 ? "3px" : "2px"}
+          bg={[colors.neon.violet, colors.neon.coral, colors.neon.amber][i % 3]}
+          left={`${10 + i * 15}%`}
+          top={`${15 + (i * 12) % 60}%`}
+          opacity={0.5}
+          animation={`${float} ${7 + i * 1.5}s ease-in-out infinite ${i * 0.8}s`}
           borderRadius="full"
+          boxShadow={`0 0 10px ${[colors.neon.violet, colors.neon.coral, colors.neon.amber][i % 3]}50`}
         />
       ))}
 
@@ -81,17 +130,52 @@ const ShopHero = ({ onScrollToProducts }) => {
         position="relative"
       >
         <VStack 
-          spacing={{ base: 8, md: 10 }} 
+          spacing={{ base: 6, md: 8 }} 
           align="center" 
           textAlign="center"
           mx="auto"
         >
+          {/* Drop badge */}
+          <MotionBox
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <HStack
+              spacing={2}
+              px={4}
+              py={2}
+              borderRadius="full"
+              bg="whiteAlpha.50"
+              border="1px solid"
+              borderColor="whiteAlpha.100"
+              backdropFilter="blur(10px)"
+            >
+              <Box
+                width="6px"
+                height="6px"
+                borderRadius="full"
+                bg={colors.neon.lime}
+                boxShadow={`0 0 10px ${colors.neon.lime}`}
+              />
+              <Text
+                fontSize="xs"
+                fontWeight="700"
+                color="gray.300"
+                letterSpacing="wider"
+                textTransform="uppercase"
+              >
+                New Collection Live
+              </Text>
+            </HStack>
+          </MotionBox>
+
           {/* Heading */}
           <MotionHeading
             as="h1"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             fontSize={{ base: "5xl", sm: "6xl", md: "7xl", lg: "8xl" }}
             fontWeight="800"
             color="white"
@@ -122,7 +206,7 @@ const ShopHero = ({ onScrollToProducts }) => {
           <MotionBox
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             maxW="700px"
           >
             <Text
@@ -135,11 +219,37 @@ const ShopHero = ({ onScrollToProducts }) => {
             </Text>
           </MotionBox>
 
+          {/* Rotating tagline */}
+          <MotionBox
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            height="24px"
+            overflow="hidden"
+          >
+            <AnimatePresence mode="wait">
+              <MotionText
+                key={taglineIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+                fontSize="sm"
+                fontWeight="600"
+                color={colors.neon.violet}
+                letterSpacing="widest"
+                textTransform="uppercase"
+              >
+                {taglines[taglineIndex]}
+              </MotionText>
+            </AnimatePresence>
+          </MotionBox>
+
           {/* CTA */}
           <MotionBox
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
             pt={4}
           >
             <Button

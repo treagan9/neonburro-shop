@@ -57,7 +57,7 @@ export const WEARABLE_PRODUCTS = {
     featuredImage: '/images/products/t-shirts/melon-teal.png',
     color: '#8B5CF6',
     description: 'Color as ritual. Each dye pattern emerges from intention, carried by cotton that breathes and softens with time.',
-    story: 'Six ways to wear energy. From sunrise hues to winter frost, from swirling chaos to clean contrasts. No graphics, just pure color meeting fabric. Each piece dyed with intention, ready to hold whatever story you bring.',
+    story: 'Five ways to wear energy. From sunrise hues to winter frost, from clean contrasts to bold two-tones. No graphics, just pure color meeting fabric. Each piece dyed with intention, ready to hold whatever story you bring.',
     materials: ['100% Premium Cotton', 'Mid-Weight', 'Soft Hand Feel', 'Hand-Dyed Process'],
     sizes: ['Mens S', 'Mens M', 'Mens L', 'Mens XL', 'Womens S', 'Womens M', 'Womens L'],
     care: 'Machine wash cold with like colors. Tumble dry low. Colors may soften beautifully over time.',
@@ -95,12 +95,6 @@ export const WEARABLE_PRODUCTS = {
         name: 'White Teal',
         image: '/images/products/t-shirts/white-teal.png',
         description: 'Clean lines hiding electric secrets. Focus and cleansing in two tones.'
-      },
-      {
-        id: 'spiral-dye',
-        name: 'Spiral Dye',
-        image: '/images/products/t-shirts/spiral-tie-dye.png',
-        description: 'Chaos organized. Energy visible. The swirl that holds everything.'
       }
     ]
   },

@@ -68,6 +68,8 @@ const pulseGlow = keyframes`
   }
 `;
 
+const MAIN_DOMAIN = 'https://neonburro.com';
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -82,31 +84,31 @@ const Footer = () => {
   }, []);
 
   const mainLinks = [
-    { label: 'Home', href: '/' },
-    { label: 'Services', href: '/services/' },
-    { label: 'Work', href: '/work/' },
-    { label: 'Lab', href: '/lab/' },
-    { label: 'About', href: '/about/' },
-    { label: 'Blog', href: '/blog/' },
-    { label: 'Contact', href: '/contact/' }
+    { label: 'Home', href: `${MAIN_DOMAIN}/` },
+    { label: 'Services', href: `${MAIN_DOMAIN}/services/` },
+    { label: 'Work', href: `${MAIN_DOMAIN}/work/` },
+    { label: 'Lab', href: `${MAIN_DOMAIN}/lab/` },
+    { label: 'About', href: `${MAIN_DOMAIN}/about/` },
+    { label: 'Blog', href: `${MAIN_DOMAIN}/blog/` },
+    { label: 'Contact', href: `${MAIN_DOMAIN}/contact/` }
   ];
 
   const serviceLinks = [
     {
       label: 'Fuel Up Hours',
-      href: '/invoice/',
+      href: `${MAIN_DOMAIN}/invoice/`,
       color: 'white',
       hoverColor: '#FFFFFF'
     },
     {
       label: 'Build Subscriptions',
-      href: '/subscription/',
+      href: `${MAIN_DOMAIN}/subscription/`,
       color: colors.accent.warm,
       hoverColor: '#FF8533'
     },
     {
       label: 'Hosting Services',
-      href: '/hosting/',
+      href: `${MAIN_DOMAIN}/hosting/`,
       color: colors.accent.banana,
       hoverColor: '#FFEE33'
     }
@@ -138,34 +140,34 @@ const Footer = () => {
   const communityLinks = [
     {
       label: 'The Burros',
-      href: '/collective/',
+      href: `${MAIN_DOMAIN}/collective/`,
       gradient: 'linear(to-r, #6366F1, #8B5CF6, #FFE500)'
     },
     {
       label: 'How NBR Works',
-      href: '/how-it-works/',
+      href: `${MAIN_DOMAIN}/how-it-works/`,
       color: colors.accent.cyan,
       hoverColor: '#33FFFF'
     },
     {
       label: 'NBR Token',
-      href: '/nbr/',
+      href: `${MAIN_DOMAIN}/nbr/`,
       color: colors.brand.teal,
       hoverColor: '#2AFFAA'
     },
     {
       label: 'Join the Herd',
-      href: '/apply-to-burro/',
+      href: `${MAIN_DOMAIN}/apply-to-burro/`,
       color: colors.accent.neon,
       hoverColor: '#4DFF2E'
     }
   ];
 
   const legalLinks = [
-    { label: 'FAQ', href: '/faq/' },
-    { label: 'Privacy', href: '/privacy/' },
-    { label: 'Terms', href: '/terms/' },
-    { label: 'Sitemap', href: '/sitemap/' }
+    { label: 'FAQ', href: `${MAIN_DOMAIN}/faq/` },
+    { label: 'Privacy', href: `${MAIN_DOMAIN}/privacy/` },
+    { label: 'Terms', href: `${MAIN_DOMAIN}/terms/` },
+    { label: 'Sitemap', href: `${MAIN_DOMAIN}/sitemap/` }
   ];
 
   const socialLinks = [
@@ -267,7 +269,7 @@ const Footer = () => {
                   width="auto"
                   filter="brightness(1.1)"
                   cursor="pointer"
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => window.location.href = MAIN_DOMAIN}
                   _hover={{
                     filter: 'brightness(1.3)',
                     animation: `${pulseGlow} 2s ease-in-out infinite`
@@ -336,7 +338,7 @@ const Footer = () => {
             <VStack align="flex-start" spacing={3}>
               <SectionHeading>Services</SectionHeading>
               <FooterLink
-                href="/contact/"
+                href={`${MAIN_DOMAIN}/contact/`}
                 color={colors.accent.neon}
                 hoverColor="#4DFF2E"
               >
@@ -474,7 +476,7 @@ const Footer = () => {
               </Text>
               <Box
                 as="a"
-                href="/"
+                href={MAIN_DOMAIN}
                 display="inline-flex"
                 alignItems="center"
                 position="relative"

@@ -1,4 +1,4 @@
-import { Box, Container, HStack, Image, Icon, Badge } from '@chakra-ui/react';
+import { Box, Container, HStack, Image, Icon, Badge, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { FiShoppingBag } from 'react-icons/fi';
@@ -12,11 +12,14 @@ const colors = {
   },
   accent: {
     neon: '#39FF14',
+    violet: '#8B5CF6',
   },
   dark: {
     black: '#0A0A0A',
   }
 };
+
+const MAIN_DOMAIN = 'https://neonburro.com';
 
 const ShopNavigation = () => {
   const { getCartItemsCount, setIsOpen } = useCart();
@@ -42,10 +45,10 @@ const ShopNavigation = () => {
     >
       <Box
         bg={isScrolled ? "rgba(10, 10, 10, 0.95)" : "transparent"}
-        backdropFilter={isScrolled ? "blur(10px)" : "none"}
+        backdropFilter={isScrolled ? "blur(12px)" : "none"}
         borderBottom="1px solid"
         borderColor={isScrolled ? "whiteAlpha.100" : "transparent"}
-        boxShadow={isScrolled ? "0 4px 30px rgba(0,0,0,0.1)" : "none"}
+        boxShadow={isScrolled ? "0 4px 30px rgba(0,0,0,0.15)" : "none"}
         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
       >
         <Container maxW="1400px" px={{ base: 4, md: 8 }}>
@@ -54,24 +57,47 @@ const ShopNavigation = () => {
             align="center"
             height={{ base: "72px", md: "80px" }}
           >
-            {/* Logo */}
-            <Box 
-              cursor="pointer" 
-              onClick={() => window.location.href = 'https://neonburro.com'}
-              transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-              _hover={{ 
-                transform: 'translateY(-2px)',
-                filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(0, 229, 229, 0.4))'
-              }}
-            >
-              <Image 
-                src="/logo-shop.svg" 
-                alt="Neon Burro Shop"
-                height={{ base: "44px", md: "56px" }}
-                width="auto"
-                filter="brightness(1.2)"
-              />
-            </Box>
+            {/* Logo - links to main domain */}
+            <HStack spacing={3}>
+              <Box 
+                cursor="pointer" 
+                onClick={() => window.location.href = MAIN_DOMAIN}
+                transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                _hover={{ 
+                  transform: 'translateY(-2px)',
+                  filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(0, 229, 229, 0.4))'
+                }}
+              >
+                <Image 
+                  src="/logo-shop.svg" 
+                  alt="Neon Burro Shop"
+                  height={{ base: "44px", md: "56px" }}
+                  width="auto"
+                  filter="brightness(1.2)"
+                />
+              </Box>
+              
+              {/* Shop indicator */}
+              <Box
+                display={{ base: 'none', md: 'block' }}
+                px={2.5}
+                py={1}
+                borderRadius="md"
+                bg={`${colors.accent.violet}15`}
+                border="1px solid"
+                borderColor={`${colors.accent.violet}30`}
+              >
+                <Text
+                  fontSize="xs"
+                  fontWeight="700"
+                  color={colors.accent.violet}
+                  letterSpacing="wider"
+                  textTransform="uppercase"
+                >
+                  Shop
+                </Text>
+              </Box>
+            </HStack>
 
             {/* Cart Button */}
             <MotionBox
@@ -81,10 +107,14 @@ const ShopNavigation = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               p={3}
-              borderRadius="lg"
+              borderRadius="xl"
+              border="1px solid"
+              borderColor={isScrolled ? "whiteAlpha.100" : "transparent"}
+              bg={isScrolled ? "whiteAlpha.50" : "transparent"}
               transition="all 0.2s"
               _hover={{ 
-                bg: 'whiteAlpha.100'
+                bg: 'whiteAlpha.100',
+                borderColor: 'whiteAlpha.200'
               }}
             >
               <Icon
@@ -96,27 +126,27 @@ const ShopNavigation = () => {
               {itemCount > 0 && (
                 <Badge
                   position="absolute"
-                  top="4px"
-                  right="4px"
+                  top="2px"
+                  right="2px"
                   bg={colors.accent.neon}
                   color={colors.dark.black}
                   borderRadius="full"
-                  minW="22px"
-                  height="22px"
+                  minW="20px"
+                  height="20px"
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
                   fontSize="xs"
                   fontWeight="800"
-                  boxShadow={`0 0 20px ${colors.accent.neon}60`}
+                  boxShadow={`0 0 15px ${colors.accent.neon}60`}
                   animation="pulse 2s ease-in-out infinite"
                   sx={{
                     '@keyframes pulse': {
                       '0%, 100%': {
-                        boxShadow: `0 0 20px ${colors.accent.neon}60`,
+                        boxShadow: `0 0 15px ${colors.accent.neon}60`,
                       },
                       '50%': {
-                        boxShadow: `0 0 30px ${colors.accent.neon}90`,
+                        boxShadow: `0 0 25px ${colors.accent.neon}90`,
                       },
                     },
                   }}
