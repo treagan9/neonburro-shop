@@ -9,15 +9,15 @@ const MotionText = motion(Text);
 
 const colors = {
   neon: {
-    cyan: '#00E5E5',
-    lime: '#39FF14', 
+    cyan: '#C5D957',
+    lime: '#A6B84A', 
     amber: '#FFE500',
     violet: '#8B5CF6',
-    coral: '#FF6B35'
+    coral: '#C8893B'
   },
   dark: {
-    void: '#000000',
-    space: '#0A0A0A'
+    void: '#070708',
+    space: '#0B0B0C'
   }
 };
 

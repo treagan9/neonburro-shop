@@ -35,20 +35,20 @@ const ProductDetail = () => {
 
   if (loading) {
     return (
-      <Box minH="100vh" bg="#0A0A0A" display="flex" alignItems="center" justifyContent="center">
-        <Box color="#00E5E5" fontSize="lg">Loading...</Box>
+      <Box minH="100vh" bg="#0B0B0C" display="flex" alignItems="center" justifyContent="center">
+        <Box color="#C5D957" fontSize="lg">Loading...</Box>
       </Box>
     );
   }
 
   if (!product) {
     return (
-      <Box minH="100vh" bg="#0A0A0A" display="flex" alignItems="center" justifyContent="center">
+      <Box minH="100vh" bg="#0B0B0C" display="flex" alignItems="center" justifyContent="center">
         <VStack spacing={4}>
           <Box color="white" fontSize="lg">Product not found</Box>
           <Box
             as="button"
-            color="#00E5E5"
+            color="#C5D957"
             onClick={() => navigate('/')}
             _hover={{ textDecoration: 'underline' }}
           >
@@ -60,7 +60,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <Box minH="100vh" bg="#0A0A0A">
+    <Box minH="100vh" bg="#0B0B0C">
       <VStack spacing={{ base: 16, md: 20 }}>
         <ProductHero 
           product={product}

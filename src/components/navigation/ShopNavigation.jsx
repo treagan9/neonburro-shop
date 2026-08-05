@@ -8,14 +8,14 @@ const MotionBox = motion(Box);
 
 const colors = {
   brand: {
-    primary: '#00E5E5',
+    primary: '#C5D957',
   },
   accent: {
-    neon: '#39FF14',
+    neon: '#A6B84A',
     violet: '#8B5CF6',
   },
   dark: {
-    black: '#0A0A0A',
+    black: '#0B0B0C',
   }
 };
 
@@ -65,7 +65,7 @@ const ShopNavigation = () => {
                 transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                 _hover={{ 
                   transform: 'translateY(-2px)',
-                  filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(0, 229, 229, 0.4))'
+                  filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(197, 217, 87, 0.4))'
                 }}
               >
                 <Image 

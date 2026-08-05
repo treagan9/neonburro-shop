@@ -57,9 +57,9 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
   }, [agreeToTerms]);
 
   const colors = {
-    teal: '#00E5E5',
-    green: '#39FF14',
-    copper: '#FF6B35'
+    teal: '#C5D957',
+    green: '#A6B84A',
+    copper: '#C8893B'
   };
 
   const stripeElementStyles = {

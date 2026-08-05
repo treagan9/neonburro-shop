@@ -20,7 +20,7 @@ const CheckoutSuccess = ({ orderData }) => {
   const { hasCopied, onCopy } = useClipboard(orderData.orderNumber);
 
   return (
-    <Box minH="100vh" bg="#0A0A0A" display="flex" alignItems="center" py={20}>
+    <Box minH="100vh" bg="#0B0B0C" display="flex" alignItems="center" py={20}>
       <Container maxW="700px" px={{ base: 4, md: 8 }}>
         <MotionBox
           initial={{ opacity: 0, y: 20 }}
@@ -37,11 +37,11 @@ const CheckoutSuccess = ({ orderData }) => {
               <Box
                 p={4}
                 borderRadius="full"
-                bg="rgba(57, 255, 20, 0.1)"
+                bg="rgba(166, 184, 74, 0.1)"
                 border="2px solid"
-                borderColor="#39FF14"
+                borderColor="#A6B84A"
               >
-                <FiCheckCircle size={48} color="#39FF14" />
+                <FiCheckCircle size={48} color="#A6B84A" />
               </Box>
             </MotionBox>
 
@@ -56,7 +56,7 @@ const CheckoutSuccess = ({ orderData }) => {
               </Heading>
               <Text color="gray.300" fontSize={{ base: "md", md: "lg" }} maxW="500px">
                 Thank you for your order. We've sent a confirmation email to{' '}
-                <Text as="span" color="#00E5E5" fontWeight="600">
+                <Text as="span" color="#C5D957" fontWeight="600">
                   {orderData.email}
                 </Text>
               </Text>
@@ -91,7 +91,7 @@ const CheckoutSuccess = ({ orderData }) => {
                       onClick={onCopy}
                       leftIcon={<FiCopy />}
                       color="gray.400"
-                      _hover={{ color: '#00E5E5', bg: 'whiteAlpha.100' }}
+                      _hover={{ color: '#C5D957', bg: 'whiteAlpha.100' }}
                     >
                       {hasCopied ? 'Copied!' : 'Copy'}
                     </Button>
@@ -103,7 +103,7 @@ const CheckoutSuccess = ({ orderData }) => {
                 <HStack justify="space-between" width="100%">
                   <Text color="gray.400">Total Paid</Text>
                   <Text
-                    color="#39FF14"
+                    color="#A6B84A"
                     fontSize="2xl"
                     fontWeight="800"
                     fontFamily="mono"
@@ -125,14 +125,14 @@ const CheckoutSuccess = ({ orderData }) => {
             <Box
               width="100%"
               p={6}
-              bg="rgba(0, 229, 229, 0.05)"
+              bg="rgba(197, 217, 87, 0.05)"
               borderRadius="xl"
               border="1px solid"
-              borderColor="rgba(0, 229, 229, 0.2)"
+              borderColor="rgba(197, 217, 87, 0.2)"
             >
               <VStack spacing={4}>
                 <HStack spacing={2}>
-                  <FiMail color="#00E5E5" />
+                  <FiMail color="#C5D957" />
                   <Heading size="md" color="white">
                     What's Next?
                   </Heading>
@@ -144,7 +144,7 @@ const CheckoutSuccess = ({ orderData }) => {
                       width="6px"
                       height="6px"
                       borderRadius="full"
-                      bg="#00E5E5"
+                      bg="#C5D957"
                       flexShrink={0}
                     />
                     <Text color="gray.300" fontSize="sm" textAlign="left">
@@ -157,7 +157,7 @@ const CheckoutSuccess = ({ orderData }) => {
                       width="6px"
                       height="6px"
                       borderRadius="full"
-                      bg="#00E5E5"
+                      bg="#C5D957"
                       flexShrink={0}
                     />
                     <Text color="gray.300" fontSize="sm" textAlign="left">
@@ -170,7 +170,7 @@ const CheckoutSuccess = ({ orderData }) => {
                       width="6px"
                       height="6px"
                       borderRadius="full"
-                      bg="#00E5E5"
+                      bg="#C5D957"
                       flexShrink={0}
                     />
                     <Text color="gray.300" fontSize="sm" textAlign="left">
@@ -209,7 +209,7 @@ const CheckoutSuccess = ({ orderData }) => {
                 <Text
                   as="a"
                   href="mailto:hello@neonburro.com"
-                  color="#00E5E5"
+                  color="#C5D957"
                   _hover={{ textDecoration: 'underline' }}
                 >
                   hello@neonburro.com

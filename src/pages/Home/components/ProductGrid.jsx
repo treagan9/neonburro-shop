@@ -30,7 +30,7 @@ const ProductGrid = forwardRef((props, ref) => {
       ref={ref}
       pt={{ base: 8, md: 12 }}
       pb={{ base: 12, md: 20 }}
-      bg="#0A0A0A"
+      bg="#0B0B0C"
       scrollMarginTop="80px"
     >
       <Container maxW="1400px" px={{ base: 4, md: 8 }}>

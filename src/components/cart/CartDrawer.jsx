@@ -145,7 +145,7 @@ const CartDrawer = () => {
             <VStack width="100%" spacing={4}>
               <HStack justify="space-between" width="100%">
                 <Text color="white" fontSize="lg" fontWeight="700">Total</Text>
-                <Text color="#39FF14" fontSize="xl" fontWeight="800">
+                <Text color="#A6B84A" fontSize="xl" fontWeight="800">
                   ${getCartTotal()}
                 </Text>
               </HStack>
@@ -161,7 +161,7 @@ const CartDrawer = () => {
                 </Button>
                 <Button
                   flex={1}
-                  bg="#39FF14"
+                  bg="#A6B84A"
                   color="black"
                   fontWeight="700"
                   onClick={handleCheckout}

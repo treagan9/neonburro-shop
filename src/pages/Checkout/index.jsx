@@ -85,7 +85,7 @@ const Checkout = () => {
   }
 
   return (
-    <Box minH="100vh" bg="#0A0A0A" pt="100px" pb={20}>
+    <Box minH="100vh" bg="#0B0B0C" pt="100px" pb={20}>
       <Container maxW="1400px" px={{ base: 4, md: 8 }}>
         <VStack spacing={8} mb={8}>
           <VStack spacing={2} textAlign="center">

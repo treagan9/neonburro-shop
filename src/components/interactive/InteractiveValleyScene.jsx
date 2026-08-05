@@ -66,10 +66,10 @@ const InteractiveValleyScene = () => {
   // Define vibrant neon colors for titles
   const neonColors = {
     stackhouse: colors.brand.primary, // teal
-    saloon: '#FF6B00', // fiery orange
+    saloon: '#C8893B', // fiery orange
     devzen: colors.accent.neon, // lime green
     river: colors.accent.banana, // banana yellow
-    valley: '#00B8E6', // baby blue
+    valley: '#6C6F97', // baby blue
     home: colors.accent.purple // bright purple
   };
 

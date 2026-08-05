@@ -9,7 +9,7 @@ const Cart = () => {
 
   if (cart.length === 0) {
     return (
-      <Box minH="100vh" bg="#0A0A0A" pt="100px">
+      <Box minH="100vh" bg="#0B0B0C" pt="100px">
         <Container maxW="600px" textAlign="center">
           <VStack spacing={8} py={20}>
             <Box fontSize="6xl">🛒</Box>
@@ -43,7 +43,7 @@ const Cart = () => {
   }
 
   return (
-    <Box minH="100vh" bg="#0A0A0A" pt="100px" pb={20}>
+    <Box minH="100vh" bg="#0B0B0C" pt="100px" pb={20}>
       <Container maxW="900px" px={{ base: 4, md: 8 }}>
         <VStack spacing={8} align="stretch">
           <HStack justify="space-between" align="center">
@@ -280,7 +280,7 @@ const Cart = () => {
                 <Text color="gray.400" fontSize="md">
                   Shipping
                 </Text>
-                <Text color="#39FF14" fontSize="md" fontWeight="600">
+                <Text color="#A6B84A" fontSize="md" fontWeight="600">
                   FREE
                 </Text>
               </HStack>
@@ -292,7 +292,7 @@ const Cart = () => {
                   Total
                 </Text>
                 <Text 
-                  color="#39FF14" 
+                  color="#A6B84A" 
                   fontSize="2xl" 
                   fontWeight="800"
                   fontFamily="mono"
@@ -309,7 +309,7 @@ const Cart = () => {
               width="100%"
               size="lg"
               height="56px"
-              bg="#39FF14"
+              bg="#A6B84A"
               color="black"
               fontWeight="700"
               fontSize="md"
@@ -318,7 +318,7 @@ const Cart = () => {
               borderRadius="full"
               _hover={{
                 transform: 'translateY(-2px)',
-                boxShadow: '0 10px 30px rgba(57, 255, 20, 0.4)'
+                boxShadow: '0 10px 30px rgba(166, 184, 74, 0.4)'
               }}
               _active={{ transform: 'translateY(0)' }}
               transition="all 0.3s"

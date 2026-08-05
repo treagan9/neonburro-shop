@@ -114,7 +114,7 @@ const RelatedProducts = ({ currentProductId }) => {
                         {product.featured && (
                           <Badge
                             bg="#FFE500"
-                            color="#0A0A0A"
+                            color="#0B0B0C"
                             px={3}
                             py={1}
                             borderRadius="full"

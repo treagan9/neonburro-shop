@@ -8,14 +8,14 @@
 
 :root {
   /* Brand Colors */
-  --brand-primary: #00E5E5;
-  --brand-primary-dark: #00B8B8;
-  --brand-primary-light: #4DFFFF;
-  --accent-neon: #39FF14;
-  --accent-warm: #FF6B00;
-  --dark-void: #000000;
-  --dark-black: #0A0A0A;
-  --dark-gray: #1A1A1A;
+  --brand-primary: #C5D957;
+  --brand-primary-dark: #A6B84A;
+  --brand-primary-light: #D2E26B;
+  --accent-neon: #A6B84A;
+  --accent-warm: #C8893B;
+  --dark-void: #070708;
+  --dark-black: #0B0B0C;
+  --dark-gray: #141416;
 }
 
 html {
@@ -47,7 +47,7 @@ code, pre, .mono {
 
 /* Selection */
 ::selection {
-  background: rgba(0, 229, 229, 0.3);
+  background: rgba(197, 217, 87, 0.3);
   color: var(--brand-primary-light);
 }
 
@@ -65,12 +65,12 @@ a:focus-visible {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 229, 229, 0.3);
+  background: rgba(197, 217, 87, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 229, 229, 0.5);
+  background: rgba(197, 217, 87, 0.5);
 }
 
 /* Scanlines - very subtle with brand color */
@@ -86,8 +86,8 @@ a:focus-visible {
       0deg,
       transparent,
       transparent 2px,
-      rgba(0, 229, 229, 0.01) 2px,
-      rgba(0, 229, 229, 0.01) 4px
+      rgba(197, 217, 87, 0.01) 2px,
+      rgba(197, 217, 87, 0.01) 4px
     );
   pointer-events: none;
   z-index: 9999;
@@ -108,9 +108,9 @@ a:focus-visible {
 /* Animation utilities */
 @keyframes glow {
   0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(0, 229, 229, 0.5));
+    filter: drop-shadow(0 0 20px rgba(197, 217, 87, 0.5));
   }
   50% {
-    filter: drop-shadow(0 0 30px rgba(0, 229, 229, 0.8));
+    filter: drop-shadow(0 0 30px rgba(197, 217, 87, 0.8));
   }
 }

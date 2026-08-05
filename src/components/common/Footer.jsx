@@ -30,40 +30,40 @@ const MotionBox = motion(Box);
 
 const colors = {
   brand: {
-    primary: '#00E5E5',
+    primary: '#C5D957',
     teal: '#14F195',
   },
   accent: {
-    neon: '#39FF14',
+    neon: '#A6B84A',
     banana: '#FFE500',
-    warm: '#FF6B00',
+    warm: '#C8893B',
     purple: '#8B5CF6',
     indigo: '#6366F1',
     pink: '#FF00FF',
     cyan: '#00FFFF'
   },
   dark: {
-    black: '#0A0A0A',
-    space: '#1A1A1A',
+    black: '#0B0B0C',
+    space: '#141416',
   }
 };
 
 const glow = keyframes`
   0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(0, 229, 229, 0.6)) brightness(1.2);
+    filter: drop-shadow(0 0 20px rgba(197, 217, 87, 0.6)) brightness(1.2);
   }
   50% {
-    filter: drop-shadow(0 0 35px rgba(0, 229, 229, 0.9)) brightness(1.4);
+    filter: drop-shadow(0 0 35px rgba(197, 217, 87, 0.9)) brightness(1.4);
   }
 `;
 
 const pulseGlow = keyframes`
   0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(57, 255, 20, 0.5));
+    filter: drop-shadow(0 0 15px rgba(166, 184, 74, 0.5));
     transform: scale(1);
   }
   50% {
-    filter: drop-shadow(0 0 30px rgba(57, 255, 20, 0.8));
+    filter: drop-shadow(0 0 30px rgba(166, 184, 74, 0.8));
     transform: scale(1.05);
   }
 `;
@@ -491,7 +491,7 @@ const Footer = () => {
                   alt="Neon Burro"
                   height="32px"
                   width="auto"
-                  filter="brightness(1.3) drop-shadow(0 0 15px rgba(0, 229, 229, 0.4))"
+                  filter="brightness(1.3) drop-shadow(0 0 15px rgba(197, 217, 87, 0.4))"
                   transition="all 0.3s"
                 />
               </Box>

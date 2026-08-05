@@ -22,7 +22,7 @@ const OrderSummary = ({ cart, total }) => {
       <VStack spacing={6} align="stretch">
         {/* Header */}
         <HStack spacing={2} align="center">
-          <FiPackage color="#00E5E5" />
+          <FiPackage color="#C5D957" />
           <Heading size="md" color="white">Order Summary</Heading>
         </HStack>
 
@@ -146,7 +146,7 @@ const OrderSummary = ({ cart, total }) => {
             <Text color="gray.400" fontSize="sm">
               Shipping
             </Text>
-            <Text color="#39FF14" fontSize="sm" fontWeight="600">
+            <Text color="#A6B84A" fontSize="sm" fontWeight="600">
               FREE
             </Text>
           </HStack>
@@ -169,7 +169,7 @@ const OrderSummary = ({ cart, total }) => {
             Total
           </Text>
           <Text 
-            color="#39FF14" 
+            color="#A6B84A" 
             fontSize="2xl" 
             fontWeight="800"
             fontFamily="mono"
@@ -181,10 +181,10 @@ const OrderSummary = ({ cart, total }) => {
         {/* Mystery Value Badge */}
         <Box
           p={4}
-          bg="rgba(57, 255, 20, 0.05)"
+          bg="rgba(166, 184, 74, 0.05)"
           borderRadius="lg"
           border="1px solid"
-          borderColor="rgba(57, 255, 20, 0.2)"
+          borderColor="rgba(166, 184, 74, 0.2)"
           position="relative"
           overflow="hidden"
         >
@@ -194,10 +194,10 @@ const OrderSummary = ({ cart, total }) => {
             right="-10px"
             opacity={0.1}
           >
-            <FiStar size={60} color="#39FF14" />
+            <FiStar size={60} color="#A6B84A" />
           </Box>
           <VStack spacing={2} position="relative">
-            <Text color="#39FF14" fontSize="sm" fontWeight="700" textAlign="center">
+            <Text color="#A6B84A" fontSize="sm" fontWeight="700" textAlign="center">
               Free US Shipping
             </Text>
             <Text color="gray.400" fontSize="xs" textAlign="center" lineHeight="1.6">

@@ -14,7 +14,7 @@ const MotionBox = motion(Box);
 
 const ProductStory = ({ product }) => {
   return (
-    <Box width="100%" py={{ base: 12, md: 16 }} bg="#0A0A0A">
+    <Box width="100%" py={{ base: 12, md: 16 }} bg="#0B0B0C">
       <Container maxW="1200px" px={{ base: 4, md: 8 }}>
         <MotionBox
           initial={{ opacity: 0, y: 30 }}

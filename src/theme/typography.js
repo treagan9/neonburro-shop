@@ -1,9 +1,9 @@
 // theme/typography.js
 export const typography = {
     fonts: {
-      heading: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-      body: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-      mono: "'JetBrains Mono', 'Fira Code', monospace"
+      heading: "'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      body: "'Geist Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+      mono: "'Geist Mono', 'JetBrains Mono', 'Fira Code', ui-monospace, monospace"
     },
     fontSizes: {
       // Exact pixel values for precision

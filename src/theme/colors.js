@@ -1,82 +1,93 @@
 // theme/colors.js
+// NeonBurro Shop — repainted to brand canon.
+// SENTINEL: NB_SHOP_COLORS_V2
+//
+// Same discipline as the Pulse repaint: every existing key keeps its SHAPE so
+// no component breaks. Values move from the 2025 cyan/neon-green system to
+// Topo Lime, warmed near-blacks and off-white ink. Marketing aliases (signal,
+// brown ramp, alpenglow) are ADDED on top, opt-in.
+
 export const colors = {
-  // Primary Brand Colors - Your unique teal/cyan
+  // Primary Brand — repainted from teal #00E5E5 to Topo Lime.
   brand: {
-    primary: '#00E5E5',      // Unique teal - between cyan and turquoise
-    primaryDark: '#00B8B8',  // Darker teal for hover states
-    primaryLight: '#4DFFFF', // Lighter teal for glows
+    primary: '#C5D957',      // Topo Lime  (was #00E5E5)
+    primaryDark: '#A6B84A',  // pressed / dim  (was #00B8B8)
+    primaryLight: '#D2E26B', // hover / glow   (was #4DFFFF)
     primaryAlpha: {
-      10: 'rgba(0, 229, 229, 0.1)',
-      20: 'rgba(0, 229, 229, 0.2)',
-      30: 'rgba(0, 229, 229, 0.3)',
-      50: 'rgba(0, 229, 229, 0.5)',
-      70: 'rgba(0, 229, 229, 0.7)',
+      10: 'rgba(197, 217, 87, 0.1)',
+      20: 'rgba(197, 217, 87, 0.2)',
+      30: 'rgba(197, 217, 87, 0.3)',
+      50: 'rgba(197, 217, 87, 0.5)',
+      70: 'rgba(197, 217, 87, 0.7)',
     }
   },
-  
-  // Accent Colors - Enhanced palette
+
+  // Accent
   accent: {
-    neon: '#39FF14',         // Neon green for energy/success
+    neon: '#C5D957',         // success / energy  (was #39FF14)
     neonAlpha: {
-      10: 'rgba(57, 255, 20, 0.1)',
-      20: 'rgba(57, 255, 20, 0.2)',
-      30: 'rgba(57, 255, 20, 0.3)',
-      50: 'rgba(57, 255, 20, 0.5)',
+      10: 'rgba(197, 217, 87, 0.1)',
+      20: 'rgba(197, 217, 87, 0.2)',
+      30: 'rgba(197, 217, 87, 0.3)',
+      50: 'rgba(197, 217, 87, 0.5)',
     },
-    warm: '#FF6B00',         // Orange for CTAs and warmth
+    warm: '#C8893B',         // Heat Thread amber, CTAs  (was #FF6B00)
     warmAlpha: {
-      10: 'rgba(255, 107, 0, 0.1)',
-      20: 'rgba(255, 107, 0, 0.2)',
-      30: 'rgba(255, 107, 0, 0.3)',
-      50: 'rgba(255, 107, 0, 0.5)',
+      10: 'rgba(200, 137, 59, 0.1)',
+      20: 'rgba(200, 137, 59, 0.2)',
+      30: 'rgba(200, 137, 59, 0.3)',
+      50: 'rgba(200, 137, 59, 0.5)',
     },
-    banana: '#FFE500',       // Neon yellow/banana accent
-    bananaLight: '#FFF044',  // Lighter banana
-    bananaDark: '#E6CE00',   // Darker banana
+    banana: '#FFE500',       // unchanged, still brand
+    bananaLight: '#FFF044',
+    bananaDark: '#E6CE00',
     bananaAlpha: {
       10: 'rgba(255, 229, 0, 0.1)',
       20: 'rgba(255, 229, 0, 0.2)',
       30: 'rgba(255, 229, 0, 0.3)',
       50: 'rgba(255, 229, 0, 0.5)',
     },
-    cool: '#00B8E6',         // Secondary blue-teal
-    purple: '#8B5CF6',       // Purple for variety
+    cool: '#6C6F97',         // Horizon Relay  (was #00B8E6)
+    purple: '#8B5CF6',       // unchanged
     purpleAlpha: {
       10: 'rgba(139, 92, 246, 0.1)',
       20: 'rgba(139, 92, 246, 0.2)',
       30: 'rgba(139, 92, 246, 0.3)',
       50: 'rgba(139, 92, 246, 0.5)',
-    }
+    },
+
+    // Marketing aliases. New work reads accent.signal so intent is legible.
+    signal: '#C5D957',
+    signalBright: '#D2E26B',
+    signalDim: '#A6B84A',
   },
-  
-  // Neutral Colors
+
+  // Neutral — warmed a few degrees toward the marketing browns, no pure black.
   dark: {
-    void: '#000000',         // Pure black
-    black: '#0A0A0A',        // Background black
-    gray: '#1A1A1A',         // Card backgrounds
-    slate: '#2A2A2A',        // Lighter elements
+    void: '#070708',         // deepest  (was #000000)
+    black: '#0B0B0C',        // canvas, matches marketing surface.base
+    gray: '#141416',         // card backgrounds
+    slate: '#252420',        // lighter elements
   },
-  
-  // Semantic Colors
+
   semantic: {
-    success: '#39FF14',      // Using neon green
-    warning: '#FFE500',      // Using banana yellow
-    error: '#FF3366',        // Red-pink for errors
-    info: '#00B8E6',         // Using cool blue
+    success: '#C5D957',
+    warning: '#FFE500',
+    error: '#FF3366',
+    info: '#6C6F97',
   },
-  
-  // Text Colors
+
+  // Text — off-white, never pure #FFF. Matches marketing text roles.
   text: {
-    primary: '#FFFFFF',
-    secondary: '#B8B8B8',
-    muted: '#808080',
-    inverse: '#0A0A0A',
+    primary: '#F4F3F1',
+    secondary: '#A8A7A4',
+    muted: '#6E6E6B',
+    inverse: '#0B0B0C',
   },
-  
-  // UI Colors
+
   ui: {
-    border: 'rgba(255, 255, 255, 0.1)',
-    borderHover: 'rgba(0, 229, 229, 0.5)',
+    border: 'rgba(255, 255, 255, 0.08)',
+    borderHover: 'rgba(197, 217, 87, 0.5)',
     backdrop: 'rgba(0, 0, 0, 0.6)',
     overlay: 'rgba(0, 0, 0, 0.8)',
     glass: {
@@ -85,14 +96,14 @@ export const colors = {
       heavy: 'rgba(255, 255, 255, 0.1)',
     }
   },
-  
-  // Utility colors for special effects
+
   effects: {
     glow: {
-      cyan: '0 0 20px rgba(0, 229, 229, 0.5)',
-      neon: '0 0 20px rgba(57, 255, 20, 0.5)',
+      cyan: '0 0 20px rgba(197, 217, 87, 0.5)',   // legacy key name, now lime
+      signal: '0 0 20px rgba(197, 217, 87, 0.5)', // preferred alias
+      neon: '0 0 20px rgba(197, 217, 87, 0.5)',
       banana: '0 0 20px rgba(255, 229, 0, 0.5)',
-      warm: '0 0 20px rgba(255, 107, 0, 0.5)',
+      warm: '0 0 20px rgba(200, 137, 59, 0.5)',
     },
     shadow: {
       sm: '0 10px 20px rgba(0, 0, 0, 0.3)',
@@ -100,15 +111,37 @@ export const colors = {
       lg: '0 30px 60px rgba(0, 0, 0, 0.5)',
     }
   },
-  
-  // Gradients
+
   gradients: {
     brand: 'linear(to-r, brand.primary, brand.primaryLight)',
-    neon: 'linear(to-r, brand.primary, accent.neon)',
+    // neon and brand.primary are the same lime now, so this ramps lime -> amber
+    // instead of collapsing into one flat color.
+    neon: 'linear(to-r, brand.primary, accent.warm)',
     warm: 'linear(to-r, accent.warm, accent.banana)',
     dark: 'linear(to-b, dark.black, dark.void)',
-    rainbow: 'linear(to-r, brand.primary, accent.neon, accent.banana, accent.warm)',
-  }
+    rainbow: 'linear(to-r, brand.primary, accent.banana, accent.warm, accent.purple)',
+  },
+
+  // ---- MARKETING-ALIGNED ADDITIONS (opt-in, additive) ----
+  // Burro material ramp, identical to marketing and Pulse.
+  brown: {
+    900: '#241A16',
+    800: '#4A382F',
+    700: '#6B5245',
+    600: '#8A6857',
+    500: '#A8846E',
+    400: '#C39D7F',
+  },
+
+  // Alpenglow warm-light surfaces, for editorial / print / light moments.
+  alpenglow: {
+    base:   '#F3EDE3',
+    raised: '#DDD2C2',
+    sunken: '#E8E0D4',
+    ink:    '#241A16',
+    inkSecondary: '#4A382F',
+    inkMuted: '#6B5245',
+  },
 };
 
 export default colors;

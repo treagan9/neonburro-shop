@@ -389,7 +389,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                                     {option.label}
                                   </Text>
                                   {option.featured && (
-                                    <Badge bg="#FF6B35" color="white" fontSize="xs">
+                                    <Badge bg="#C8893B" color="white" fontSize="xs">
                                       Popular
                                     </Badge>
                                   )}
@@ -429,7 +429,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                       _focus={{ borderColor: product.color, boxShadow: `0 0 0 1px ${product.color}` }}
                     >
                       {product.sizes.map((size) => (
-                        <option key={size} value={size} style={{ background: '#1A1A1A' }}>
+                        <option key={size} value={size} style={{ background: '#141416' }}>
                           {size}
                         </option>
                       ))}
@@ -471,7 +471,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     size="lg"
                     width="100%"
                     bg={product.color}
-                    color="#0A0A0A"
+                    color="#0B0B0C"
                     fontWeight="700"
                     height="56px"
                     leftIcon={<FiShoppingCart />}
