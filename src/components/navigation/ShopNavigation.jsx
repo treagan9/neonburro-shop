@@ -68,12 +68,15 @@ const ShopNavigation = () => {
                   filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(197, 217, 87, 0.4))'
                 }}
               >
-                <Image 
-                  src="/logo-shop.svg" 
-                  alt="Neon Burro Shop"
-                  height={{ base: "44px", md: "56px" }}
+                {/* One logo across every domain. The shop used to carry its own
+                    lockup, which meant a visitor crossing from neonburro.com saw
+                    a different mark and had to decide whether they were still in
+                    the same place. */}
+                <Image
+                  src="/logo-main.png"
+                  alt="neonburro"
+                  height={{ base: "30px", md: "36px" }}
                   width="auto"
-                  filter="brightness(1.2)"
                 />
               </Box>
               

@@ -263,8 +263,8 @@ const Footer = () => {
             <VStack align="flex-start" spacing={6}>
               <Box>
                 <Image
-                  src="/logo-text-only.svg"
-                  alt="Neon Burro"
+                  src="/logo-main.png"
+                  alt="neonburro"
                   height="40px"
                   width="auto"
                   filter="brightness(1.1)"
@@ -487,8 +487,8 @@ const Footer = () => {
                 }}
               >
                 <Image
-                  src="/logo-main.svg"
-                  alt="Neon Burro"
+                  src="/logo-main.png"
+                  alt="neonburro"
                   height="32px"
                   width="auto"
                   filter="brightness(1.3) drop-shadow(0 0 15px rgba(197, 217, 87, 0.4))"
