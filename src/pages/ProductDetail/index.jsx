@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import ProductHero from './components/ProductHero';
 import ProductStory from './components/ProductStory';
 import RelatedProducts from './components/RelatedProducts';
+import FloatBand from '../../components/blindlead/FloatBand';
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -68,6 +69,14 @@ const ProductDetail = () => {
           onBuyNow={handleBuyNow}
         />
         <ProductStory product={product} />
+
+        {/* Object, then story, then the quiet line that says this one carries a
+            clue. It goes after the story on purpose. You should want the thing
+            before you find out it is also a map. */}
+        <Box w="100%" maxW="1180px" px={{ base: 5, md: 10 }} mx="auto">
+          <FloatBand productId={product.id} />
+        </Box>
+
         <RelatedProducts currentProductId={product.id} />
       </VStack>
     </Box>

@@ -6,6 +6,7 @@ import ShopNavigation from './components/navigation/ShopNavigation';
 import CartDrawer from './components/cart/CartDrawer';
 import Footer from './components/common/Footer';
 import Home from './pages/Home';
+import BlindLead from './pages/BlindLead';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -30,6 +31,8 @@ function AppContent() {
       <CartDrawer />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/the-blind-lead/" element={<BlindLead />} />
+        <Route path="/the-blind-lead" element={<BlindLead />} />
         <Route path="/product/:productId/" element={<ProductDetail />} />
         <Route path="/cart/" element={<Cart />} />
         <Route path="/checkout/" element={<Checkout />} />
