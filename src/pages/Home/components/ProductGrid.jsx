@@ -1,9 +1,10 @@
 import { Box, Container, Grid, Heading, Text, VStack, Badge } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { useState, forwardRef } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { keyframes } from '@emotion/react';
 import { getAllProducts } from '../../../data/products';
+import { primeInventory, subscribeInventory, stockState } from '../../../data/inventory';
 
 const MotionBox = motion(Box);
 
@@ -16,7 +17,16 @@ const gradientFlow = keyframes`
 const ProductGrid = forwardRef((props, ref) => {
   const navigate = useNavigate();
   const [clickedProduct, setClickedProduct] = useState(null);
+  const [, setStockTick] = useState(0);
   const products = getAllProducts();
+
+  // Ask Pulse what is actually on the shelf. Until it answers every card falls
+  // back to the static inStock flag, which is closed. See data/inventory.js.
+  useEffect(() => {
+    const off = subscribeInventory(() => setStockTick((n) => n + 1));
+    primeInventory();
+    return off;
+  }, []);
 
   const handleProductClick = (productId) => {
     setClickedProduct(productId);
@@ -124,6 +134,35 @@ const ProductGrid = forwardRef((props, ref) => {
                   borderRadius={{ base: "2xl", md: "3xl" }}
                   borderBottomRadius={0}
                 >
+                  {(() => {
+                    const state = stockState(product);
+                    if (state === 'in') return null;
+                    const label = state === 'soon' ? 'Coming soon'
+                      : state === 'low' ? 'Almost gone'
+                      : 'Out of stock';
+                    return (
+                      <Badge
+                        position="absolute"
+                        top={{ base: 3, md: 4 }}
+                        right={{ base: 3, md: 4 }}
+                        zIndex={4}
+                        px={2.5}
+                        py={1}
+                        borderRadius="full"
+                        bg="rgba(11, 11, 12, 0.82)"
+                        border="1px solid"
+                        borderColor={state === 'low' ? product.color : 'rgba(255,255,255,0.14)'}
+                        color={state === 'low' ? product.color : 'gray.400'}
+                        fontFamily="mono"
+                        fontSize="10px"
+                        fontWeight="600"
+                        letterSpacing="0.08em"
+                        textTransform="uppercase"
+                      >
+                        {label}
+                      </Badge>
+                    );
+                  })()}
                   <Box
                     width="100%"
                     height="100%"
@@ -132,17 +171,22 @@ const ProductGrid = forwardRef((props, ref) => {
                     justifyContent="center"
                     position="relative"
                   >
-                    <Box
-                      as="img"
-                      src={product.featuredImage}
-                      alt={product.name}
-                      maxW={{ base: "75%", md: "85%" }}
-                      maxH={{ base: "75%", md: "85%" }}
-                      objectFit="contain"
-                      position="relative"
-                      zIndex={2}
-                      filter={`drop-shadow(0 10px 30px ${product.color}40)`}
-                    />
+                    {product.featuredImage && (
+                      <Box
+                        as="img"
+                        src={product.featuredImage}
+                        alt={product.name}
+                        loading="lazy"
+                        maxW={{ base: "75%", md: "85%" }}
+                        maxH={{ base: "75%", md: "85%" }}
+                        objectFit="contain"
+                        position="relative"
+                        zIndex={2}
+                        opacity={stockState(product) === 'out' ? 0.55 : 1}
+                        transition="opacity 0.3s ease"
+                        filter={`drop-shadow(0 10px 30px ${product.color}40)`}
+                      />
+                    )}
                     
                     <Text 
                       fontSize={{ base: "6xl", md: "9xl" }}

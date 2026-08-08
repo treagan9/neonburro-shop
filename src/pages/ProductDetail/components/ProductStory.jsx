@@ -69,6 +69,35 @@ const ProductStory = ({ product }) => {
               </VStack>
             </Box>
 
+            {/* The natural dye note. This is a promise about variance and it
+                sits above materials on purpose, because somebody who reads it
+                after opening the box feels misled and somebody who reads it
+                here feels let in on something. */}
+            {product.dyeNote && (
+              <Box
+                p={6}
+                mb={6}
+                borderRadius="xl"
+                bg={`${product.color}08`}
+                borderLeft="2px solid"
+                borderColor={product.color}
+              >
+                <Text
+                  color={product.color}
+                  fontWeight="700"
+                  fontSize="sm"
+                  textTransform="uppercase"
+                  letterSpacing="wider"
+                  mb={2}
+                >
+                  About the colour
+                </Text>
+                <Text color="gray.300" fontSize={{ base: 'sm', md: 'md' }} lineHeight="1.7">
+                  {product.dyeNote}
+                </Text>
+              </Box>
+            )}
+
             {/* Materials & Care Grid */}
             <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={6}>
               {/* Materials */}

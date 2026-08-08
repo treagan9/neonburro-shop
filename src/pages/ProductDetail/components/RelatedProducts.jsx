@@ -159,7 +159,7 @@ const RelatedProducts = ({ currentProductId }) => {
                       >
                         <Box
                           as="img"
-                          src={product.featuredImage}
+                          src={product.featuredImage || undefined}
                           alt={product.name}
                           maxW="75%"
                           maxH="75%"

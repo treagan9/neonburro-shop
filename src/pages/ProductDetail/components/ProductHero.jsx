@@ -24,7 +24,8 @@ import {
 import { motion } from 'framer-motion';
 import { FiArrowLeft, FiShoppingCart, FiTruck, FiStar, FiPackage } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { primeInventory, subscribeInventory, stockState } from '../../../data/inventory';
 
 const MotionBox = motion(Box);
 
@@ -36,6 +37,15 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
   const [selectedDesign, setSelectedDesign] = useState(product.designs ? product.designs[0] : null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
+  const [, setStockTick] = useState(0);
+
+  // Live stock from Pulse. Until it answers, stockState falls back to the
+  // static inStock flag on the product, which is closed. See data/inventory.js.
+  useEffect(() => {
+    const off = subscribeInventory(() => setStockTick((n) => n + 1));
+    primeInventory();
+    return off;
+  }, []);
 
   const getCurrentPrice = () => {
     if (product.hasVariants && selectedTier) {
@@ -467,6 +477,34 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                 )}
 
                 <VStack spacing={3} width="100%">
+                  {(() => {
+                    // Variant aware. A colorway can be gone while the product is
+                    // not, and a greyed button with no reason is worse than none.
+                    const state = stockState(product, selectedDesign?.id || null);
+                    if (state === 'in' || state === 'low') return null;
+                    return (
+                      <Box
+                        width="100%"
+                        px={5}
+                        py={4}
+                        borderRadius="xl"
+                        bg="rgba(255,255,255,0.03)"
+                        border="1px solid"
+                        borderColor="whiteAlpha.200"
+                      >
+                        <Text color="white" fontWeight="700" fontSize="sm" mb={1}>
+                          {state === 'soon' ? 'Not made yet' : 'Out of stock'}
+                          {selectedDesign ? ` in ${selectedDesign.name}` : ''}
+                        </Text>
+                        <Text color="gray.400" fontSize="sm" lineHeight="1.6">
+                          {state === 'soon'
+                            ? 'This one is still in the sample stage. It goes up the day the first run lands.'
+                            : 'Small runs sell through and we do not backorder. The next run gets announced before it goes up.'}
+                        </Text>
+                      </Box>
+                    );
+                  })()}
+
                   <Button
                     size="lg"
                     width="100%"
@@ -477,6 +515,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     leftIcon={<FiShoppingCart />}
                     onClick={handleAddToCart}
                     isLoading={isAdding}
+                    isDisabled={!['in','low'].includes(stockState(product, selectedDesign?.id || null))}
                     _hover={{
                       transform: 'translateY(-2px)',
                       boxShadow: `0 10px 30px ${product.color}44`
@@ -495,6 +534,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
                     fontWeight="600"
                     height="56px"
                     onClick={handleBuyNow}
+                    isDisabled={!['in','low'].includes(stockState(product, selectedDesign?.id || null))}
                     _hover={{ bg: `${product.color}11` }}
                     borderRadius="full"
                   >

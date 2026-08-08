@@ -73,14 +73,11 @@ export const RULES = [
 
 export const FLOATS = [
   { id: 'F-01', carrier: 'two-dollar-clue', state: 'queued', found: null, note: 'The cheapest door into the hunt. This is the one that explains what float is.' },
-  { id: 'F-02', carrier: 'mystery-graphic-t', state: 'queued', found: null, note: 'Worked into the print. Not in the part of the artwork you notice first.' },
-  { id: 'F-03', carrier: 'mystery-dyed-t', state: 'queued', found: null, note: 'The dye pattern is not decorative on every run.' },
-  { id: 'F-04', carrier: 'lost-burro-luxe-tee', state: 'queued', found: null, note: 'The Lost Burro is lost for a reason and the tee says where he was last seen.' },
-  { id: 'F-05', carrier: 'titanium-cup', state: 'queued', found: null, note: 'Etched. You will find it when the light is wrong.' },
-  { id: 'F-06', carrier: 'copper-cup', state: 'queued', found: null, note: 'Copper takes a patina. The patina is the point.' },
-  { id: 'F-07', carrier: 'nibble-wands', state: 'queued', found: null, note: 'On the case, not on the wands.' },
-  { id: 'F-08', carrier: 'burro-sweater', state: 'queued', found: null, note: 'Knitted in. Turn it inside out.' },
-  { id: 'F-09', carrier: 'burro-socks', state: 'queued', found: null, note: 'Three colorways, three fragments, one sentence.' },
+  { id: 'F-02', carrier: 'theburroship', state: 'queued', found: null, note: 'Worked into the print. Not in the part of the artwork you notice first.' },
+  { id: 'F-03', carrier: 'neonburro-tee', state: 'queued', found: null, note: 'The mark is printed a half step off the body. One colorway is off by more than that.' },
+  { id: 'F-04', carrier: 'blanks', state: 'queued', found: null, note: 'Nothing is printed on this shirt, so the float is in the packaging.' },
+  { id: 'F-05', carrier: 'halfway-nook', state: 'queued', found: null, note: 'Etched low on the wall. Titanium shows it when the light is wrong, copper shows it once the patina comes in.' },
+  { id: 'F-06', carrier: 'nibble-wands', state: 'queued', found: null, note: 'On the case, not on the wands.' },
 ];
 
 export const FLOAT_BY_CARRIER = Object.fromEntries(
