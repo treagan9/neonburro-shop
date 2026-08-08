@@ -116,13 +116,6 @@ const Footer = () => {
 
   const networkLinks = [
     {
-      label: 'Neon Merch',
-      href: 'https://shop.neonburro.com',
-      color: colors.accent.pink,
-      hoverColor: '#FF33FF',
-      external: true
-    },
-    {
       label: 'Order Local Food',
       href: 'https://order.neonburro.com',
       color: colors.accent.warm,
@@ -133,6 +126,13 @@ const Footer = () => {
       label: 'Lounge Access',
       href: 'https://lounge.neonburro.com',
       gradient: 'linear(to-r, #14F195, #8B5CF6)',
+      external: true
+    },
+    {
+      label: 'Pulse Dashboard',
+      href: 'https://pulse.neonburro.com',
+      color: colors.brand.primary,
+      hoverColor: '#D2E26B',
       external: true
     }
   ];
@@ -465,7 +465,37 @@ const Footer = () => {
 
         <Box pt={8}>
           <VStack spacing={4}>
-            <HStack spacing={3} align="center" flexWrap="wrap" justify="center">
+            {/* THE DEMO LINE
+                This store is hand built. It takes a card and it takes a token,
+                it runs its own inventory out of the same database as the back
+                office, and there is a treasure hunt on top of it. Nobody needs
+                telling we could build them one, they are standing in it. Do not
+                soften this into "powered by", that was a vendor credit and this
+                is the argument. */}
+            <VStack spacing={2} maxW="620px">
+              <Text color="gray.300" fontSize={{ base: 'sm', md: 'md' }} fontWeight="600"
+                textAlign="center" lineHeight="1.7">
+                You are standing in a demo.
+              </Text>
+              <Text color="gray.500" fontSize="sm" textAlign="center" lineHeight="1.7">
+                Every part of this store was built by hand. The checkout, the inventory,
+                the token pricing and the hunt underneath it. We do the same thing for
+                small and mid sized businesses who would rather their software worked
+                than worked around them.
+              </Text>
+              <Link
+                href={`${MAIN_DOMAIN}/contact/`}
+                color={colors.brand.primary}
+                fontSize="sm"
+                fontWeight="700"
+                mt={1}
+                _hover={{ textDecoration: 'none', color: '#D2E26B' }}
+              >
+                Have one built &rarr;
+              </Link>
+            </VStack>
+
+            <HStack spacing={3} align="center" flexWrap="wrap" justify="center" pt={2}>
               <Text
                 color="gray.400"
                 fontSize="sm"
