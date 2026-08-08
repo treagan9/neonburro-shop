@@ -1,297 +1,223 @@
-import { Box, Container, Grid, Heading, Text, VStack, Badge } from '@chakra-ui/react';
+// src/pages/Home/components/ProductGrid.jsx
+// SENTINEL: NB_SHOP_GRID_V3
+//
+// Three rooms, not one grid. Worn, Carried, Sent. A room is entered rather than
+// filtered, which is the difference between a boutique and a warehouse listing.
+//
+// WHAT WAS REMOVED IN V3 AND WHY, SO IT DOES NOT COME BACK
+//   · The giant faded initial behind every image. It was there to fill space on
+//     cards with no photograph and it read as a rendering bug, because a huge
+//     grey "b" in the middle of a shirt is a huge grey "b". A piece with no
+//     photograph now gets a deliberate empty frame that says so.
+//   · The magenta and cyan animated hover border. That is the retired 2025
+//     palette and it fights everything else on the page. Hover is a lime hairline.
+//   · The scanline overlay on every tile. Texture for its own sake.
+//   · The category badge, which sat in the same corner as the stock badge and
+//     covered it. One badge per card. Stock wins, because it is the only one
+//     carrying information a customer needs before clicking.
+//
+// ORDERING IS NOT ALPHABETICAL AND IS NOT INSERTION ORDER. Digital used to sort
+// first because it is spread first in ALL_PRODUCTS, so the store opened on a
+// gift card. Rooms run Worn, Carried, Sent, and inside a room heavy float sorts
+// up. See taxonomy.js.
+//
+// No oxford commas, no em dashes.
+
+import { Box, Container, Grid, Heading, Text, VStack, HStack, Badge } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { useState, useEffect, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { keyframes } from '@emotion/react';
 import { getAllProducts } from '../../../data/products';
+import { ROOMS, productsInRoom, floatWeight, isHeavyFloat } from '../../../data/taxonomy';
 import { primeInventory, subscribeInventory, stockState } from '../../../data/inventory';
+import { colors } from '../../../theme/colors';
 
 const MotionBox = motion(Box);
+const LIME = colors.accent.signal;
 
-const gradientFlow = keyframes`
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-`;
+const STOCK_LABEL = { out: 'Out of stock', low: 'Almost gone', soon: 'Not made yet' };
 
 const ProductGrid = forwardRef((props, ref) => {
   const navigate = useNavigate();
-  const [clickedProduct, setClickedProduct] = useState(null);
   const [, setStockTick] = useState(0);
   const products = getAllProducts();
 
-  // Ask Pulse what is actually on the shelf. Until it answers every card falls
-  // back to the static inStock flag, which is closed. See data/inventory.js.
+  // Live stock from Pulse. Until it answers, every card falls back to the
+  // static inStock flag, which is closed. See data/inventory.js.
   useEffect(() => {
     const off = subscribeInventory(() => setStockTick((n) => n + 1));
     primeInventory();
     return off;
   }, []);
 
-  const handleProductClick = (productId) => {
-    setClickedProduct(productId);
-    setTimeout(() => {
-      navigate(`/product/${productId}/`);
-    }, 300);
+  const go = (id) => navigate(`/product/${id}/`);
+
+  const Card = ({ product, index }) => {
+    const state = stockState(product);
+    const dimmed = state === 'out' || state === 'soon';
+    const heavy = isHeavyFloat(product);
+
+    return (
+      <MotionBox
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-60px' }}
+        transition={{ duration: 0.5, delay: Math.min(index, 4) * 0.06 }}
+        onClick={() => go(product.id)}
+        cursor="pointer"
+        role="group"
+        borderRadius="xl"
+        overflow="hidden"
+        bg={colors.dark.gray}
+        border="1px solid"
+        borderColor={colors.ui.border}
+        sx={{ transition: 'border-color 0.35s ease, transform 0.35s ease' }}
+        _hover={{ borderColor: LIME, transform: 'translateY(-3px)' }}
+      >
+        {/* image well */}
+        <Box
+          position="relative"
+          height={{ base: '210px', md: '300px', lg: '330px' }}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          background={`radial-gradient(circle at 50% 45%, ${product.color}10 0%, transparent 68%)`}
+        >
+
+          {(state === 'out' || state === 'soon' || state === 'low') && (
+            <Badge
+              position="absolute"
+              top={{ base: 3, md: 4 }}
+              right={{ base: 3, md: 4 }}
+              zIndex={3}
+              px={2.5}
+              py={1}
+              borderRadius="full"
+              bg="rgba(11, 11, 12, 0.8)"
+              border="1px solid"
+              borderColor={state === 'low' ? LIME : colors.ui.border}
+              color={state === 'low' ? LIME : colors.text.muted}
+              fontFamily="mono"
+              fontSize="9px"
+              fontWeight="500"
+              letterSpacing="0.14em"
+              textTransform="uppercase"
+            >
+              {STOCK_LABEL[state]}
+            </Badge>
+          )}
+
+          {heavy && (
+            <HStack
+              position="absolute"
+              top={{ base: 3, md: 4 }}
+              left={{ base: 3, md: 4 }}
+              zIndex={3}
+              spacing={1.5}
+            >
+              <Box w="5px" h="5px" borderRadius="full" bg={LIME} />
+              <Text fontFamily="mono" fontSize="9px" letterSpacing="0.14em"
+                textTransform="uppercase" color={LIME}>
+                Heavy float
+              </Text>
+            </HStack>
+          )}
+
+          {product.featuredImage ? (
+            <Box
+              as="img"
+              src={product.featuredImage}
+              alt={product.name}
+              loading="lazy"
+              maxW={{ base: '76%', md: '84%' }}
+              maxH={{ base: '76%', md: '84%' }}
+              objectFit="contain"
+              opacity={dimmed ? 0.6 : 1}
+              sx={{ transition: 'opacity 0.35s ease, transform 0.6s ease' }}
+              _groupHover={{ transform: 'scale(1.03)' }}
+            />
+          ) : (
+            // Deliberate, not a fallback. A piece we have not photographed says
+            // so in one quiet line rather than pretending with a placeholder.
+            <VStack spacing={2} px={6} textAlign="center">
+              <Box w="46px" h="46px" borderRadius="sm" border="1px solid"
+                borderColor={colors.ui.border} opacity={0.7} />
+              <Text fontFamily="mono" fontSize="9px" letterSpacing="0.16em"
+                textTransform="uppercase" color={colors.text.muted}>
+                Not photographed yet
+              </Text>
+            </VStack>
+          )}
+        </Box>
+
+        {/* label */}
+        <VStack align="stretch" spacing={2} p={{ base: 4, md: 6 }}
+          borderTop="1px solid" borderColor={colors.ui.border}>
+          <Heading as="h3" fontSize={{ base: 'sm', md: 'lg' }} fontWeight="600"
+            letterSpacing="-0.02em" color={colors.text.primary} noOfLines={1}
+            sx={{ transition: 'color 0.3s ease' }} _groupHover={{ color: LIME }}>
+            {product.name}
+          </Heading>
+
+          <Text fontFamily="mono" fontSize="9px" letterSpacing="0.16em"
+            textTransform="uppercase" color={colors.text.muted} noOfLines={1}>
+            {product.subtitle}
+          </Text>
+
+          <Text fontSize={{ base: 'xs', md: 'sm' }} color={colors.text.secondary}
+            lineHeight="1.7" noOfLines={2} display={{ base: 'none', sm: '-webkit-box' }}>
+            {product.description}
+          </Text>
+
+          <Text fontFamily="mono" fontSize={{ base: 'sm', md: 'md' }} fontWeight="500"
+            color={colors.text.primary} pt={1}>
+            ${product.price}
+          </Text>
+        </VStack>
+      </MotionBox>
+    );
   };
 
   return (
-    <Box 
-      ref={ref}
-      pt={{ base: 8, md: 12 }}
-      pb={{ base: 12, md: 20 }}
-      bg="#0B0B0C"
-      scrollMarginTop="80px"
-    >
-      <Container maxW="1400px" px={{ base: 4, md: 8 }}>
-        <Grid
-          templateColumns={{
-            base: "repeat(2, 1fr)",
-            md: "repeat(2, 1fr)",
-            lg: "repeat(3, 1fr)"
-          }}
-          gap={{ base: 4, md: 6, lg: 8 }}
-          width="100%"
-        >
-          {products.map((product, index) => (
-            <MotionBox
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              onClick={() => handleProductClick(product.id)}
-              position="relative"
-            >
-              <Box
-                cursor="pointer"
-                position="relative"
-                bg="rgba(255, 255, 255, 0.03)"
-                borderRadius={{ base: "2xl", md: "3xl" }}
-                overflow="hidden"
-                transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
-                _hover={{
-                  transform: { base: 'translateY(-8px)', md: 'translateY(-12px)' },
-                  bg: 'rgba(255, 255, 255, 0.05)',
-                  '&::before': {
-                    opacity: 1,
-                  }
-                }}
-                _before={{
-                  content: '""',
-                  position: 'absolute',
-                  inset: '-3px',
-                  borderRadius: { base: '2xl', md: '3xl' },
-                  padding: '3px',
-                  background: `linear-gradient(135deg, ${product.color}, #FF00FF, ${product.color}, #00D9FF, ${product.color})`,
-                  backgroundSize: '400% 400%',
-                  animation: `${gradientFlow} 3s ease infinite`,
-                  WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                  WebkitMaskComposite: 'xor',
-                  maskComposite: 'exclude',
-                  opacity: 0,
-                  transition: 'opacity 0.4s',
-                  zIndex: -1,
-                }}
-              >
-                {/* Category Badge Only */}
-                <Box position="absolute" top={{ base: 3, md: 5 }} right={{ base: 3, md: 5 }} zIndex={2}>
-                  <Badge
-                    bg={`${product.color}25`}
-                    color={product.color}
-                    px={{ base: 2, md: 3 }}
-                    py={{ base: 1, md: 1.5 }}
-                    borderRadius="lg"
-                    fontSize="2xs"
-                    fontWeight="700"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                    border="2px solid"
-                    borderColor={`${product.color}50`}
-                    backdropFilter="blur(10px)"
-                  >
-                    {product.category}
-                  </Badge>
-                </Box>
+    <Box ref={ref} bg={colors.dark.black} scrollMarginTop="80px"
+      pb={{ base: 12, md: 20 }}>
+      <Container maxW="1400px" px={{ base: 5, md: 10, lg: 16 }}>
+        {ROOMS.map((room) => {
+          const inRoom = productsInRoom(products, room.id)
+            .sort((a, b) => floatWeight(b) - floatWeight(a));
+          if (!inRoom.length) return null;
 
-                {clickedProduct === product.id && (
-                  <Box
-                    position="absolute"
-                    inset={0}
-                    bg={product.color}
-                    opacity={0.6}
-                    filter="blur(50px)"
-                    animation="pulse 0.3s ease-out"
-                    zIndex={10}
-                  />
-                )}
-
-                {/* Product Image */}
-                <Box
-                  height={{ base: "200px", sm: "240px", md: "320px", lg: "340px" }}
-                  bg={`radial-gradient(circle at center, ${product.color}12 0%, ${product.color}05 40%, transparent 70%)`}
-                  position="relative"
-                  overflow="hidden"
-                  borderRadius={{ base: "2xl", md: "3xl" }}
-                  borderBottomRadius={0}
-                >
-                  {(() => {
-                    const state = stockState(product);
-                    if (state === 'in') return null;
-                    const label = state === 'soon' ? 'Coming soon'
-                      : state === 'low' ? 'Almost gone'
-                      : 'Out of stock';
-                    return (
-                      <Badge
-                        position="absolute"
-                        top={{ base: 3, md: 4 }}
-                        right={{ base: 3, md: 4 }}
-                        zIndex={4}
-                        px={2.5}
-                        py={1}
-                        borderRadius="full"
-                        bg="rgba(11, 11, 12, 0.82)"
-                        border="1px solid"
-                        borderColor={state === 'low' ? product.color : 'rgba(255,255,255,0.14)'}
-                        color={state === 'low' ? product.color : 'gray.400'}
-                        fontFamily="mono"
-                        fontSize="10px"
-                        fontWeight="600"
-                        letterSpacing="0.08em"
-                        textTransform="uppercase"
-                      >
-                        {label}
-                      </Badge>
-                    );
-                  })()}
-                  <Box
-                    width="100%"
-                    height="100%"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    position="relative"
-                  >
-                    {product.featuredImage && (
-                      <Box
-                        as="img"
-                        src={product.featuredImage}
-                        alt={product.name}
-                        loading="lazy"
-                        maxW={{ base: "75%", md: "85%" }}
-                        maxH={{ base: "75%", md: "85%" }}
-                        objectFit="contain"
-                        position="relative"
-                        zIndex={2}
-                        opacity={stockState(product) === 'out' ? 0.55 : 1}
-                        transition="opacity 0.3s ease"
-                        filter={`drop-shadow(0 10px 30px ${product.color}40)`}
-                      />
-                    )}
-                    
-                    <Text 
-                      fontSize={{ base: "6xl", md: "9xl" }}
-                      opacity={0.15} 
-                      color={product.color}
-                      fontWeight="900"
-                      fontFamily="mono"
-                      filter={`drop-shadow(0 0 30px ${product.color}80)`}
-                      position="absolute"
-                      zIndex={1}
-                    >
-                      {product.name.charAt(0)}
-                    </Text>
-                    
-                    <Box
-                      position="absolute"
-                      inset={0}
-                      opacity={0.08}
-                      backgroundImage={`repeating-linear-gradient(0deg, ${product.color}, ${product.color} 1px, transparent 1px, transparent 15px)`}
-                      zIndex={0}
-                    />
-                  </Box>
-                </Box>
-
-                {/* Product Info */}
-                <VStack align="stretch" p={{ base: 4, md: 6, lg: 7 }} spacing={{ base: 2, md: 4 }}>
-                  <VStack align="start" spacing={1}>
-                    <Heading
-                      size={{ base: "xs", sm: "sm", md: "md" }}
-                      color="white"
-                      fontWeight="800"
-                      lineHeight="1.2"
-                      noOfLines={1}
-                    >
-                      {product.name}
-                    </Heading>
-                    <Text
-                      fontSize={{ base: "2xs", sm: "xs", md: "sm" }}
-                      color={product.color}
-                      fontWeight="600"
-                      textTransform="uppercase"
-                      letterSpacing="wider"
-                      filter={`drop-shadow(0 0 10px ${product.color}40)`}
-                      noOfLines={1}
-                    >
-                      {product.subtitle}
-                    </Text>
-                  </VStack>
-                  
-                  <Text
-                    fontSize={{ base: "xs", md: "sm" }}
-                    color="gray.300"
-                    lineHeight="1.7"
-                    noOfLines={2}
-                    display={{ base: "none", sm: "block" }}
-                  >
-                    {product.description}
+          return (
+            <Box key={room.id} pt={{ base: 12, md: 16 }}>
+              <HStack justify="space-between" align="baseline" flexWrap="wrap" rowGap={2}
+                pb={{ base: 6, md: 8 }}>
+                <HStack spacing={4} align="baseline">
+                  <Heading as="h3" fontSize={{ base: 'xl', md: '2xl' }} fontWeight="600"
+                    letterSpacing="-0.03em" color={colors.text.primary}>
+                    {room.name}
+                  </Heading>
+                  <Text fontSize={{ base: 'xs', md: 'sm' }} color={colors.text.muted}>
+                    {room.line}
                   </Text>
-                  
-                  <Box pt={{ base: 1, md: 2 }}>
-                    <Text
-                      fontSize={{ base: "xl", md: "2xl" }}
-                      fontWeight="900"
-                      color={product.color}
-                      fontFamily="mono"
-                      filter={`drop-shadow(0 0 15px ${product.color}50)`}
-                    >
-                      ${product.price}
-                    </Text>
-                  </Box>
-                </VStack>
-              </Box>
-            </MotionBox>
-          ))}
-        </Grid>
+                </HStack>
+                <Text fontFamily="mono" fontSize="9px" letterSpacing="0.16em"
+                  textTransform="uppercase" color={colors.text.muted}
+                  display={{ base: 'none', md: 'block' }}>
+                  {room.note}
+                </Text>
+              </HStack>
 
-        <VStack spacing={5} textAlign="center" pt={{ base: 16, md: 20 }}>
-          <Text 
-            color="gray.300" 
-            fontSize={{ base: "md", md: "lg" }}
-            maxW="600px"
-            lineHeight="1.8"
-            px={{ base: 4, md: 0 }}
-          >
-            Each piece is crafted with intention, designed to last, and made to be part of your story.
-          </Text>
-          <Box
-            px={{ base: 5, md: 6 }}
-            py={{ base: 2.5, md: 3 }}
-            borderRadius="full"
-            bg="rgba(255, 255, 255, 0.05)"
-            border="2px solid"
-            borderColor="rgba(255, 255, 255, 0.15)"
-            backdropFilter="blur(10px)"
-          >
-            <Text 
-              color="gray.400" 
-              fontSize="sm"
-              fontWeight="600"
-              letterSpacing="wide"
-            >
-              More pieces arriving soon
-            </Text>
-          </Box>
-        </VStack>
+              <Grid
+                templateColumns={{ base: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }}
+                gap={{ base: 4, md: 6, lg: 8 }}
+              >
+                {inRoom.map((product, i) => (
+                  <Card key={product.id} product={product} index={i} />
+                ))}
+              </Grid>
+            </Box>
+          );
+        })}
       </Container>
     </Box>
   );

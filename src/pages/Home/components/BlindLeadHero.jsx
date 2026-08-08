@@ -13,13 +13,19 @@
 // Nothing here animates for the sake of it. The one moving element is the float
 // dot, because that is the thing we want a stranger to learn to look for.
 //
+// THE STAT ROW IS GONE ON PURPOSE. It read "00 in the world" and "0 purchase
+// necessary" side by side, which a stranger parses as a store with nothing in
+// it. Counters that can legitimately sit at zero do not belong above the fold
+// of a shop that has not shipped its first run. The numbers still live on the
+// board, where zero means "not started" instead of "empty".
+//
 // No oxford commas, no em dashes.
 
 import { Box, Text, Heading, HStack, VStack } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiArrowDown } from 'react-icons/fi';
-import { HUNT, floatCounts } from '../../../data/blindLead';
+import { HUNT } from '../../../data/blindLead';
 import { colors } from '../../../theme/colors';
 
 const MotionBox = motion(Box);
@@ -28,7 +34,6 @@ const RAIL = { base: 5, md: 10, lg: 16 };
 const SHEET = '1400px';
 
 const BlindLeadHero = ({ onScrollToProducts }) => {
-  const counts = floatCounts();
 
   return (
     <Box as="section" position="relative" overflow="hidden"
@@ -94,27 +99,6 @@ const BlindLeadHero = ({ onScrollToProducts }) => {
             </Box>
           </HStack>
 
-          <HStack spacing={{ base: 6, md: 12 }} flexWrap="wrap" rowGap={4}
-            pt={{ base: 6, md: 8 }} borderTop="1px solid" borderColor={colors.ui.border}
-            maxW="720px">
-            {[
-              [String(counts.total).padStart(2, '0'), 'floats in the run'],
-              [String(counts.out).padStart(2, '0'), 'in the world'],
-              ['$2', 'cheapest way in'],
-              ['0', 'purchase necessary'],
-            ].map(([n, label]) => (
-              <VStack key={label} align="start" spacing={1}>
-                <Text fontSize={{ base: 'xl', md: '2xl' }} fontWeight="600"
-                  color={colors.text.primary} letterSpacing="-0.02em" lineHeight="1">
-                  {n}
-                </Text>
-                <Text fontFamily="mono" fontSize="9px" letterSpacing="0.16em"
-                  textTransform="uppercase" color={colors.text.muted}>
-                  {label}
-                </Text>
-              </VStack>
-            ))}
-          </HStack>
         </MotionBox>
       </Box>
     </Box>
