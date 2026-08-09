@@ -38,3 +38,7 @@ lerna-debug.log*
 .DS_Store
 Thumbs.db
 .env.local
+
+# Working scratch. Full resolution masters and swept legacy art.
+# 80MB of PNG that must never enter git history.
+_to_delete/

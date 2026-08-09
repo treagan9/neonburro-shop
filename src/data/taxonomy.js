@@ -33,6 +33,21 @@
 
 import { FREE_DELAY_DAYS } from './blindLead';
 
+// ── the two things we say before the sale ───────────────────────────────────
+// Both belong here rather than on a policy page, because a policy page is where
+// a shop puts the thing it hopes you do not read. Every product record carries
+// them and every product page prints them above the button.
+
+export const DYE_NOTE =
+  'Dyed naturally in small runs, so your shade will sit a little off the photograph. Two shirts out of the same bath are not the same shirt. That is the product, not a defect.';
+
+// The honest version of no returns. The reason is real, so it gets said.
+export const RETURNS_NOTE =
+  'No returns. Every piece leaves here carrying a clue, and a clue somebody has already read is not a clue. Anything we got wrong we will fix. Anything you have already looked inside stays yours.';
+
+// The whole shop in nine words. Use it once per page, never twice.
+export const HOUSE_LINE = 'Sizes run boxy. Colours run honest. Nothing runs back.';
+
 export const ROOMS = [
   {
     id: 'worn',
@@ -114,4 +129,4 @@ export const GRUBSTAKE = {
     'A run closes when it fills, not on a calendar. You get told the day it closes and the day it ships, and you can pull out any time before the first one.',
 };
 
-export default { ROOMS, roomFor, heavyFloat, GRUBSTAKE };
+export default { ROOMS, roomFor, heavyFloat, GRUBSTAKE, DYE_NOTE, RETURNS_NOTE, HOUSE_LINE };

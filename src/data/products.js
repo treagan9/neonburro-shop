@@ -1,13 +1,21 @@
 import { DIGITAL_PRODUCTS } from './products-digital';
 import { WEARABLE_PRODUCTS } from './products-wearable';
 import { CRAFT_PRODUCTS } from './products-craft';
+import { withCover } from './covers';
 
 // Combine all products into one object
-export const ALL_PRODUCTS = {
+// Every record gets its cover picked from its own folder here, once, so no page
+// has to remember to do it and no line ever carries a hand chosen hero shot.
+// See covers.js for why that is a rule rather than a convenience.
+const RAW = {
   ...DIGITAL_PRODUCTS,
   ...WEARABLE_PRODUCTS,
   ...CRAFT_PRODUCTS
 };
+
+export const ALL_PRODUCTS = Object.fromEntries(
+  Object.entries(RAW).map(([id, p]) => [id, withCover(p)])
+);
 
 // Get all products as an array
 export const getAllProducts = () => {
