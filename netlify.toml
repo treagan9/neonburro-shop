@@ -3,7 +3,10 @@
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18.18.0"
+  # Node 18 went end of life in April 2025 and Netlify no longer provisions it
+  # reliably. Vite 6 and React 19 both want 20 or newer anyway. A pinned EOL
+  # runtime is a build that fails on a day nobody changed anything.
+  NODE_VERSION = "20.19.0"
 
 # Specific redirect for invoice page to use the custom HTML with proper meta tags
 [[redirects]]
