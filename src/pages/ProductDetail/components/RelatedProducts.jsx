@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowRight } from 'react-icons/fi';
 import { getAllProducts } from '../../../data/products';
+import { RAIL, SHEET } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
 
@@ -40,7 +41,7 @@ const RelatedProducts = ({ currentProductId }) => {
 
   return (
     <Box width="100%" py={{ base: 8, md: 12 }}>
-      <Container maxW="1400px" px={{ base: 4, md: 8 }}>
+      <Container maxW={SHEET} px={RAIL} mx={0}>
         <MotionBox
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

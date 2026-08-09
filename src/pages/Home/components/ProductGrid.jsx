@@ -31,6 +31,7 @@ import { getAllProducts } from '../../../data/products';
 import { ROOMS, productsInRoom, floatWeight, isHeavyFloat } from '../../../data/taxonomy';
 import { primeInventory, subscribeInventory, stockState } from '../../../data/inventory';
 import { colors } from '../../../theme/colors';
+import { RAIL, SHEET } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
 const LIME = colors.accent.signal;
@@ -181,7 +182,7 @@ const ProductGrid = forwardRef((props, ref) => {
   return (
     <Box ref={ref} bg={colors.dark.black} scrollMarginTop="80px"
       pb={{ base: 12, md: 20 }}>
-      <Container maxW="1400px" px={{ base: 5, md: 10, lg: 16 }}>
+      <Container maxW={SHEET} px={RAIL} mx={0}>
         {ROOMS.map((room) => {
           const inRoom = productsInRoom(products, room.id)
             .sort((a, b) => floatWeight(b) - floatWeight(a));

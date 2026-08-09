@@ -1,168 +1,197 @@
-import { Box, Container, HStack, Image, Icon, Badge, Text } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+// src/components/navigation/ShopNavigation.jsx
+// SENTINEL: NB_SHOP_NAV_V2
+//
+// Full width bar. Same lockup, same rail, same tile surface as neonburro.com,
+// and one deliberate difference in behaviour.
+//
+// ── WHY IT NEVER HIDES ──────────────────────────────────────────────────────
+// The studio nav is a floating tile that slides away as you read. That is right
+// for a studio: nothing on the page is urgent and getting out of the way is a
+// courtesy. It is wrong for a shop. A cart that is one scroll position away from
+// unreachable is a cart people abandon, and the moment somebody decides to buy
+// is never the moment you predicted.
+//
+// So this one condenses instead of leaving. Past 24px it loses about twenty
+// pixels of height and the house tile surface arrives across the whole band. It
+// is the same information doing less shouting, rather than information leaving.
+//
+// ── THE ALIGNMENT, WHICH IS THE ACTUAL POINT ────────────────────────────────
+// The wordmark's first glyph lands on CONTENT_LEFT, the same x as the first
+// character of every heading on every page of both domains. The lockup carries
+// 11px of padding and a 1px border, so the tile is pulled back by NAV_TILE_INSET
+// to put the LETTERFORM on the line rather than the box. Getting this wrong by
+// twelve pixels is what makes a layout look almost right.
+//
+// The plumb line under it is the visible proof. If a heading ever drifts, you
+// see it against that hairline without measuring anything.
+//
+// V1 was 167 lines with its own hardcoded colour object and a Container capped
+// at 1400px, so the shop and the studio disagreed about where the left edge of
+// the world was. Everything geometric now comes from theme/layout.js.
+//
+// No oxford commas, no em dashes.
+
+import { Box, Flex, HStack, Image, Text, Link } from '@chakra-ui/react';
+import { Link as RouterLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
 import { FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
+import { colors } from '../../theme/colors';
+import {
+  RAIL, CONTENT_LEFT, NAV_TILE_INSET, NAV_H, NAV_H_TIGHT,
+  NAV_CONDENSE_AFTER, EASE, TILE,
+} from '../../theme/layout';
 
-const MotionBox = motion(Box);
-
-const colors = {
-  brand: {
-    primary: '#C5D957',
-  },
-  accent: {
-    neon: '#A6B84A',
-    violet: '#8B5CF6',
-  },
-  dark: {
-    black: '#0B0B0C',
-  }
-};
-
+const LIME = colors.accent.signal;
 const MAIN_DOMAIN = 'https://neonburro.com';
 
 const ShopNavigation = () => {
   const { getCartItemsCount, setIsOpen } = useCart();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const itemCount = getCartItemsCount();
+  const [condensed, setCondensed] = useState(false);
+  const count = getCartItemsCount();
 
+  // Rendered once on mount and then only when the boolean actually flips, so a
+  // scroll does not re render the tree sixty times a second.
+  const state = useRef(false);
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+    const onScroll = () => {
+      const next = window.scrollY > NAV_CONDENSE_AFTER;
+      if (next !== state.current) {
+        state.current = next;
+        setCondensed(next);
+      }
     };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
-    <Box
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      zIndex={1000}
-    >
-      <Box
-        bg={isScrolled ? "rgba(10, 10, 10, 0.95)" : "transparent"}
-        backdropFilter={isScrolled ? "blur(12px)" : "none"}
-        borderBottom="1px solid"
-        borderColor={isScrolled ? "whiteAlpha.100" : "transparent"}
-        boxShadow={isScrolled ? "0 4px 30px rgba(0,0,0,0.15)" : "none"}
-        transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-      >
-        <Container maxW="1400px" px={{ base: 4, md: 8 }}>
-          <HStack 
-            justify="space-between" 
-            align="center"
-            height={{ base: "72px", md: "80px" }}
-          >
-            {/* Logo - links to main domain */}
-            <HStack spacing={3}>
-              <Box 
-                cursor="pointer" 
-                onClick={() => window.location.href = MAIN_DOMAIN}
-                transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                _hover={{ 
-                  transform: 'translateY(-2px)',
-                  filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(197, 217, 87, 0.4))'
-                }}
-              >
-                {/* One logo across every domain. The shop used to carry its own
-                    lockup, which meant a visitor crossing from neonburro.com saw
-                    a different mark and had to decide whether they were still in
-                    the same place. */}
-                <Image
-                  src="/logo-main.png"
-                  alt="neonburro"
-                  height={{ base: "30px", md: "36px" }}
-                  width="auto"
-                />
-              </Box>
-              
-              {/* Shop indicator */}
-              <Box
-                display={{ base: 'none', md: 'block' }}
-                px={2.5}
-                py={1}
-                borderRadius="md"
-                bg={`${colors.accent.violet}15`}
-                border="1px solid"
-                borderColor={`${colors.accent.violet}30`}
-              >
-                <Text
-                  fontSize="xs"
-                  fontWeight="700"
-                  color={colors.accent.violet}
-                  letterSpacing="wider"
-                  textTransform="uppercase"
-                >
-                  Shop
-                </Text>
-              </Box>
-            </HStack>
+    <>
+      {/* THE PLUMB LINE. Desktop only. Sits on CONTENT_LEFT rather than on the
+          lockup, so it is the line the headings are measured against and not a
+          decoration hanging off the logo. */}
+      <Box display={{ base: 'none', md: 'block' }} position="fixed" aria-hidden="true"
+        left={CONTENT_LEFT} top="120px" bottom="28px" w="1px" zIndex={999}
+        pointerEvents="none"
+        sx={{
+          background: `linear-gradient(to bottom, ${TILE.border} 0%, transparent 82%)`,
+          opacity: 0.55,
+        }} />
 
-            {/* Cart Button */}
-            <MotionBox
-              position="relative"
-              cursor="pointer"
-              onClick={() => setIsOpen(true)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              p={3}
-              borderRadius="xl"
-              border="1px solid"
-              borderColor={isScrolled ? "whiteAlpha.100" : "transparent"}
-              bg={isScrolled ? "whiteAlpha.50" : "transparent"}
-              transition="all 0.2s"
-              _hover={{ 
-                bg: 'whiteAlpha.100',
-                borderColor: 'whiteAlpha.200'
-              }}
+      <Box
+        as="header"
+        position="fixed"
+        top={0}
+        left={0}
+        right={0}
+        zIndex={1001}
+        transition={`background-color 420ms ${EASE}, border-color 420ms ${EASE}, box-shadow 420ms ${EASE}`}
+        bg={condensed ? TILE.bg : 'transparent'}
+        borderBottom="1px solid"
+        borderColor={condensed ? TILE.border : 'transparent'}
+        boxShadow={condensed ? TILE.shadow : 'none'}
+        sx={{
+          backdropFilter: condensed ? TILE.blur : 'none',
+          WebkitBackdropFilter: condensed ? TILE.blur : 'none',
+        }}
+      >
+        <Flex
+          align="center"
+          justify="space-between"
+          px={RAIL}
+          h={condensed ? NAV_H_TIGHT : NAV_H}
+          transition={`height 420ms ${EASE}`}
+        >
+          {/* ── the lockup ────────────────────────────────────────────────
+              Pulled back by NAV_TILE_INSET so the glyph, not the box, lands
+              on the rail. */}
+          <HStack spacing={{ base: 3, md: 4 }} ml={`-${NAV_TILE_INSET}px`} minW={0}>
+            <Link
+              href={MAIN_DOMAIN}
+              display="inline-flex"
+              alignItems="center"
+              px="11px"
+              py="8px"
+              borderRadius="12px"
+              border="1px solid transparent"
+              transition={`opacity 260ms ${EASE}`}
+              _hover={{ opacity: 0.85, textDecoration: 'none' }}
+              aria-label="neonburro, back to the studio"
             >
-              <Icon
-                as={FiShoppingBag}
-                boxSize={{ base: 6, md: 7 }}
-                color="white"
-                transition="color 0.2s"
+              <Image
+                src="/logo-main.png"
+                alt="neonburro"
+                h={condensed ? { base: '30px', md: '34px' } : { base: '34px', md: '42px' }}
+                w="auto"
+                objectFit="contain"
+                draggable={false}
+                transition={`height 420ms ${EASE}`}
               />
-              {itemCount > 0 && (
-                <Badge
-                  position="absolute"
-                  top="2px"
-                  right="2px"
-                  bg={colors.accent.neon}
-                  color={colors.dark.black}
-                  borderRadius="full"
-                  minW="20px"
-                  height="20px"
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="xs"
-                  fontWeight="800"
-                  boxShadow={`0 0 15px ${colors.accent.neon}60`}
-                  animation="pulse 2s ease-in-out infinite"
-                  sx={{
-                    '@keyframes pulse': {
-                      '0%, 100%': {
-                        boxShadow: `0 0 15px ${colors.accent.neon}60`,
-                      },
-                      '50%': {
-                        boxShadow: `0 0 25px ${colors.accent.neon}90`,
-                      },
-                    },
-                  }}
-                >
-                  {itemCount}
-                </Badge>
-              )}
-            </MotionBox>
+            </Link>
+
+            {/* Not a badge. The studio uses mono kickers everywhere and a
+                coloured pill would be the one piece of chrome on either site
+                that came from somewhere else. */}
+            <Box w="1px" h="14px" bg={TILE.border} display={{ base: 'none', sm: 'block' }} />
+            <Text
+              as={RouterLink}
+              to="/"
+              display={{ base: 'none', sm: 'block' }}
+              fontFamily="mono"
+              fontSize={{ base: '9px', md: '10px' }}
+              fontWeight="500"
+              letterSpacing="0.22em"
+              textTransform="uppercase"
+              color={LIME}
+              opacity={0.85}
+              transition={`opacity 260ms ${EASE}`}
+              _hover={{ opacity: 1, textDecoration: 'none' }}
+            >
+              shop
+            </Text>
           </HStack>
-        </Container>
+
+          {/* ── the cart ──────────────────────────────────────────────────
+              Sits on the right rail. No pulse, no glow. A counter that
+              animates forever is a counter people stop reading. */}
+          <HStack
+            as="button"
+            type="button"
+            onClick={() => setIsOpen(true)}
+            spacing={2.5}
+            px={3}
+            py={2}
+            mr="-4px"
+            borderRadius="10px"
+            border="1px solid transparent"
+            transition={`border-color 260ms ${EASE}, background-color 260ms ${EASE}`}
+            _hover={{ borderColor: TILE.border, bg: 'rgba(255,255,255,0.04)' }}
+            _focusVisible={{ borderColor: LIME, outline: 'none' }}
+            aria-label={count > 0 ? `Cart, ${count} items` : 'Cart, empty'}
+          >
+            <Box as={FiShoppingBag} boxSize={{ base: '19px', md: '20px' }}
+              color={colors.text.primary} />
+            <Text
+              fontFamily="mono"
+              fontSize="11px"
+              fontWeight="500"
+              letterSpacing="0.1em"
+              lineHeight="1"
+              minW="12px"
+              textAlign="left"
+              color={count > 0 ? LIME : colors.text.muted}
+              transition={`color 260ms ${EASE}`}
+            >
+              {count > 0 ? String(count).padStart(2, '0') : '00'}
+            </Text>
+          </HStack>
+        </Flex>
       </Box>
-    </Box>
+    </>
   );
 };
 
 export default ShopNavigation;
+
+/* NB · shop navigation · v2 · full width, same rail, never hides */

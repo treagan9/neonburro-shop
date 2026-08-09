@@ -23,11 +23,10 @@ import { FiArrowRight } from 'react-icons/fi';
 import { HUNT, HOW_IT_WORKS, RULES, FLOATS, floatCounts } from '../../data/blindLead';
 import { getProduct } from '../../data/products';
 import { colors } from '../../theme/colors';
+import { RAIL, SHEET } from '../../theme/layout';
 
 const MotionBox = motion(Box);
 const LIME = colors.accent.signal;
-const RAIL = { base: 5, md: 10, lg: 16 };
-const SHEET = '1400px';
 
 const Kicker = ({ children, color = LIME, ...rest }) => (
   <Text fontFamily="mono" fontSize={{ base: '9px', md: '10px' }} fontWeight="500"
@@ -90,7 +89,7 @@ const BlindLead = () => {
 
       {/* ── what it is ──────────────────────────────────────────────── */}
       <Box as="section" px={RAIL} pt={{ base: 28, md: 40 }} pb={{ base: 16, md: 24 }}
-        maxW={SHEET} mx="auto">
+        maxW={SHEET}>
         <MotionBox initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}>
           <Kicker mb={{ base: 4, md: 6 }}>{HUNT.region}</Kicker>
@@ -115,7 +114,7 @@ const BlindLead = () => {
       </Box>
 
       {/* ── how it works ────────────────────────────────────────────── */}
-      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET} mx="auto"
+      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET}
         borderTop="1px solid" borderColor={colors.ui.border}>
         <Kicker mb={{ base: 8, md: 12 }} color={colors.text.muted}>How it works</Kicker>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={{ base: 8, md: 10 }}>
@@ -137,7 +136,7 @@ const BlindLead = () => {
       </Box>
 
       {/* ── the board ───────────────────────────────────────────────── */}
-      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET} mx="auto"
+      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET}
         borderTop="1px solid" borderColor={colors.ui.border}>
         <HStack justify="space-between" align="baseline" flexWrap="wrap" rowGap={3}
           mb={{ base: 8, md: 10 }}>
@@ -161,7 +160,7 @@ const BlindLead = () => {
       </Box>
 
       {/* ── the rules ───────────────────────────────────────────────── */}
-      <Box as="section" px={RAIL} py={{ base: 16, md: 24 }} maxW={SHEET} mx="auto"
+      <Box as="section" px={RAIL} py={{ base: 16, md: 24 }} maxW={SHEET}
         borderTop="1px solid" borderColor={colors.ui.border}>
         <Box display="grid" gridTemplateColumns={{ base: '1fr', lg: '300px 1fr' }}
           gap={{ base: 8, lg: 16 }}>
@@ -202,7 +201,7 @@ const BlindLead = () => {
       </Box>
 
       {/* ── the cheapest door ───────────────────────────────────────── */}
-      <Box as="section" px={RAIL} pb={{ base: 20, md: 32 }} maxW={SHEET} mx="auto">
+      <Box as="section" px={RAIL} pb={{ base: 20, md: 32 }} maxW={SHEET}>
         <Box borderRadius="xl" overflow="hidden" p={{ base: 8, md: 14 }}
           border="1px solid" borderColor={colors.ui.border}
           background={`linear-gradient(120deg, ${colors.dark.gray} 0%, ${LIME}0E 60%, ${colors.dark.void} 100%)`}>

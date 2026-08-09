@@ -2,6 +2,7 @@ import { Box, Container, Heading, Text, VStack, HStack, Button, IconButton, Divi
 import { FiX, FiPlus, FiMinus, FiArrowRight, FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { RAIL } from '../../theme/layout';
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ const Cart = () => {
 
   return (
     <Box minH="100vh" bg="#0B0B0C" pt="100px" pb={20}>
-      <Container maxW="900px" px={{ base: 4, md: 8 }}>
+      <Container maxW="900px" px={RAIL} mx={0}>
         <VStack spacing={8} align="stretch">
           <HStack justify="space-between" align="center">
             <Heading color="white" fontSize={{ base: "2xl", md: "3xl" }}>

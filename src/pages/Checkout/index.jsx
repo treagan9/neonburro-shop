@@ -5,6 +5,7 @@ import { useCart } from '../../context/CartContext';
 import CheckoutForm from './components/CheckoutForm';
 import OrderSummary from './components/OrderSummary';
 import CheckoutSuccess from './components/CheckoutSuccess';
+import { RAIL, SHEET } from '../../theme/layout';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ const Checkout = () => {
 
   return (
     <Box minH="100vh" bg="#0B0B0C" pt="100px" pb={20}>
-      <Container maxW="1400px" px={{ base: 4, md: 8 }}>
+      <Container maxW={SHEET} px={RAIL} mx={0}>
         <VStack spacing={8} mb={8}>
           <VStack spacing={2} textAlign="center">
             <Heading 

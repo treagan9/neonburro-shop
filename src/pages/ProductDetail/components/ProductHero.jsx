@@ -26,6 +26,7 @@ import { FiArrowLeft, FiShoppingCart, FiTruck, FiStar, FiPackage } from 'react-i
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { primeInventory, subscribeInventory, stockState } from '../../../data/inventory';
+import { RAIL, SHEET } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
 
@@ -153,7 +154,7 @@ const ProductHero = ({ product, onAddToCart, onBuyNow }) => {
 
   return (
     <Box position="relative" width="100%" pt={{ base: 20, md: 24 }}>
-      <Container maxW="1400px" px={{ base: 4, md: 8 }}>
+      <Container maxW={SHEET} px={RAIL} mx={0}>
         <MotionBox
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

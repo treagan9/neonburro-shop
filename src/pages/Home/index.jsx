@@ -20,10 +20,9 @@ import BlindLeadHero from './components/BlindLeadHero';
 import ProductGrid from './components/ProductGrid';
 import { HOW_IT_WORKS, HUNT } from '../../data/blindLead';
 import { colors } from '../../theme/colors';
+import { RAIL, SHEET } from '../../theme/layout';
 
 const LIME = colors.accent.signal;
-const RAIL = { base: 5, md: 10, lg: 16 };
-const SHEET = '1400px';
 
 const Home = () => {
   const productsRef = useRef(null);
@@ -38,7 +37,7 @@ const Home = () => {
       <BlindLeadHero onScrollToProducts={scrollToProducts} />
 
       {/* ── what float is, before anybody sees a price ──────────────── */}
-      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET} mx="auto"
+      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET}
         borderTop="1px solid" borderColor={colors.ui.border}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={{ base: 8, md: 10 }}>
           {HOW_IT_WORKS.map((s, i) => (
@@ -70,7 +69,7 @@ const Home = () => {
       </Box>
 
       {/* ── the goods ───────────────────────────────────────────────── */}
-      <Box as="section" px={RAIL} pt={{ base: 12, md: 18 }} maxW={SHEET} mx="auto">
+      <Box as="section" px={RAIL} pt={{ base: 12, md: 18 }} maxW={SHEET}>
         <HStack justify="space-between" align="baseline" flexWrap="wrap" rowGap={3}
           pb={{ base: 6, md: 8 }} borderTop="1px solid" borderColor={colors.ui.border} pt={{ base: 12, md: 16 }}>
           <Heading as="h2" fontSize={{ base: '26px', md: '40px' }} fontWeight="600"
@@ -88,7 +87,7 @@ const Home = () => {
 
       {/* ── the cheapest door ───────────────────────────────────────── */}
       <Box as="section" px={RAIL} pb={{ base: 20, md: 32 }} pt={{ base: 4, md: 8 }}
-        maxW={SHEET} mx="auto">
+        maxW={SHEET}>
         <Box borderRadius="xl" p={{ base: 8, md: 14 }} border="1px solid"
           borderColor={colors.ui.border}
           background={`linear-gradient(120deg, ${colors.dark.gray} 0%, ${LIME}0E 60%, ${colors.dark.void} 100%)`}>

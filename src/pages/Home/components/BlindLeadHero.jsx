@@ -27,11 +27,10 @@ import { motion } from 'framer-motion';
 import { FiArrowRight, FiArrowDown } from 'react-icons/fi';
 import { HUNT } from '../../../data/blindLead';
 import { colors } from '../../../theme/colors';
+import { RAIL, SHEET } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
 const LIME = colors.accent.signal;
-const RAIL = { base: 5, md: 10, lg: 16 };
-const SHEET = '1400px';
 
 const BlindLeadHero = ({ onScrollToProducts }) => {
 
@@ -47,7 +46,7 @@ const BlindLeadHero = ({ onScrollToProducts }) => {
         sx={{ background: `radial-gradient(circle, ${LIME}1E 0%, ${LIME}08 46%, transparent 72%)`,
               filter: 'blur(18px)' }} />
 
-      <Box px={RAIL} maxW={SHEET} mx="auto" w="100%" position="relative" zIndex={1}>
+      <Box px={RAIL} maxW={SHEET} w="100%" position="relative" zIndex={1}>
         <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
 
