@@ -8,6 +8,14 @@
   # runtime is a build that fails on a day nobody changed anything.
   NODE_VERSION = "20.19.0"
 
+# Declared rather than left to auto detection. Both handlers are ESM, which is
+# what package.json "type": "module" makes them, and esbuild is the bundler that
+# handles that without a wrapper. An undeclared functions directory is one
+# rename away from a checkout that silently 404s.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 # Specific redirect for invoice page to use the custom HTML with proper meta tags
 [[redirects]]
   from = "/invoice"
