@@ -69,10 +69,12 @@ const EnvelopeFan = () => (
             transition={{ duration: 0.9, delay: 0.25 + i * 0.09, ease: [0.16, 1, 0.3, 1] }}
             style={{ transformOrigin: '50% 50%' }}
             zIndex={i + 1}>
-            <Box borderRadius="10px" overflow="hidden" boxShadow="0 24px 60px rgba(0,0,0,0.55)"
-              border="1px solid" borderColor="rgba(255,255,255,0.08)"
-              transition={`transform 480ms ${EASE}, box-shadow 480ms ${EASE}`}
-              _groupHover={{ transform: `translateY(${-8 - i * 3}px)`, boxShadow: `0 34px 70px rgba(0,0,0,0.6), 0 0 0 1px ${LIME}55` }}>
+            {/* The envelope art is transparent, so the shadow has to follow the
+                paper, not a box around it. drop-shadow does that, box-shadow
+                would draw a dark slab. */}
+            <Box transition={`transform 480ms ${EASE}, filter 480ms ${EASE}`}
+              filter="drop-shadow(0 22px 34px rgba(0,0,0,0.55))"
+              _groupHover={{ transform: `translateY(${-8 - i * 3}px)`, filter: `drop-shadow(0 30px 44px rgba(0,0,0,0.6)) drop-shadow(0 0 18px ${LIME}33)` }}>
               <Image src={f.image} alt={`${f.name}, sealed by ${f.character}`} w="100%" h="auto" display="block"
                 draggable={false} loading="eager" />
             </Box>
