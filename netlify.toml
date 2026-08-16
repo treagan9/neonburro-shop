@@ -16,6 +16,12 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# The direct Solana rail's safety net. Walks pending payment requests and asks
+# the chain, so a transfer sent from a phone after the laptop closed still
+# settles and still notifies. See netlify/functions/solana-pay-sweep.js.
+[functions."solana-pay-sweep"]
+  schedule = "*/5 * * * *"
+
 # Specific redirect for invoice page to use the custom HTML with proper meta tags
 [[redirects]]
   from = "/invoice"

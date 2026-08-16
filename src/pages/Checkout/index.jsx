@@ -57,6 +57,7 @@ import ExpressCheckout from './components/ExpressCheckout';
 import CheckoutForm from './components/CheckoutForm';
 import OrderSummary from './components/OrderSummary';
 import CheckoutSuccess from './components/CheckoutSuccess';
+import DirectSolana from './components/DirectSolana';
 import { readStash, dropStash } from './stash';
 import { colors } from '../../theme/colors';
 import { RAIL, SHEET } from '../../theme/layout';
@@ -201,17 +202,21 @@ const Checkout = () => {
       paymentIntentId: formData.paymentIntentId,
       paymentMethod: formData.paymentMethod || 'card',
       processing: !!formData.processing,
+      solana: formData.solana || null,
     });
 
     clearCart();
     dropStash();
     setStep('success');
 
+    const direct = formData.paymentMethod === 'solana';
     toast({
-      title: formData.processing ? 'Payment received, settling' : 'Order placed',
-      description: formData.processing
-        ? 'Your payment is confirming on chain. We will email you when it settles.'
-        : 'Thank you. The receipt is on its way.',
+      title: direct ? 'Landed' : formData.processing ? 'Payment received, settling' : 'Order placed',
+      description: direct
+        ? 'Direct on Solana. Cypher saw it.'
+        : formData.processing
+          ? 'Your payment is confirming on chain. We will email you when it settles.'
+          : 'Thank you. The receipt is on its way.',
       status: 'success',
       duration: 5000,
       isClosable: true,
@@ -310,6 +315,8 @@ const Checkout = () => {
                 <Elements stripe={stripePromise} options={elementsOptions}>
                   <CheckoutForm onSubmit={finalizeOrder} isProcessing={step === 'processing'} cart={cart} total={total} />
                 </Elements>
+                {/* The direct rail. Outside Stripe on purpose, see DirectSolana.jsx. */}
+                <DirectSolana cart={cart} total={total} onPaid={finalizeOrder} onError={onError} disabled={step === 'processing'} />
               </>
             )}
           </GridItem>
