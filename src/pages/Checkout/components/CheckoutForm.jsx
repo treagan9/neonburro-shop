@@ -1,90 +1,79 @@
 // src/pages/Checkout/components/CheckoutForm.jsx
-// SENTINEL: NB_SHOP_CHECKOUT_FORM_V3
+// SENTINEL: NB_SHOP_CHECKOUT_FORM_V4
 //
-// Contact and shipping fields, the Stripe Payment Element, the terms gate and
-// one pay button. Lives inside the <Elements> provider that Checkout/index.jsx
-// mounts with the cart total.
+// The long form under the express row. Three parts, numbered: contact,
+// delivery, payment. Then one button. Lives inside the <Elements> provider
+// that Checkout/index.jsx mounts with the cart total (the second of two, see
+// ExpressCheckout.jsx for why there are two).
 //
-// ── V2, why the Payment Element ─────────────────────────────────────────────
-// This used to be three separate card elements, a radio group and a
-// PaymentRequestButtonElement for Apple Pay and Google Pay, confirmed with
-// stripe.confirmCardPayment. That API can only ever take a card. It could not
-// show Link, it could not show a bank, and it could not show Stripe's
-// stablecoin rail (USDC on Solana, Base, Ethereum or Polygon, settled to us in
-// dollars), which is the reason for the rewrite. The Payment Element renders
-// every method the Stripe Dashboard has enabled, so there is one form, one
-// submit path and one terms check.
+// ── V4, Stripe draws the fields ─────────────────────────────────────────────
+// V3 had nine Chakra inputs and a Payment Element in a bordered plate. On a
+// phone the plate ate forty pixels of a 375 wide screen and the card number
+// field wrapped. V4 has no plate on any width, and the fields that matter are
+// Stripe's own:
 //
-// ── V3, digital aware ───────────────────────────────────────────────────────
-// A two dollar clue arrives by email. Asking for a street address to buy it
-// is friction with no purpose, and it was required. When every line in the
-// saddlebag is digital (CartContext.isDigitalItem) the address block becomes
-// optional and says so: "optional, but recommended", because some float
-// ships a physical follow up and a shopper who leaves an address gets it.
-// Name and email stay required, the email IS the delivery address. When any
-// physical line is present everything is required as before.
+//   LinkAuthenticationElement   the email. If the shopper has used Link
+//                               anywhere on the web this recognises them and
+//                               offers to fill everything else in one tap.
+//   AddressElement              shipping, US only, name split into first and
+//                               last, phone optional. Autocomplete is on by
+//                               default because a Payment Element is mounted
+//                               in the same group, Stripe supplies the maps
+//                               key. Nobody types a full address twice.
+//   PaymentElement              card, Link, and Stripe's stablecoin rail
+//                               (USDC on Solana, Base, Ethereum, Polygon).
+//                               Wallets are switched off here because the
+//                               express row above owns them, one place for
+//                               Apple Pay, not two.
 //
-// Billing details for the Payment Element are set to 'never' collected by
-// Stripe, so they must be passed in confirmParams. For a digital only order
-// with no address that means billing_details.address is { country: 'US' } and
-// whatever the shopper did fill in. Stripe accepts a partial address on the
-// payment method. shipping is only sent when there is a street to send to.
+// Digital only saddlebags skip the address by default. Two name fields and
+// the email are all that is needed to send a two dollar clue, and a link
+// under them opens the address element for anybody who wants a physical
+// follow up. When any physical line is present the address is required.
+//
+// ── billing details ─────────────────────────────────────────────────────────
+// Name and email are 'never' collected by the Payment Element because we
+// already have them (address element or our two fields, and the Link email),
+// so they are passed in confirmParams. Phone and address stay 'auto', Stripe
+// collects a postal code for a card when it needs one and reuses the shipping
+// address when there is one.
+//
+// ── terms ───────────────────────────────────────────────────────────────────
+// Clickwrap. The line under the button says paying agrees to the terms and
+// privacy policy. The checkbox is gone. It was the most common reason the
+// button did nothing, and a checkbox does not make consent more real than a
+// labelled button does.
 //
 // ── the submit sequence, and the order matters ──────────────────────────────
-//   1. our own validation (required fields, terms)
-//   2. elements.submit()   validates the Payment Element and, for wallets,
-//                          opens the sheet. Stripe requires this to run before
-//                          the intent is created when using deferred intents.
+//   1. our own validation (email, name, address when required)
+//   2. elements.submit()   validates every Stripe element in this group
 //   3. writeStash()        park the typed fields in sessionStorage in case
 //                          step 5 leaves the site. See stash.js.
 //   4. create the PaymentIntent server side, sending contact, shipping when
 //                          present, delivery kind and any reload codes so
 //                          Stripe holds the order before any redirect.
 //   5. stripe.confirmPayment with redirect: 'if_required'
-//        card, wallets, Link   resolve here with a succeeded intent, onSubmit
+//        card, Link            resolve here with a succeeded intent, onSubmit
 //        stablecoins           browser leaves for crypto.stripe.com and comes
 //                              back to /checkout/ with a client secret, and
 //                              Checkout/index.jsx finishes the order.
 //
-// The Payment Element's onChange tells us which method is selected. For a
-// method that leaves the site the button says so and a line under it says
-// what happens next.
-//
 // No oxford commas, no em dashes.
 
-import {
-  Box,
-  VStack,
-  HStack,
-  Text,
-  Input,
-  Button,
-  FormControl,
-  FormLabel,
-  Checkbox,
-  Link,
-  Skeleton,
-  useToast,
-} from '@chakra-ui/react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Box, VStack, HStack, Text, Input, Button, FormControl, FormLabel, Skeleton, Link, useToast } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { useState, useMemo } from 'react';
-import { FiLock, FiAlertCircle } from 'react-icons/fi';
-import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+import { FiLock } from 'react-icons/fi';
+import {
+  useStripe, useElements, PaymentElement, AddressElement, LinkAuthenticationElement,
+} from '@stripe/react-stripe-js';
 import { writeStash } from '../stash';
 import { isDigitalItem } from '../../../context/CartContext';
+import { colors } from '../../../theme/colors';
+import { EASE } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
-
-// Lime, lime dim and the copper warning. The old key was called teal for a
-// value that has been lime since the repaint, which confused everybody.
-const colors = {
-  lime: '#C5D957',
-  green: '#A6B84A',
-  copper: '#C8893B',
-};
-
-const REQUIRED_PHYSICAL = ['firstName', 'lastName', 'email', 'address', 'city', 'state', 'zip'];
-const REQUIRED_DIGITAL = ['firstName', 'lastName', 'email'];
+const LIME = colors.accent.signal;
 
 // Methods that take the shopper off the site before the intent settles.
 const REDIRECT_TYPES = new Set(['crypto']);
@@ -92,14 +81,39 @@ const REDIRECT_TYPES = new Set(['crypto']);
 const buttonCopy = (type, total) => {
   const amount = `$${Number(total).toFixed(2)}`;
   if (type === 'crypto') return `Continue to Stripe · ${amount}`;
-  if (type === 'apple_pay') return `Pay with Apple Pay · ${amount}`;
-  if (type === 'google_pay') return `Pay with Google Pay · ${amount}`;
-  return `Complete Payment · ${amount}`;
+  return `Pay ${amount}`;
 };
 
 const railNote = (type) => {
   if (type === 'crypto') return 'You will connect a wallet on Stripe and come straight back here. Settles in USD.';
-  return 'Secure checkout powered by Stripe';
+  return 'Card details go to Stripe and never touch our servers.';
+};
+
+// The first step under the saddlebag bar has no hairline of its own on a
+// phone, the bar already drew one. On desktop the bar is a plate to the right
+// and the step opens the column, so it gets its line back.
+const Step = ({ n, title, sub, first = false, children }) => (
+  <Box as="section" pt={{ base: first ? 4 : 7, md: 8 }} pb={{ base: 2, md: 3 }}
+    borderTop={first ? { base: 'none', lg: '1px solid' } : '1px solid'} borderColor={colors.ui.border}>
+    <HStack align="baseline" spacing={3} mb={sub ? 1 : 4}>
+      <Text fontFamily="mono" fontSize="10px" letterSpacing="0.2em" color={LIME}>{n}</Text>
+      <Text color={colors.text.primary} fontSize={{ base: 'md', md: 'lg' }} fontWeight="600" letterSpacing="-0.02em">{title}</Text>
+    </HStack>
+    {sub && <Text color={colors.text.secondary} fontSize="sm" lineHeight="1.6" mb={4} maxW="560px">{sub}</Text>}
+    {children}
+  </Box>
+);
+
+const inputStyles = {
+  bg: 'rgba(255, 255, 255, 0.02)',
+  border: '1px solid',
+  borderColor: colors.ui.border,
+  color: colors.text.primary,
+  h: '48px',
+  borderRadius: '12px',
+  _placeholder: { color: colors.text.muted },
+  _hover: { borderColor: colors.ui.borderHover },
+  _focus: { borderColor: LIME, boxShadow: `0 0 0 1px ${LIME}` },
 };
 
 const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
@@ -108,96 +122,83 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
   const toast = useToast();
 
   const digitalOnly = cart.length > 0 && cart.every(isDigitalItem);
-  const required = digitalOnly ? REQUIRED_DIGITAL : REQUIRED_PHYSICAL;
 
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zip: '',
-    country: 'United States',
-  });
-
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [termsError, setTermsError] = useState(false);
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [wantsAddress, setWantsAddress] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [elementReady, setElementReady] = useState(false);
+  const [paymentReady, setPaymentReady] = useState(false);
   const [selectedType, setSelectedType] = useState('card');
 
-  const paymentElementOptions = useMemo(() => ({
-    layout: {
-      type: 'accordion',
-      defaultCollapsed: false,
-      radios: true,
-      spacedAccordionItems: true,
-    },
-    wallets: { applePay: 'auto', googlePay: 'auto' },
-    fields: {
-      billingDetails: {
-        name: 'never',
-        email: 'never',
-        phone: 'never',
-        address: 'never',
-      },
-    },
+  const showAddress = !digitalOnly || wantsAddress;
+
+  const paymentOptions = useMemo(() => ({
+    layout: { type: 'accordion', defaultCollapsed: false, radios: true, spacedAccordionItems: true },
+    wallets: { applePay: 'never', googlePay: 'never' },
+    fields: { billingDetails: { name: 'never', email: 'never' } },
+    terms: { card: 'never' },
+    // Crypto second. Cards win on volume, stablecoins are the story, and the
+    // Dashboard's default order buried the rail under Cash App and Amazon.
+    paymentMethodOrder: ['card', 'crypto', 'link', 'cashapp', 'amazon_pay'],
   }), []);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const addressOptions = useMemo(() => ({
+    mode: 'shipping',
+    allowedCountries: ['US'],
+    fields: { phone: 'always' },
+    validation: { phone: { required: 'never' } },
+    display: { name: 'split' },
+  }), []);
+
+  const fail = (title, description) => toast({ title, description, status: 'error', duration: 4000, isClosable: true });
 
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!stripe || !elements || isLoading || isProcessing) return;
 
-    const missing = required.filter((k) => !String(formData[k] || '').trim());
-    if (missing.length > 0) {
-      toast({
-        title: 'Required fields missing',
-        description: digitalOnly
-          ? 'Please fill in your name and the email the order should go to'
-          : 'Please fill in your name, email and shipping address',
-        status: 'error',
-        duration: 3000,
-      });
-      return;
-    }
+    if (!email.trim()) return fail('Email needed', digitalOnly ? 'The email is where the order goes.' : 'The receipt and shipping updates go there.');
 
-    if (!agreeToTerms) {
-      setTermsError(true);
-      toast({
-        title: 'Terms Required',
-        description: 'Please accept the terms to continue',
-        status: 'error',
-        duration: 4000,
-      });
-      return;
+    // Who and where. From the address element when it is on the page and
+    // complete, otherwise from the two name fields.
+    let name = `${firstName} ${lastName}`.trim();
+    let first = firstName.trim();
+    let last = lastName.trim();
+    let phone = '';
+    let addr = null;
+
+    const addressEl = showAddress ? elements.getElement(AddressElement) : null;
+    if (addressEl) {
+      const { complete, value } = await addressEl.getValue();
+      if (!digitalOnly && !complete) return fail('Shipping address needed', 'Fill in where this should go.');
+      if (complete && value) {
+        first = value.firstName || first;
+        last = value.lastName || last;
+        name = value.name || `${first} ${last}`.trim();
+        phone = value.phone || '';
+        addr = value.address || null;
+      }
     }
+    if (!name) return fail('Name needed', 'Just so the order has one.');
 
     setIsLoading(true);
-
     try {
       const { error: submitError } = await elements.submit();
       if (submitError) throw new Error(submitError.message);
 
-      writeStash({ ...formData, paymentType: selectedType });
-
-      const name = `${formData.firstName} ${formData.lastName}`.trim();
-      const hasStreet = !!formData.address.trim();
-      const address = {
-        line1: formData.address.trim() || undefined,
-        city: formData.city.trim() || undefined,
-        state: formData.state.trim() || undefined,
-        postal_code: formData.zip.trim() || undefined,
-        country: 'US',
+      const formData = {
+        firstName: first,
+        lastName: last,
+        email: email.trim(),
+        phone,
+        address: addr?.line1 || '',
+        address2: addr?.line2 || '',
+        city: addr?.city || '',
+        state: addr?.state || '',
+        zip: addr?.postal_code || '',
+        country: 'United States',
       };
+      writeStash({ ...formData, paymentType: selectedType });
 
       const response = await fetch('/.netlify/functions/create-payment-intent', {
         method: 'POST',
@@ -209,7 +210,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
           delivery: digitalOnly ? 'digital' : 'ship',
           customer: {
             name,
-            phone: formData.phone,
+            phone,
             address: formData.address,
             city: formData.city,
             state: formData.state,
@@ -229,24 +230,27 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
           })),
         }),
       });
-
       const { clientSecret, error } = await response.json();
       if (error || !clientSecret) throw new Error(error || 'Could not start the payment');
 
       const confirmParams = {
         return_url: `${window.location.origin}/checkout/`,
         receipt_email: formData.email,
-        payment_method_data: {
-          billing_details: {
-            name,
-            email: formData.email,
-            phone: formData.phone || undefined,
-            address,
-          },
-        },
+        payment_method_data: { billing_details: { name, email: formData.email } },
       };
-      if (hasStreet) {
-        confirmParams.shipping = { name, phone: formData.phone || undefined, address };
+      if (addr && addr.line1) {
+        confirmParams.shipping = {
+          name,
+          phone: phone || undefined,
+          address: {
+            line1: addr.line1,
+            line2: addr.line2 || undefined,
+            city: addr.city,
+            state: addr.state,
+            postal_code: addr.postal_code,
+            country: 'US',
+          },
+        };
       }
 
       const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
@@ -255,11 +259,8 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
         confirmParams,
         redirect: 'if_required',
       });
-
       if (confirmError) throw new Error(confirmError.message);
 
-      // Redirect rails never reach this line, the browser has left. Everything
-      // else resolves with the intent.
       if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
         onSubmit({
           ...formData,
@@ -269,245 +270,97 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
         });
         return;
       }
-
       throw new Error('The payment was not completed. Please try again.');
     } catch (err) {
-      toast({
-        title: 'Payment failed',
-        description: err.message,
-        status: 'error',
-        duration: 5000,
-      });
+      fail('Payment failed', err.message);
       setIsLoading(false);
     }
   };
 
-  const inputStyles = {
-    bg: 'rgba(255, 255, 255, 0.02)',
-    border: '2px solid',
-    borderColor: 'whiteAlpha.200',
-    color: 'white',
-    _hover: { borderColor: 'whiteAlpha.300' },
-    _focus: {
-      borderColor: colors.lime,
-      boxShadow: `0 0 0 1px ${colors.lime}`,
-    },
-  };
-
   const leaving = REDIRECT_TYPES.has(selectedType);
-  const addressRequired = !digitalOnly;
 
   return (
-    <Box
-      as="form"
-      onSubmit={handleSubmit}
-      noValidate
-      p={{ base: 6, md: 8 }}
-      bg="rgba(255, 255, 255, 0.02)"
-      borderRadius="2xl"
-      border="1px solid"
-      borderColor="whiteAlpha.100"
-    >
-      <VStack spacing={6} align="stretch">
-        <Box>
-          <Text color="white" fontSize="lg" fontWeight="600" mb={1}>
-            {digitalOnly ? 'Contact' : 'Contact & Shipping'}
-          </Text>
-          {digitalOnly && (
-            <Text color="gray.400" fontSize="sm" mb={4} lineHeight="1.6">
-              Everything in the saddlebag arrives by email, so the email is the delivery address.
-            </Text>
-          )}
-          {!digitalOnly && <Box mb={4} />}
-          <VStack spacing={4}>
-            <HStack spacing={4} width="100%">
-              <FormControl isRequired>
-                <FormLabel color="gray.400" fontSize="sm">First Name</FormLabel>
-                <Input name="firstName" autoComplete="given-name" value={formData.firstName}
-                  onChange={handleChange} placeholder="John" size="lg" {...inputStyles} />
-              </FormControl>
-
-              <FormControl isRequired>
-                <FormLabel color="gray.400" fontSize="sm">Last Name</FormLabel>
-                <Input name="lastName" autoComplete="family-name" value={formData.lastName}
-                  onChange={handleChange} placeholder="Doe" size="lg" {...inputStyles} />
-              </FormControl>
-            </HStack>
-
-            <FormControl isRequired>
-              <FormLabel color="gray.400" fontSize="sm">Email</FormLabel>
-              <Input name="email" type="email" autoComplete="email" value={formData.email}
-                onChange={handleChange} placeholder="john@example.com" size="lg" {...inputStyles} />
-            </FormControl>
-
-            <FormControl>
-              <FormLabel color="gray.400" fontSize="sm">Phone</FormLabel>
-              <Input name="phone" type="tel" autoComplete="tel" value={formData.phone}
-                onChange={handleChange} placeholder="(555) 123-4567" size="lg" {...inputStyles} />
-            </FormControl>
-          </VStack>
-        </Box>
-
-        <Box>
-          <HStack justify="space-between" align="baseline" mb={digitalOnly ? 1 : 4} flexWrap="wrap" rowGap={1}>
-            <Text color="white" fontSize="lg" fontWeight="600">
-              {digitalOnly ? 'Mailing address' : 'Shipping address'}
-            </Text>
-            {digitalOnly && (
-              <Text fontFamily="mono" fontSize="10px" letterSpacing="0.14em" textTransform="uppercase" color={colors.lime}>
-                Optional, but recommended
-              </Text>
-            )}
-          </HStack>
-          {digitalOnly && (
-            <Text color="gray.400" fontSize="sm" mb={4} lineHeight="1.6">
-              Some float ships a physical follow up. Leave an address and it can find you.
-            </Text>
-          )}
-          <VStack spacing={4}>
-            <FormControl isRequired={addressRequired}>
-              <FormLabel color="gray.400" fontSize="sm">Address</FormLabel>
-              <Input name="address" autoComplete="shipping street-address" value={formData.address}
-                onChange={handleChange} placeholder="123 Main St" size="lg" {...inputStyles} />
-            </FormControl>
-
-            <HStack spacing={4} width="100%">
-              <FormControl isRequired={addressRequired} flex={2}>
-                <FormLabel color="gray.400" fontSize="sm">City</FormLabel>
-                <Input name="city" autoComplete="shipping address-level2" value={formData.city}
-                  onChange={handleChange} placeholder="Denver" size="lg" {...inputStyles} />
-              </FormControl>
-
-              <FormControl isRequired={addressRequired} flex={1}>
-                <FormLabel color="gray.400" fontSize="sm">State</FormLabel>
-                <Input name="state" autoComplete="shipping address-level1" value={formData.state}
-                  onChange={handleChange} placeholder="CO" size="lg" maxLength={2} {...inputStyles} />
-              </FormControl>
-
-              <FormControl isRequired={addressRequired} flex={1}>
-                <FormLabel color="gray.400" fontSize="sm">ZIP</FormLabel>
-                <Input name="zip" autoComplete="shipping postal-code" value={formData.zip}
-                  onChange={handleChange} placeholder="80202" size="lg" {...inputStyles} />
-              </FormControl>
-            </HStack>
-          </VStack>
-        </Box>
-
-        <Box>
-          <Text color="white" fontSize="lg" fontWeight="600" mb={4}>
-            Payment Method
-          </Text>
-
-          {!elementReady && (
-            <VStack spacing={3} align="stretch" mb={3}>
-              <Skeleton height="56px" borderRadius="lg" startColor="whiteAlpha.100" endColor="whiteAlpha.200" />
-              <Skeleton height="56px" borderRadius="lg" startColor="whiteAlpha.100" endColor="whiteAlpha.200" />
-            </VStack>
-          )}
-
-          <Box display={elementReady ? 'block' : 'none'}>
-            <PaymentElement
-              options={paymentElementOptions}
-              onReady={() => setElementReady(true)}
-              onChange={(event) => {
-                if (event?.value?.type) setSelectedType(event.value.type);
-              }}
+    <Box as="form" onSubmit={handleSubmit} noValidate>
+      <VStack spacing={0} align="stretch">
+        <Step n="01" title="Contact" first
+          sub={digitalOnly ? 'The email is the delivery address, everything in the saddlebag arrives there.' : 'Receipt and shipping updates go here.'}>
+          <Box mb={4}>
+            <LinkAuthenticationElement
+              onChange={(ev) => setEmail(ev?.value?.email || '')}
             />
           </Box>
-        </Box>
+          {digitalOnly && (
+            <HStack spacing={3} align="start">
+              <FormControl isRequired>
+                <FormLabel color={colors.text.secondary} fontSize="sm" mb={1.5}>First name</FormLabel>
+                <Input value={firstName} onChange={(e) => setFirstName(e.target.value)} autoComplete="given-name" placeholder="Pitch" {...inputStyles} />
+              </FormControl>
+              <FormControl isRequired>
+                <FormLabel color={colors.text.secondary} fontSize="sm" mb={1.5}>Last name</FormLabel>
+                <Input value={lastName} onChange={(e) => setLastName(e.target.value)} autoComplete="family-name" placeholder="Burro" {...inputStyles} />
+              </FormControl>
+            </HStack>
+          )}
+        </Step>
 
-        <Box id="terms-section">
-          <Box
-            p={4}
-            bg={termsError && !agreeToTerms ? `${colors.copper}10` : 'transparent'}
-            border="2px solid"
-            borderColor={termsError && !agreeToTerms ? colors.copper : 'transparent'}
-            borderRadius="lg"
-            transition="all 0.2s"
-          >
-            <Checkbox
-              isChecked={agreeToTerms}
-              onChange={(e) => {
-                setAgreeToTerms(e.target.checked);
-                if (termsError) setTermsError(false);
-              }}
-              size="lg"
-              colorScheme="green"
-              iconColor={colors.green}
-              sx={{
-                '.chakra-checkbox__control': {
-                  borderColor: agreeToTerms ? colors.lime : 'whiteAlpha.300',
-                  bg: agreeToTerms ? colors.lime : 'transparent',
-                  _checked: {
-                    bg: colors.lime,
-                    borderColor: colors.lime,
-                  },
-                },
-              }}
-            >
-              <Text color="gray.300" fontSize="sm">
-                I agree to{' '}
-                <Link href="https://neonburro.com/terms/" color={colors.lime} isExternal fontWeight="600">
-                  Terms of Service
-                </Link>
-                {' '}and{' '}
-                <Link href="https://neonburro.com/privacy/" color={colors.lime} isExternal fontWeight="600">
-                  Privacy Policy
-                </Link>
-              </Text>
-            </Checkbox>
+        <Step n="02" title={digitalOnly ? 'Mailing address' : 'Ship to'}
+          sub={digitalOnly
+            ? 'Optional. Some float ships a physical follow up, leave an address and it can find you.'
+            : 'US only for now. Start typing and pick the address, it fills the rest.'}>
+          {digitalOnly && !wantsAddress ? (
+            <Button variant="link" color={LIME} fontWeight="600" fontSize="sm" onClick={() => setWantsAddress(true)}
+              _hover={{ textDecoration: 'none', opacity: 0.85 }}>
+              Add a mailing address
+            </Button>
+          ) : (
+            <MotionBox initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+              <AddressElement options={addressOptions} />
+              {digitalOnly && (
+                <Button variant="link" color={colors.text.muted} fontWeight="500" fontSize="xs" mt={3}
+                  onClick={() => setWantsAddress(false)} _hover={{ color: colors.text.primary, textDecoration: 'none' }}>
+                  Skip the address
+                </Button>
+              )}
+            </MotionBox>
+          )}
+        </Step>
+
+        <Step n="03" title="Payment"
+          sub="Card, Link or a stablecoin. USDC on Solana, Base, Ethereum or Polygon settles in dollars, no wallet on our side.">
+          {!paymentReady && (
+            <VStack spacing={3} align="stretch" mb={3}>
+              <Skeleton height="52px" borderRadius="12px" startColor="whiteAlpha.100" endColor="whiteAlpha.200" />
+              <Skeleton height="52px" borderRadius="12px" startColor="whiteAlpha.100" endColor="whiteAlpha.200" />
+            </VStack>
+          )}
+          <Box display={paymentReady ? 'block' : 'none'}>
+            <PaymentElement
+              options={paymentOptions}
+              onReady={() => setPaymentReady(true)}
+              onChange={(ev) => { if (ev?.value?.type) setSelectedType(ev.value.type); }}
+            />
           </Box>
+        </Step>
 
-          <AnimatePresence>
-            {termsError && !agreeToTerms && (
-              <MotionBox
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                mt={3}
-              >
-                <HStack spacing={2} justify="center">
-                  <FiAlertCircle color={colors.copper} size={16} />
-                  <Text color={colors.copper} fontSize="sm" fontWeight="600">
-                    Please accept the terms to continue
-                  </Text>
-                </HStack>
-              </MotionBox>
-            )}
-          </AnimatePresence>
-        </Box>
-
-        <Button
-          type="submit"
-          size="lg"
-          bg={colors.green}
-          color="black"
-          width="100%"
-          isLoading={isLoading || isProcessing}
-          isDisabled={!stripe || !elements || !elementReady}
-          loadingText={leaving ? 'Sending you to Stripe...' : 'Processing...'}
-          fontWeight="800"
-          borderRadius="full"
-          height="56px"
-          leftIcon={<FiLock />}
-          _hover={{
-            transform: 'translateY(-2px)',
-            boxShadow: `0 15px 50px ${colors.green}40`,
-          }}
-          _active={{
-            transform: 'translateY(0)',
-          }}
-          transition="all 0.3s"
-        >
-          {buttonCopy(selectedType, total)}
-        </Button>
-
-        <HStack justify="center" spacing={2}>
-          <FiLock size={14} color="#6B7280" />
-          <Text color="gray.400" fontSize="xs" textAlign="center">
+        <VStack spacing={3} align="stretch" pt={{ base: 6, md: 8 }}>
+          <Button type="submit" size="lg" h="56px" bg={LIME} color={colors.dark.black} fontWeight="700" borderRadius="full"
+            leftIcon={<FiLock />} isLoading={isLoading || isProcessing} isDisabled={!stripe || !elements || !paymentReady}
+            loadingText={leaving ? 'Sending you to Stripe...' : 'Processing...'}
+            transition={`transform 260ms ${EASE}, filter 260ms ${EASE}, box-shadow 260ms ${EASE}`}
+            _hover={{ transform: 'translateY(-1px)', filter: 'brightness(1.05)', boxShadow: `0 14px 36px ${LIME}33` }}
+            _active={{ transform: 'translateY(0)' }}>
+            {buttonCopy(selectedType, total)}
+          </Button>
+          <Text color={colors.text.muted} fontSize="xs" lineHeight="1.6" textAlign="center">
             {railNote(selectedType)}
           </Text>
-        </HStack>
+          <Text color={colors.text.muted} fontSize="xs" lineHeight="1.6" textAlign="center">
+            By paying you agree to the{' '}
+            <Link href="https://neonburro.com/terms/" color={colors.text.secondary} isExternal fontWeight="600" _hover={{ color: LIME }}>Terms</Link>
+            {' '}and{' '}
+            <Link href="https://neonburro.com/privacy/" color={colors.text.secondary} isExternal fontWeight="600" _hover={{ color: LIME }}>Privacy Policy</Link>.
+          </Text>
+        </VStack>
       </VStack>
     </Box>
   );
