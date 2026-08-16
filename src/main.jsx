@@ -14,16 +14,21 @@
 // and JetBrains from Google Fonts, and nobody noticed the shop was rendering in
 // a different typeface to neonburro.com. Self hosted, no third party request.
 //
+// The latin-*.css entry points are deliberate, same as the studio's main.jsx:
+// the bare 400.css files register every subset fontsource ships (cyrillic,
+// vietnamese, latin-ext, symbols) and the build emits woff files nobody's
+// browser asks for. Latin is the only subset the shop sets.
+//
 // No oxford commas, no em dashes.
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import '@fontsource/geist-sans/400.css';
-import '@fontsource/geist-sans/500.css';
-import '@fontsource/geist-sans/600.css';
-import '@fontsource/geist-sans/700.css';
-import '@fontsource/geist-mono/400.css';
-import '@fontsource/geist-mono/500.css';
+import '@fontsource/geist-sans/latin-400.css';
+import '@fontsource/geist-sans/latin-500.css';
+import '@fontsource/geist-sans/latin-600.css';
+import '@fontsource/geist-sans/latin-700.css';
+import '@fontsource/geist-mono/latin-400.css';
+import '@fontsource/geist-mono/latin-500.css';
 import App from './App.jsx';
 import './index.css';
 

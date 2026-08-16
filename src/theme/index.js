@@ -1,7 +1,41 @@
-// theme/index.js
+// src/theme/index.js
+// SENTINEL: NB_SHOP_THEME_V2
+//
+// ── WHAT THIS FILE IS ───────────────────────────────────────────────────────
+//
+// The shop's Chakra theme, assembled from colors.js (the shop's older key
+// names carrying the brand values), typography.js (a copy of the studio scale)
+// and layout.js (a copy of the studio geometry plus the saddlebag dock). This
+// file only wires them together and sets the global and component defaults.
+// The canon for every value is neonburro.com/src/theme, this file follows it.
+//
+// ── WHAT CHANGED IN V2, AND WHY ─────────────────────────────────────────────
+//
+// V1 was the 2025 template: a global transition on every element, links
+// coloured lime with an underline on hover, lime on lime selection, neon and
+// banana button variants nobody called, glass and card Box variants nobody
+// called, a hand copied spacing scale identical to Chakra's own, and radii a
+// step smaller than the studio's. All of it gone. Every shop component that
+// mattered had already been overriding these globals inline, which is the
+// surest sign a global is wrong.
+//
+// ── THE SHOP'S LICENCE ──────────────────────────────────────────────────────
+//
+// On the studio the solid button is warm white and turns lime on hover, lime
+// being spent once per screen. In the shop the whole store is lime, so the
+// solid button is lime at rest, dark text, and lifts on hover. That is the one
+// deliberate difference from the studio theme and it is written here on
+// purpose. Do not import the studio's Button block over it.
+//
+// Colour mode is LOCKED to dark, useSystemColorMode false. No OS setting
+// repaints the shop.
+//
+// No oxford commas, no em dashes.
+
 import { extendTheme } from '@chakra-ui/react';
 import colors from './colors';
 import typography from './typography';
+import { EASE } from './layout';
 
 const theme = extendTheme({
   config: {
@@ -16,56 +50,42 @@ const theme = extendTheme({
         bg: 'dark.black',
         color: 'text.primary',
         fontFamily: 'body',
-        lineHeight: 'base',
+        lineHeight: 'relaxed',
         overflowX: 'hidden',
         scrollBehavior: 'smooth',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale',
+        textRendering: 'optimizeLegibility',
       },
       '*::selection': {
-        bg: 'brand.primaryAlpha.50',
-        color: 'brand.primaryLight',
+        bg: 'brand.primaryAlpha.20',
+        color: 'text.primary',
       },
-      '::-webkit-scrollbar': {
-        width: '8px',
-        bg: 'dark.void',
-      },
+      '::-webkit-scrollbar': { width: '8px', bg: 'dark.void' },
       '::-webkit-scrollbar-thumb': {
-        bg: 'brand.primaryAlpha.30',
+        bg: 'whiteAlpha.300',
         borderRadius: '4px',
-        '&:hover': {
-          bg: 'brand.primaryAlpha.50',
-        }
+        '&:hover': { bg: 'brand.primaryAlpha.50' },
       },
-      // Focus styles for accessibility
       'button:focus-visible, a:focus-visible': {
         outline: '2px solid',
         outlineColor: 'brand.primary',
         outlineOffset: '2px',
       },
-      // Heading styles
       'h1, h2, h3, h4, h5, h6': {
         fontFamily: 'heading',
         fontWeight: 'bold',
         letterSpacing: 'tight',
         lineHeight: 'tight',
       },
-      // Code and mono elements
-      'code, pre, .mono': {
-        fontFamily: 'mono',
-      },
-      // Smooth transitions
-      '*': {
-        transition: 'background-color 0.3s ease, border-color 0.3s ease',
-      },
-      // Better link styles
+      'code, pre, .mono': { fontFamily: 'mono' },
+      // Links inherit. A lime default was colouring every anchor styled Box in
+      // the shop and every one of them was overriding it back.
       'a': {
-        color: 'brand.primary',
+        color: 'inherit',
         textDecoration: 'none',
-        transition: 'all 0.2s',
-        '&:hover': {
-          color: 'brand.primaryLight',
-          textDecoration: 'underline',
-        }
-      }
+        '&:hover': { textDecoration: 'none' },
+      },
     },
   },
   components: {
@@ -73,182 +93,90 @@ const theme = extendTheme({
       baseStyle: {
         fontWeight: 'semibold',
         borderRadius: 'full',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        _focus: {
-          boxShadow: 'none',
-        },
-        _focusVisible: {
-          boxShadow: '0 0 0 3px brand.primaryAlpha.50',
-        }
+        letterSpacing: 'normal',
+        transition: `background 220ms ${EASE}, color 220ms ${EASE}, border-color 220ms ${EASE}, transform 220ms ${EASE}, opacity 220ms ${EASE}`,
+        _focus: { boxShadow: 'none' },
+        _focusVisible: { boxShadow: 'none' },
+        _active: { opacity: 0.92 },
       },
       sizes: {
-        sm: {
-          fontSize: 'sm',
-          px: 4,
-          py: 2,
-        },
-        md: {
-          fontSize: 'md',
-          px: 6,
-          py: 3,
-        },
-        lg: {
-          fontSize: 'md',
-          px: 8,
-          py: 4,
-        }
+        xs: { fontSize: 'sm', h: '36px', px: 4 },
+        sm: { fontSize: 'sm', h: '42px', px: 6 },
+        md: { fontSize: 'sm', h: '46px', px: 6 },
+        lg: { fontSize: 'sm', h: '52px', px: 7 },
       },
       variants: {
+        // Lime at rest. The shop's licence, see the header.
         solid: {
           bg: 'brand.primary',
           color: 'dark.black',
           _hover: {
-            bg: 'brand.primaryDark',
+            bg: 'brand.primaryLight',
             transform: 'translateY(-2px)',
-            boxShadow: 'effects.glow.cyan',
+            _disabled: { bg: 'brand.primary', transform: 'none' },
           },
-          _active: {
-            transform: 'translateY(0)',
-          }
+          _active: { transform: 'translateY(0)' },
         },
         outline: {
-          borderColor: 'brand.primary',
-          borderWidth: '2px',
-          color: 'brand.primary',
+          borderColor: 'ui.border',
+          borderWidth: '1px',
+          color: 'text.primary',
+          bg: 'transparent',
           _hover: {
-            bg: 'brand.primaryAlpha.10',
-            transform: 'translateY(-2px)',
+            borderColor: 'brand.primary',
+            color: 'brand.primary',
+            bg: 'transparent',
           },
         },
         ghost: {
           color: 'text.secondary',
-          _hover: {
-            bg: 'whiteAlpha.100',
-            color: 'text.primary',
-          },
+          _hover: { bg: 'whiteAlpha.100', color: 'text.primary' },
         },
-        neon: {
-          bg: 'transparent',
-          color: 'accent.neon',
-          borderWidth: '2px',
-          borderColor: 'accent.neon',
-          _hover: {
-            bg: 'accent.neonAlpha.20',
-            boxShadow: 'effects.glow.neon',
-            transform: 'translateY(-2px)',
-          },
-        },
-        banana: {
-          bg: 'accent.banana',
-          color: 'dark.black',
-          _hover: {
-            bg: 'accent.bananaDark',
-            transform: 'translateY(-2px)',
-            boxShadow: 'effects.glow.banana',
-          },
-        }
       },
+      defaultProps: { variant: 'solid' },
     },
     Heading: {
       baseStyle: {
         fontFamily: 'heading',
         fontWeight: 'bold',
         letterSpacing: 'tight',
+        color: 'text.primary',
       },
     },
     Text: {
-      baseStyle: {
-        lineHeight: 'base',
-      },
+      baseStyle: { lineHeight: 'relaxed' },
       variants: {
+        // The house kicker. Same values as textStyles.kicker in typography.js.
         label: {
-          fontSize: 'xs',
-          fontWeight: 'semibold',
-          letterSpacing: 'wider',
+          fontFamily: 'mono',
+          fontSize: '10px',
+          fontWeight: 'medium',
+          letterSpacing: '0.2em',
           textTransform: 'uppercase',
+          lineHeight: 'normal',
           color: 'text.muted',
         },
         body: {
           fontSize: 'md',
           lineHeight: 'relaxed',
           color: 'text.secondary',
-        }
-      }
-    },
-    Container: {
-      baseStyle: {
-        maxW: '1400px',
-        px: { base: 4, md: 8 },
-      },
-    },
-    Box: {
-      baseStyle: {
-        // Custom box variants can be added here
-      },
-      variants: {
-        glass: {
-          bg: 'ui.glass.light',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid',
-          borderColor: 'ui.border',
         },
-        card: {
-          bg: 'ui.glass.medium',
-          backdropFilter: 'blur(20px)',
-          borderRadius: 'xl',
-          border: '2px solid',
-          borderColor: 'ui.border',
-          p: { base: 4, md: 6 },
-        }
-      }
-    }
+      },
+    },
+    // The inner page column for the long form pages (about, legal). NOT the
+    // sheet. Product pages and the home page use RAIL and SHEET from layout.js.
+    Container: {
+      baseStyle: { maxW: '1400px', px: { base: 4, md: 8 } },
+    },
   },
-  // Custom breakpoints matching your design system
   breakpoints: {
-    sm: '640px',
-    md: '768px',
-    lg: '1024px',
-    xl: '1280px',
-    '2xl': '1536px',
+    sm: '640px', md: '768px', lg: '1024px', xl: '1280px', '2xl': '1536px',
   },
-  // Spacing scale
-  space: {
-    px: '1px',
-    0.5: '0.125rem',
-    1: '0.25rem',
-    1.5: '0.375rem',
-    2: '0.5rem',
-    2.5: '0.625rem',
-    3: '0.75rem',
-    3.5: '0.875rem',
-    4: '1rem',
-    5: '1.25rem',
-    6: '1.5rem',
-    7: '1.75rem',
-    8: '2rem',
-    9: '2.25rem',
-    10: '2.5rem',
-    12: '3rem',
-    14: '3.5rem',
-    16: '4rem',
-    20: '5rem',
-    24: '6rem',
-    28: '7rem',
-    32: '8rem',
-    36: '9rem',
-    40: '10rem',
-  },
-  // Radii
+  // Same steps as the studio. Pills for buttons and counts, 12px cards and
+  // wells, 24px plates.
   radii: {
-    none: '0',
-    sm: '0.125rem',
-    base: '0.25rem',
-    md: '0.375rem',
-    lg: '0.5rem',
-    xl: '0.75rem',
-    '2xl': '1rem',
-    '3xl': '1.5rem',
-    full: '9999px',
+    none: '0', sm: '0.25rem', md: '0.5rem', lg: '0.75rem',
+    xl: '1rem', '2xl': '1.5rem', full: '9999px',
   },
 });
 

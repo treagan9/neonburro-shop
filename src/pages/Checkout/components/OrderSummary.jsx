@@ -1,5 +1,5 @@
 // src/pages/Checkout/components/OrderSummary.jsx
-// SENTINEL: NB_SHOP_ORDER_SUMMARY_V3
+// SENTINEL: NB_SHOP_ORDER_SUMMARY_V4
 //
 // The saddlebag as it stands at checkout. Reuses SaddlebagLine so the lines
 // look the way they did in the drawer the shopper just came from, read only
@@ -14,6 +14,13 @@
 // drawer, and a full list above the email field pushed the email field off
 // the first screen. Chakra's Collapse does the reveal, no box around it, a
 // hairline above and below.
+//
+// V4: on desktop the body is rendered directly, not inside a Collapse. V3
+// wrapped both shapes in one Collapse with in={isDesktop || openMobile}, and
+// useBreakpointValue resolves after first paint, so on a wide screen the plate
+// could sit open with an empty body until the Collapse animation caught up,
+// and a full page capture showed the header alone. The desktop plate has
+// nothing to animate. Only the phone bar collapses.
 //
 // Tax is "calculated at checkout" because Stripe Tax is not on yet. When it
 // is, the amount comes back on the PaymentIntent and this line becomes a
@@ -34,7 +41,6 @@ const LIME = colors.accent.signal;
 const OrderSummary = ({ cart, total }) => {
   const isDesktop = useBreakpointValue({ base: false, lg: true }, { ssr: false });
   const [openMobile, setOpenMobile] = useState(false);
-  const open = isDesktop || openMobile;
 
   const digital = cart.filter(isDigitalItem).length;
   const physical = cart.length - digital;
@@ -74,7 +80,7 @@ const OrderSummary = ({ cart, total }) => {
 
       <HStack justify="space-between" align="baseline" pt={4} borderTop="1px solid" borderColor={colors.ui.border}>
         <Text color={colors.text.primary} fontSize="lg" fontWeight="700">Total</Text>
-        <Text color={LIME} fontSize="2xl" fontWeight="800" fontFamily="mono">{money(total)}</Text>
+        <Text color={LIME} fontSize="2xl" fontWeight="700" fontFamily="mono">{money(total)}</Text>
       </HStack>
 
       <HStack spacing={3} align="start" pt={1}>
@@ -108,7 +114,7 @@ const OrderSummary = ({ cart, total }) => {
         onClick={isDesktop ? undefined : () => setOpenMobile((v) => !v)}
         w="100%" justify="space-between" align="center" py={{ base: 4, lg: 0 }} mb={{ base: 0, lg: 5 }}
         borderTop={{ base: '1px solid', lg: 'none' }} borderBottom={{ base: '1px solid', lg: 'none' }} borderColor={colors.ui.border}
-        textAlign="left" aria-expanded={open}>
+        textAlign="left" aria-expanded={isDesktop ? undefined : openMobile}>
         <HStack spacing={3} align="center">
           <Box as={FiShoppingBag} boxSize="16px" color={LIME} />
           <Text fontFamily="mono" fontSize="11px" fontWeight="500" letterSpacing="0.2em" textTransform="uppercase" color={colors.text.primary}>
@@ -121,15 +127,17 @@ const OrderSummary = ({ cart, total }) => {
         <HStack spacing={3} display={{ base: 'flex', lg: 'none' }}>
           <Text fontFamily="mono" fontSize="md" fontWeight="600" color={LIME}>{money(total)}</Text>
           <Box as={FiChevronDown} boxSize="16px" color={colors.text.muted}
-            transition={`transform 260ms ${EASE}`} transform={open ? 'rotate(180deg)' : 'none'} />
+            transition={`transform 260ms ${EASE}`} transform={openMobile ? 'rotate(180deg)' : 'none'} />
         </HStack>
       </HStack>
 
-      <Collapse in={open} animateOpacity>
-        <Box pt={{ base: 4, lg: 0 }} pb={{ base: 4, lg: 0 }} borderBottom={{ base: '1px solid', lg: 'none' }} borderColor={colors.ui.border}>
-          {Body}
-        </Box>
-      </Collapse>
+      {isDesktop ? Body : (
+        <Collapse in={openMobile} animateOpacity>
+          <Box pt={4} pb={4} borderBottom="1px solid" borderColor={colors.ui.border}>
+            {Body}
+          </Box>
+        </Collapse>
+      )}
     </Box>
   );
 };
