@@ -1,3 +1,22 @@
+// src/pages/Checkout/components/CheckoutSuccess.jsx
+// SENTINEL: NB_SHOP_CHECKOUT_SUCCESS_V2
+//
+// The order confirmed screen. Rendered by Checkout/index.jsx once the payment
+// intent is succeeded or processing, on both the in page path and the round
+// trip from a redirect rail.
+//
+// orderData comes from Checkout/index.jsx finalizeOrder:
+//   orderNumber     derived from the PaymentIntent id, stable across refresh
+//   email           where the receipt went
+//   total, items    the cart as paid
+//   paymentMethod   'card', 'apple_pay', 'google_pay', 'link', 'crypto', ...
+//   processing      true when Stripe reported the intent as processing rather
+//                   than succeeded, which happens on stablecoins while the
+//                   chain confirms. The copy softens to "received, settling"
+//                   so nobody reads "confirmed" and then gets a failure email.
+//
+// No oxford commas, no em dashes.
+
 import {
   Box,
   Container,
@@ -7,17 +26,30 @@ import {
   Button,
   HStack,
   Divider,
-  useClipboard
+  useClipboard,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { FiCheckCircle, FiMail, FiCopy, FiArrowRight, FiHome } from 'react-icons/fi';
+import { FiCheckCircle, FiClock, FiMail, FiCopy, FiHome } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 const MotionBox = motion(Box);
 
+const methodLabel = (method) => {
+  switch (method) {
+    case 'crypto': return 'Stablecoin via Stripe';
+    case 'apple_pay': return 'Apple Pay';
+    case 'google_pay': return 'Google Pay';
+    case 'link': return 'Link';
+    case 'card': return 'Card';
+    default: return null;
+  }
+};
+
 const CheckoutSuccess = ({ orderData }) => {
   const navigate = useNavigate();
   const { hasCopied, onCopy } = useClipboard(orderData.orderNumber);
+  const settling = !!orderData.processing;
+  const method = methodLabel(orderData.paymentMethod);
 
   return (
     <Box minH="100vh" bg="#0B0B0C" display="flex" alignItems="center" py={20}>
@@ -28,11 +60,10 @@ const CheckoutSuccess = ({ orderData }) => {
           transition={{ duration: 0.6 }}
         >
           <VStack spacing={8} textAlign="center">
-            {/* Success Icon */}
             <MotionBox
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2, type: "spring" }}
+              transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
             >
               <Box
                 p={4}
@@ -41,28 +72,31 @@ const CheckoutSuccess = ({ orderData }) => {
                 border="2px solid"
                 borderColor="#A6B84A"
               >
-                <FiCheckCircle size={48} color="#A6B84A" />
+                {settling
+                  ? <FiClock size={48} color="#A6B84A" />
+                  : <FiCheckCircle size={48} color="#A6B84A" />}
               </Box>
             </MotionBox>
 
-            {/* Success Message */}
             <VStack spacing={4}>
               <Heading
-                fontSize={{ base: "2xl", md: "4xl" }}
+                fontSize={{ base: '2xl', md: '4xl' }}
                 color="white"
                 fontWeight="800"
               >
-                Order Confirmed!
+                {settling ? 'Payment Received' : 'Order Confirmed!'}
               </Heading>
-              <Text color="gray.300" fontSize={{ base: "md", md: "lg" }} maxW="500px">
-                Thank you for your order. We've sent a confirmation email to{' '}
+              <Text color="gray.300" fontSize={{ base: 'md', md: 'lg' }} maxW="500px">
+                {settling
+                  ? 'Your payment is confirming on chain. We will email '
+                  : 'Thank you for your order. We\'ve sent a confirmation email to '}
                 <Text as="span" color="#C5D957" fontWeight="600">
                   {orderData.email}
                 </Text>
+                {settling ? ' the moment it settles.' : ''}
               </Text>
             </VStack>
 
-            {/* Order Details */}
             <Box
               width="100%"
               p={6}
@@ -101,14 +135,14 @@ const CheckoutSuccess = ({ orderData }) => {
                 <Divider borderColor="whiteAlpha.200" />
 
                 <HStack justify="space-between" width="100%">
-                  <Text color="gray.400">Total Paid</Text>
+                  <Text color="gray.400">{settling ? 'Total' : 'Total Paid'}</Text>
                   <Text
                     color="#A6B84A"
                     fontSize="2xl"
                     fontWeight="800"
                     fontFamily="mono"
                   >
-                    ${orderData.total}
+                    ${Number(orderData.total).toFixed(2)}
                   </Text>
                 </HStack>
 
@@ -118,10 +152,18 @@ const CheckoutSuccess = ({ orderData }) => {
                     {orderData.items.length}
                   </Text>
                 </HStack>
+
+                {method && (
+                  <HStack justify="space-between" width="100%">
+                    <Text color="gray.400">Paid with</Text>
+                    <Text color="white" fontWeight="600">
+                      {method}
+                    </Text>
+                  </HStack>
+                )}
               </VStack>
             </Box>
 
-            {/* What's Next */}
             <Box
               width="100%"
               p={6}
@@ -138,41 +180,28 @@ const CheckoutSuccess = ({ orderData }) => {
                   </Heading>
                 </HStack>
                 <VStack spacing={2} align="start" width="100%">
+                  {settling && (
+                    <HStack spacing={3} align="start">
+                      <Box mt={1} width="6px" height="6px" borderRadius="full" bg="#C5D957" flexShrink={0} />
+                      <Text color="gray.300" fontSize="sm" textAlign="left">
+                        Stablecoin payments usually settle within a few minutes. Nothing else is needed from you.
+                      </Text>
+                    </HStack>
+                  )}
                   <HStack spacing={3} align="start">
-                    <Box
-                      mt={1}
-                      width="6px"
-                      height="6px"
-                      borderRadius="full"
-                      bg="#C5D957"
-                      flexShrink={0}
-                    />
+                    <Box mt={1} width="6px" height="6px" borderRadius="full" bg="#C5D957" flexShrink={0} />
                     <Text color="gray.300" fontSize="sm" textAlign="left">
                       You'll receive an order confirmation email shortly
                     </Text>
                   </HStack>
                   <HStack spacing={3} align="start">
-                    <Box
-                      mt={1}
-                      width="6px"
-                      height="6px"
-                      borderRadius="full"
-                      bg="#C5D957"
-                      flexShrink={0}
-                    />
+                    <Box mt={1} width="6px" height="6px" borderRadius="full" bg="#C5D957" flexShrink={0} />
                     <Text color="gray.300" fontSize="sm" textAlign="left">
                       We'll send you shipping updates as your order moves
                     </Text>
                   </HStack>
                   <HStack spacing={3} align="start">
-                    <Box
-                      mt={1}
-                      width="6px"
-                      height="6px"
-                      borderRadius="full"
-                      bg="#C5D957"
-                      flexShrink={0}
-                    />
+                    <Box mt={1} width="6px" height="6px" borderRadius="full" bg="#C5D957" flexShrink={0} />
                     <Text color="gray.300" fontSize="sm" textAlign="left">
                       Your order will ship within 2-3 business days
                     </Text>
@@ -181,7 +210,6 @@ const CheckoutSuccess = ({ orderData }) => {
               </VStack>
             </Box>
 
-            {/* Action Buttons */}
             <VStack spacing={3} width="100%" pt={4}>
               <Button
                 width="100%"
@@ -196,7 +224,7 @@ const CheckoutSuccess = ({ orderData }) => {
                 borderRadius="full"
                 _hover={{
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 10px 30px rgba(255, 255, 255, 0.2)'
+                  boxShadow: '0 10px 30px rgba(255, 255, 255, 0.2)',
                 }}
                 _active={{ transform: 'translateY(0)' }}
                 transition="all 0.3s"

@@ -1,13 +1,28 @@
 -- docs/shop-inventory.sql
--- SENTINEL: NB_SHOP_INVENTORY_SQL_V1
+-- SENTINEL: NB_SHOP_INVENTORY_SQL_V2
 --
--- Run this in the neonburro Supabase project (the same one Pulse uses).
--- One row per sellable thing. A product with variants gets one row per variant
--- and no product level row, so the shop sums them. A product without variants
--- gets a single row with variant_id null.
+-- Run this in the neonburro Supabase project (the same one Pulse uses,
+-- ref sspbripimqvfdkfbpubq). One row per sellable thing. A product with
+-- variants gets one row per variant and no product level row, so the shop sums
+-- them. A product without variants gets a single row with variant_id null.
 --
 -- READ IS PUBLIC, WRITE IS NOT. The shop reads this table with whatever key
--- Netlify has. Pulse writes it with the secret key. Never grant write to anon.
+-- Netlify has (netlify/functions/shop-inventory.js). Pulse writes it with the
+-- secret key. Never grant write to anon.
+--
+-- ── nulls not distinct, read this before you touch the constraint ────────────
+-- Postgres treats two nulls as different values in a plain unique constraint,
+-- so unique (product_id, variant_id) does NOT stop a second ('blanks', null)
+-- row, and the on conflict clause on the seed below silently inserts a
+-- duplicate every time this file is re-run. Postgres 15 added
+-- `unique nulls not distinct`, and the project is on 17, so the constraint
+-- uses it and the seed is genuinely idempotent. If this table already exists
+-- from a run of the V1 file, drop and recreate the constraint by hand:
+--   alter table public.shop_inventory drop constraint shop_inventory_product_id_variant_id_key;
+--   alter table public.shop_inventory add constraint shop_inventory_product_variant_key
+--     unique nulls not distinct (product_id, variant_id);
+--
+-- No oxford commas, no em dashes.
 
 create table if not exists public.shop_inventory (
   id          uuid primary key default gen_random_uuid(),
@@ -15,7 +30,7 @@ create table if not exists public.shop_inventory (
   variant_id  text,
   on_hand     integer not null default 0 check (on_hand >= 0),
   updated_at  timestamptz not null default now(),
-  unique (product_id, variant_id)
+  constraint shop_inventory_product_variant_key unique nulls not distinct (product_id, variant_id)
 );
 
 create index if not exists shop_inventory_product_idx on public.shop_inventory (product_id);

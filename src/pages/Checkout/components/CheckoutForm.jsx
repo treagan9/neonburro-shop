@@ -1,3 +1,56 @@
+// src/pages/Checkout/components/CheckoutForm.jsx
+// SENTINEL: NB_SHOP_CHECKOUT_FORM_V2
+//
+// Contact and shipping fields, the Stripe Payment Element, the terms gate and
+// one pay button. Lives inside the <Elements> provider that Checkout/index.jsx
+// mounts with the cart total.
+//
+// ── what changed and why ────────────────────────────────────────────────────
+// This used to be three separate card elements, a radio group and a
+// PaymentRequestButtonElement for Apple Pay and Google Pay, confirmed with
+// stripe.confirmCardPayment. That API can only ever take a card. It could not
+// show Link, it could not show a bank, and it could not show Stripe's
+// stablecoin rail (USDC on Solana, Base, Ethereum or Polygon, settled to us in
+// dollars), which is the reason for the rewrite.
+//
+// The Payment Element renders every method the Stripe Dashboard has enabled
+// for the account, including Apple Pay and Google Pay when the device has
+// them, and stripe.confirmPayment handles whichever one the shopper picked. So
+// there is one form, one submit path and one terms check, instead of three of
+// each. Turning a new rail on is a Dashboard switch, not a deploy.
+//
+// ── the submit sequence, and the order matters ──────────────────────────────
+//   1. our own validation (required fields, terms)
+//   2. elements.submit()   validates the Payment Element and, for wallets,
+//                          opens the sheet. Stripe requires this to run before
+//                          the intent is created when using deferred intents.
+//   3. writeStash()        park the typed fields in sessionStorage in case
+//                          step 5 leaves the site. See stash.js.
+//   4. create the PaymentIntent server side, sending contact and shipping so
+//                          Stripe holds the order before any redirect.
+//   5. stripe.confirmPayment with redirect: 'if_required'
+//        card, wallets, Link   resolve here with a succeeded intent, onSubmit
+//        stablecoins           browser leaves for crypto.stripe.com and comes
+//                              back to /checkout/ with a client secret, and
+//                              Checkout/index.jsx finishes the order.
+//
+// ── billing details ─────────────────────────────────────────────────────────
+// fields.billingDetails is 'never' for name, email, phone and address, because
+// we already collect all of them above the element and asking twice is how a
+// shopper leaves. The trade is that Stripe then REQUIRES them in
+// confirmParams.payment_method_data.billing_details, every time, for every
+// method. If a field is ever made optional above, it must still be sent here
+// or confirmPayment fails with a missing billing detail error. Country is
+// always US, the shop only ships domestically.
+//
+// ── the pay button copy ─────────────────────────────────────────────────────
+// The Payment Element's onChange tells us which method is selected. For a
+// method that leaves the site the button says so and a line under it says
+// what happens next. A shopper who is told they are about to be redirected
+// completes the payment. One who is not closes the tab.
+//
+// No oxford commas, no em dashes.
+
 import {
   Box,
   VStack,
@@ -7,31 +60,48 @@ import {
   Button,
   FormControl,
   FormLabel,
-  RadioGroup,
-  Radio,
   Checkbox,
   Link,
-  useToast
+  Skeleton,
+  useToast,
 } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import { FiCreditCard, FiLock, FiAlertCircle } from 'react-icons/fi';
-import { 
-  useStripe, 
-  useElements, 
-  CardNumberElement, 
-  CardExpiryElement, 
-  CardCvcElement,
-  PaymentRequestButtonElement 
-} from '@stripe/react-stripe-js';
+import { useState, useMemo } from 'react';
+import { FiLock, FiAlertCircle } from 'react-icons/fi';
+import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
+import { writeStash } from '../stash';
 
 const MotionBox = motion(Box);
+
+const colors = {
+  teal: '#C5D957',
+  green: '#A6B84A',
+  copper: '#C8893B',
+};
+
+const REQUIRED = ['firstName', 'lastName', 'email', 'address', 'city', 'state', 'zip'];
+
+// Methods that take the shopper off the site before the intent settles.
+const REDIRECT_TYPES = new Set(['crypto']);
+
+const buttonCopy = (type, total) => {
+  const amount = `$${Number(total).toFixed(2)}`;
+  if (type === 'crypto') return `Continue to Stripe · ${amount}`;
+  if (type === 'apple_pay') return `Pay with Apple Pay · ${amount}`;
+  if (type === 'google_pay') return `Pay with Google Pay · ${amount}`;
+  return `Complete Payment · ${amount}`;
+};
+
+const railNote = (type) => {
+  if (type === 'crypto') return 'You will connect a wallet on Stripe and come straight back here. Settles in USD.';
+  return 'Secure checkout powered by Stripe';
+};
 
 const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
   const stripe = useStripe();
   const elements = useElements();
   const toast = useToast();
-  
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -41,154 +111,49 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     city: '',
     state: '',
     zip: '',
-    country: 'United States'
+    country: 'United States',
   });
-  
-  const [paymentMethodType, setPaymentMethodType] = useState('card');
+
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [termsError, setTermsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [paymentRequest, setPaymentRequest] = useState(null);
-  const [canMakePayment, setCanMakePayment] = useState(false);
-  const agreeToTermsRef = useRef(agreeToTerms);
-  
-  useEffect(() => {
-    agreeToTermsRef.current = agreeToTerms;
-  }, [agreeToTerms]);
+  const [elementReady, setElementReady] = useState(false);
+  const [selectedType, setSelectedType] = useState('card');
 
-  const colors = {
-    teal: '#C5D957',
-    green: '#A6B84A',
-    copper: '#C8893B'
-  };
-
-  const stripeElementStyles = {
-    style: {
-      base: {
-        color: '#ffffff',
-        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-        fontSize: '16px',
-        fontWeight: '400',
-        '::placeholder': { 
-          color: '#6B7280',
-          fontWeight: '400'
-        },
-        iconColor: colors.teal,
-      },
-      invalid: {
-        color: '#EF4444',
-        iconColor: '#EF4444',
+  const paymentElementOptions = useMemo(() => ({
+    layout: {
+      type: 'accordion',
+      defaultCollapsed: false,
+      radios: true,
+      spacedAccordionItems: true,
+    },
+    wallets: { applePay: 'auto', googlePay: 'auto' },
+    fields: {
+      billingDetails: {
+        name: 'never',
+        email: 'never',
+        phone: 'never',
+        address: 'never',
       },
     },
+  }), []);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  // Setup Apple Pay / Google Pay
-  useEffect(() => {
-    if (!stripe || !cart.length || paymentRequest) return;
+  const handleSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!stripe || !elements || isLoading || isProcessing) return;
 
-    const pr = stripe.paymentRequest({
-      country: 'US',
-      currency: 'usd',
-      total: {
-        label: 'Neon Burro Shop',
-        amount: Math.round(total * 100),
-      },
-      requestPayerName: true,
-      requestPayerEmail: true,
-      requestPayerPhone: true,
-    });
-
-    pr.canMakePayment().then(result => {
-      if (result) {
-        setPaymentRequest(pr);
-        setCanMakePayment(true);
-
-        pr.on('paymentmethod', async (ev) => {
-          if (!agreeToTermsRef.current) {
-            ev.complete('fail');
-            setTermsError(true);
-            toast({
-              title: 'Terms Required',
-              description: 'Please accept the terms to continue',
-              status: 'error',
-              duration: 4000,
-            });
-            return;
-          }
-
-          setIsLoading(true);
-          
-          try {
-            const response = await fetch('/.netlify/functions/create-payment-intent', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                type: 'shop',
-                amount: total,
-                customerEmail: ev.payerEmail,
-                items: cart.map(item => ({
-                  id: item.id,
-                  name: item.name,
-                  price: item.price,
-                  quantity: item.quantity,
-                  selectedSize: item.selectedSize || null,
-                  selectedDesign: item.selectedDesign || null,
-                  selectedTier: item.selectedTier || null,
-                  stripePriceId: item.stripePriceId
-                }))
-              }),
-            });
-
-            const { clientSecret, error } = await response.json();
-            if (error) throw new Error(error);
-
-            const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-              clientSecret,
-              { payment_method: ev.paymentMethod.id },
-              { handleActions: false }
-            );
-
-            if (confirmError) {
-              ev.complete('fail');
-              throw new Error(confirmError.message);
-            }
-
-            ev.complete('success');
-            
-            if (paymentIntent.status === 'requires_action') {
-              const { error: actionError } = await stripe.confirmCardPayment(clientSecret);
-              if (actionError) throw new Error(actionError.message);
-            }
-            
-            onSubmit({
-              ...formData,
-              email: ev.payerEmail,
-              phone: ev.payerPhone || '',
-              paymentMethod: 'digital_wallet',
-              paymentIntentId: paymentIntent.id
-            });
-          } catch (error) {
-            ev.complete('fail');
-            toast({
-              title: 'Payment failed',
-              description: error.message,
-              status: 'error',
-              duration: 5000,
-            });
-            setIsLoading(false);
-          }
-        });
-      }
-    });
-  }, [stripe, cart, total, onSubmit, toast]);
-
-  const handleCardPayment = async () => {
-    if (!stripe || !elements) return;
-
-    if (!formData.email || !formData.firstName || !formData.lastName) {
+    const missing = REQUIRED.filter((k) => !String(formData[k] || '').trim());
+    if (missing.length > 0) {
       toast({
         title: 'Required fields missing',
-        description: 'Please fill in all required fields',
+        description: 'Please fill in your name, email and shipping address',
         status: 'error',
         duration: 3000,
       });
@@ -209,6 +174,20 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     setIsLoading(true);
 
     try {
+      const { error: submitError } = await elements.submit();
+      if (submitError) throw new Error(submitError.message);
+
+      writeStash({ ...formData, paymentType: selectedType });
+
+      const name = `${formData.firstName} ${formData.lastName}`.trim();
+      const address = {
+        line1: formData.address,
+        city: formData.city,
+        state: formData.state,
+        postal_code: formData.zip,
+        country: 'US',
+      };
+
       const response = await fetch('/.netlify/functions/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -216,7 +195,15 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
           type: 'shop',
           amount: total,
           customerEmail: formData.email,
-          items: cart.map(item => ({
+          customer: {
+            name,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+          },
+          items: cart.map((item) => ({
             id: item.id,
             name: item.name,
             price: item.price,
@@ -224,58 +211,61 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
             selectedSize: item.selectedSize || null,
             selectedDesign: item.selectedDesign || null,
             selectedTier: item.selectedTier || null,
-            stripePriceId: item.stripePriceId
-          }))
+            stripePriceId: item.stripePriceId,
+          })),
         }),
       });
 
       const { clientSecret, error } = await response.json();
-      if (error) throw new Error(error);
+      if (error || !clientSecret) throw new Error(error || 'Could not start the payment');
 
-      const cardElement = elements.getElement(CardNumberElement);
-      const { error: paymentError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: `${formData.firstName} ${formData.lastName}`,
-            email: formData.email,
-            phone: formData.phone,
-            address: {
-              line1: formData.address,
-              city: formData.city,
-              state: formData.state,
-              postal_code: formData.zip,
-              country: 'US',
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${window.location.origin}/checkout/`,
+          receipt_email: formData.email,
+          payment_method_data: {
+            billing_details: {
+              name,
+              email: formData.email,
+              phone: formData.phone || undefined,
+              address,
             },
           },
+          shipping: {
+            name,
+            phone: formData.phone || undefined,
+            address,
+          },
         },
+        redirect: 'if_required',
       });
 
-      if (paymentError) throw new Error(paymentError.message);
+      if (confirmError) throw new Error(confirmError.message);
 
-      if (paymentIntent.status === 'succeeded') {
+      // Redirect rails never reach this line, the browser has left. Everything
+      // else resolves with the intent.
+      if (paymentIntent && (paymentIntent.status === 'succeeded' || paymentIntent.status === 'processing')) {
         onSubmit({
           ...formData,
-          paymentMethod: 'card',
-          paymentIntentId: paymentIntent.id
+          paymentMethod: selectedType,
+          paymentIntentId: paymentIntent.id,
+          processing: paymentIntent.status === 'processing',
         });
+        return;
       }
-    } catch (error) {
+
+      throw new Error('The payment was not completed. Please try again.');
+    } catch (err) {
       toast({
         title: 'Payment failed',
-        description: error.message,
+        description: err.message,
         status: 'error',
         duration: 5000,
       });
       setIsLoading(false);
     }
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
   };
 
   const inputStyles = {
@@ -284,14 +274,19 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     borderColor: 'whiteAlpha.200',
     color: 'white',
     _hover: { borderColor: 'whiteAlpha.300' },
-    _focus: { 
-      borderColor: colors.teal, 
-      boxShadow: `0 0 0 1px ${colors.teal}` 
-    }
+    _focus: {
+      borderColor: colors.teal,
+      boxShadow: `0 0 0 1px ${colors.teal}`,
+    },
   };
+
+  const leaving = REDIRECT_TYPES.has(selectedType);
 
   return (
     <Box
+      as="form"
+      onSubmit={handleSubmit}
+      noValidate
       p={{ base: 6, md: 8 }}
       bg="rgba(255, 255, 255, 0.02)"
       borderRadius="2xl"
@@ -309,6 +304,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 <FormLabel color="gray.400" fontSize="sm">First Name</FormLabel>
                 <Input
                   name="firstName"
+                  autoComplete="given-name"
                   value={formData.firstName}
                   onChange={handleChange}
                   placeholder="John"
@@ -316,11 +312,12 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                   {...inputStyles}
                 />
               </FormControl>
-              
+
               <FormControl isRequired>
                 <FormLabel color="gray.400" fontSize="sm">Last Name</FormLabel>
                 <Input
                   name="lastName"
+                  autoComplete="family-name"
                   value={formData.lastName}
                   onChange={handleChange}
                   placeholder="Doe"
@@ -335,6 +332,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               <Input
                 name="email"
                 type="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="john@example.com"
@@ -348,6 +346,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               <Input
                 name="phone"
                 type="tel"
+                autoComplete="tel"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="(555) 123-4567"
@@ -360,6 +359,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               <FormLabel color="gray.400" fontSize="sm">Address</FormLabel>
               <Input
                 name="address"
+                autoComplete="shipping street-address"
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="123 Main St"
@@ -373,6 +373,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 <FormLabel color="gray.400" fontSize="sm">City</FormLabel>
                 <Input
                   name="city"
+                  autoComplete="shipping address-level2"
                   value={formData.city}
                   onChange={handleChange}
                   placeholder="Denver"
@@ -385,6 +386,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 <FormLabel color="gray.400" fontSize="sm">State</FormLabel>
                 <Input
                   name="state"
+                  autoComplete="shipping address-level1"
                   value={formData.state}
                   onChange={handleChange}
                   placeholder="CO"
@@ -398,6 +400,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 <FormLabel color="gray.400" fontSize="sm">ZIP</FormLabel>
                 <Input
                   name="zip"
+                  autoComplete="shipping postal-code"
                   value={formData.zip}
                   onChange={handleChange}
                   placeholder="80202"
@@ -413,137 +416,31 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
           <Text color="white" fontSize="lg" fontWeight="600" mb={4}>
             Payment Method
           </Text>
-          
-          <RadioGroup value={paymentMethodType} onChange={setPaymentMethodType}>
-            <VStack spacing={3} align="stretch">
-              <Box
-                p={4}
-                borderRadius="lg"
-                border="2px solid"
-                borderColor={paymentMethodType === 'card' ? colors.teal : 'whiteAlpha.200'}
-                bg={paymentMethodType === 'card' ? `${colors.teal}10` : 'transparent'}
-                cursor="pointer"
-                onClick={() => setPaymentMethodType('card')}
-                transition="all 0.2s"
-                boxShadow={paymentMethodType === 'card' ? `0 0 20px ${colors.teal}30` : 'none'}
-              >
-                <HStack spacing={4}>
-                  <Radio value="card" colorScheme="cyan" />
-                  <FiCreditCard color={paymentMethodType === 'card' ? colors.teal : '#9CA3AF'} />
-                  <Text color="white" fontWeight="600">Credit / Debit Card</Text>
-                </HStack>
-              </Box>
 
-              {canMakePayment && (
-                <Box
-                  p={4}
-                  borderRadius="lg"
-                  border="2px solid"
-                  borderColor={paymentMethodType === 'wallet' ? colors.green : 'whiteAlpha.200'}
-                  bg={paymentMethodType === 'wallet' ? `${colors.green}10` : 'transparent'}
-                  cursor="pointer"
-                  onClick={() => setPaymentMethodType('wallet')}
-                  transition="all 0.2s"
-                  boxShadow={paymentMethodType === 'wallet' ? `0 0 20px ${colors.green}30` : 'none'}
-                >
-                  <HStack spacing={4}>
-                    <Radio value="wallet" colorScheme="cyan" />
-                    <Text color="white" fontWeight="600">Apple Pay / Google Pay</Text>
-                  </HStack>
-                </Box>
-              )}
+          {!elementReady && (
+            <VStack spacing={3} align="stretch" mb={3}>
+              <Skeleton height="56px" borderRadius="lg" startColor="whiteAlpha.100" endColor="whiteAlpha.200" />
+              <Skeleton height="56px" borderRadius="lg" startColor="whiteAlpha.100" endColor="whiteAlpha.200" />
             </VStack>
-          </RadioGroup>
-        </Box>
+          )}
 
-        {paymentMethodType === 'card' && (
-          <VStack spacing={4} align="stretch">
-            <FormLabel color="gray.400" fontSize="sm" mb={0}>Card Information</FormLabel>
-            
-            <Box
-              p={4}
-              bg="rgba(255, 255, 255, 0.02)"
-              border="2px solid"
-              borderColor="whiteAlpha.200"
-              borderRadius="lg"
-              minH="56px"
-              display="flex"
-              alignItems="center"
-              transition="all 0.2s"
-              _hover={{ 
-                borderColor: colors.teal,
-                boxShadow: `0 0 15px ${colors.teal}20`
+          <Box display={elementReady ? 'block' : 'none'}>
+            <PaymentElement
+              options={paymentElementOptions}
+              onReady={() => setElementReady(true)}
+              onChange={(event) => {
+                if (event?.value?.type) setSelectedType(event.value.type);
               }}
-              _focusWithin={{ 
-                borderColor: colors.teal,
-                boxShadow: `0 0 20px ${colors.teal}40, 0 0 0 1px ${colors.teal}`
-              }}
-            >
-              <Box width="100%">
-                <CardNumberElement options={stripeElementStyles} />
-              </Box>
-            </Box>
-            
-            <HStack spacing={4}>
-              <Box
-                flex={1}
-                p={4}
-                bg="rgba(255, 255, 255, 0.02)"
-                border="2px solid"
-                borderColor="whiteAlpha.200"
-                borderRadius="lg"
-                minH="56px"
-                display="flex"
-                alignItems="center"
-                transition="all 0.2s"
-                _hover={{ 
-                  borderColor: colors.teal,
-                  boxShadow: `0 0 15px ${colors.teal}20`
-                }}
-                _focusWithin={{ 
-                  borderColor: colors.teal,
-                  boxShadow: `0 0 20px ${colors.teal}40, 0 0 0 1px ${colors.teal}`
-                }}
-              >
-                <Box width="100%">
-                  <CardExpiryElement options={stripeElementStyles} />
-                </Box>
-              </Box>
-              
-              <Box
-                flex={1}
-                p={4}
-                bg="rgba(255, 255, 255, 0.02)"
-                border="2px solid"
-                borderColor="whiteAlpha.200"
-                borderRadius="lg"
-                minH="56px"
-                display="flex"
-                alignItems="center"
-                transition="all 0.2s"
-                _hover={{ 
-                  borderColor: colors.teal,
-                  boxShadow: `0 0 15px ${colors.teal}20`
-                }}
-                _focusWithin={{ 
-                  borderColor: colors.teal,
-                  boxShadow: `0 0 20px ${colors.teal}40, 0 0 0 1px ${colors.teal}`
-                }}
-              >
-                <Box width="100%">
-                  <CardCvcElement options={stripeElementStyles} />
-                </Box>
-              </Box>
-            </HStack>
-          </VStack>
-        )}
+            />
+          </Box>
+        </Box>
 
         <Box id="terms-section">
           <Box
             p={4}
-            bg={termsError && !agreeToTerms ? `${colors.copper}10` : "transparent"}
+            bg={termsError && !agreeToTerms ? `${colors.copper}10` : 'transparent'}
             border="2px solid"
-            borderColor={termsError && !agreeToTerms ? colors.copper : "transparent"}
+            borderColor={termsError && !agreeToTerms ? colors.copper : 'transparent'}
             borderRadius="lg"
             transition="all 0.2s"
           >
@@ -563,8 +460,8 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                   _checked: {
                     bg: colors.teal,
                     borderColor: colors.teal,
-                  }
-                }
+                  },
+                },
               }}
             >
               <Text color="gray.300" fontSize="sm">
@@ -579,7 +476,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               </Text>
             </Checkbox>
           </Box>
-          
+
           <AnimatePresence>
             {termsError && !agreeToTerms && (
               <MotionBox
@@ -599,78 +496,35 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
           </AnimatePresence>
         </Box>
 
-        {paymentMethodType === 'wallet' && canMakePayment && paymentRequest && (
-          <Box position="relative">
-            {!agreeToTerms && (
-              <Box
-                position="absolute"
-                inset={0}
-                zIndex={2}
-                cursor="not-allowed"
-                onClick={() => setTermsError(true)}
-              />
-            )}
-            
-            <Box 
-              p={1}
-              borderRadius="lg"
-              border="3px solid"
-              borderColor={agreeToTerms ? colors.green : 'whiteAlpha.300'}
-              bg={agreeToTerms ? `${colors.green}08` : 'transparent'}
-              filter={!agreeToTerms ? 'grayscale(50%) opacity(0.5)' : 'none'}
-              pointerEvents={agreeToTerms ? 'auto' : 'none'}
-              transition="all 0.3s"
-              boxShadow={agreeToTerms ? `0 0 25px ${colors.green}30, inset 0 0 15px ${colors.green}10` : 'none'}
-              _hover={agreeToTerms ? {
-                boxShadow: `0 0 35px ${colors.green}40, inset 0 0 20px ${colors.green}15`
-              } : {}}
-            >
-              <PaymentRequestButtonElement 
-                options={{
-                  paymentRequest,
-                  style: {
-                    paymentRequestButton: {
-                      type: 'default',
-                      theme: 'dark',
-                      height: '56px',
-                    },
-                  },
-                }}
-              />
-            </Box>
-          </Box>
-        )}
-
-        {paymentMethodType === 'card' && (
-          <Button
-            onClick={handleCardPayment}
-            size="lg"
-            bg={colors.green}
-            color="black"
-            width="100%"
-            isLoading={isLoading}
-            loadingText="Processing..."
-            fontWeight="800"
-            borderRadius="full"
-            height="56px"
-            leftIcon={<FiLock />}
-            _hover={{
-              transform: 'translateY(-2px)',
-              boxShadow: `0 15px 50px ${colors.green}40`
-            }}
-            _active={{
-              transform: 'translateY(0)'
-            }}
-            transition="all 0.3s"
-          >
-            Complete Payment · ${total}
-          </Button>
-        )}
+        <Button
+          type="submit"
+          size="lg"
+          bg={colors.green}
+          color="black"
+          width="100%"
+          isLoading={isLoading || isProcessing}
+          isDisabled={!stripe || !elements || !elementReady}
+          loadingText={leaving ? 'Sending you to Stripe...' : 'Processing...'}
+          fontWeight="800"
+          borderRadius="full"
+          height="56px"
+          leftIcon={<FiLock />}
+          _hover={{
+            transform: 'translateY(-2px)',
+            boxShadow: `0 15px 50px ${colors.green}40`,
+          }}
+          _active={{
+            transform: 'translateY(0)',
+          }}
+          transition="all 0.3s"
+        >
+          {buttonCopy(selectedType, total)}
+        </Button>
 
         <HStack justify="center" spacing={2}>
           <FiLock size={14} color="#6B7280" />
-          <Text color="gray.400" fontSize="xs">
-            Secure checkout powered by Stripe
+          <Text color="gray.400" fontSize="xs" textAlign="center">
+            {railNote(selectedType)}
           </Text>
         </HStack>
       </VStack>
