@@ -1,104 +1,184 @@
 // src/pages/Home/components/BlindLeadHero.jsx
-// SENTINEL: NB_SHOP_HERO_V2
+// SENTINEL: NB_SHOP_HERO_V3
 //
-// The shop leads with the hunt, not the merchandise. That is the whole revamp in
-// one decision.
+// The shop leads with the hunt, not the merchandise. That is still the whole
+// decision. What changed in V3 is that the hunt is now something you can see.
 //
-// A store that opens with a product grid is asking to be compared on price. A
-// store that opens with a reason is asking to be understood, and a stranger who
-// understands the reason will pay ninety nine dollars for chopsticks without
-// blinking. The grid is still four hundred pixels down. It has not gone
-// anywhere. It just is not the argument any more.
+// ── V2 was a wall of text with an empty right half ─────────────────────────
+// A ninety six pixel headline, two paragraphs and two buttons in the left
+// column, and nothing on the right but a soft glow. On a wide display that
+// read as a page that had not finished loading. The headline is smaller now
+// and the right column holds the four clue envelopes, fanned like a hand of
+// cards, each sealed by a different burro. It is the two dollar door drawn as
+// an object, it links straight to that product, and it fills the half of the
+// screen that used to be empty with the actual thing being sold.
 //
-// Nothing here animates for the sake of it. The one moving element is the float
-// dot, because that is the thing we want a stranger to learn to look for.
+// ── the keeper ──────────────────────────────────────────────────────────────
+// The shop has a burro who runs it. When the portrait lands at KEEPER_SRC it
+// renders behind the fan (or on its own on very narrow screens). Until the
+// file exists the <Image> fails to load, onError flips a flag and nothing is
+// drawn, so the hero is complete with or without it. Deliver the portrait as
+// a 4:5 webp, 2000x2500 with a 1200 wide variant, the same shape the studio
+// used for the account login plate. It scales by width in a column, so a
+// wide crop would arrive as a strip. See the note in the chat that shipped
+// this file for the full sizing guidance.
 //
-// THE STAT ROW IS GONE ON PURPOSE. It read "00 in the world" and "0 purchase
-// necessary" side by side, which a stranger parses as a store with nothing in
-// it. Counters that can legitimately sit at zero do not belong above the fold
-// of a shop that has not shipped its first run. The numbers still live on the
-// board, where zero means "not started" instead of "empty".
+// Nothing here animates for the sake of it. The float dot breathes, the
+// envelopes arrive once and lift on hover. That is the whole motion budget.
 //
 // No oxford commas, no em dashes.
 
-import { Box, Text, Heading, HStack, VStack } from '@chakra-ui/react';
+import { Box, Text, Heading, HStack, Grid, GridItem, Image } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { FiArrowRight, FiArrowDown } from 'react-icons/fi';
 import { HUNT } from '../../../data/blindLead';
+import { CLUE_FLOATS } from '../../../data/products-digital';
 import { colors } from '../../../theme/colors';
-import { RAIL, SHEET } from '../../../theme/layout';
+import { RAIL, SHEET, EASE } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
 const LIME = colors.accent.signal;
 
+// Drop the shopkeeper here when it exists. Nothing renders until it does.
+const KEEPER_SRC = '/images/shop/hero/keeper.webp';
+
+// The spread. Four envelopes laid on a table, each fully visible because the
+// four burros on them are the point. A fanned hand looked better and hid
+// three of them behind the front card. Positions are percentages of the
+// square, index order matches CLUE_FLOATS.
+const FAN = [
+  { rot: -7, left: 2, top: 4 },
+  { rot: 5, left: 50, top: 0 },
+  { rot: 4, left: 0, top: 50 },
+  { rot: -5, left: 52, top: 47 },
+];
+
+const EnvelopeFan = () => (
+  <Box as={RouterLink} to="/product/two-dollar-clue/" role="group" display="block"
+    position="relative" w="100%" maxW="560px" mx="auto" aria-label="The $2 Clue, four floats"
+    _hover={{ textDecoration: 'none' }}>
+    <Box position="relative" w="100%" pt="96%">
+      {CLUE_FLOATS.map((f, i) => {
+        const g = FAN[i] || FAN[FAN.length - 1];
+        return (
+          <MotionBox key={f.id} position="absolute" left={`${g.left}%`} top={`${g.top}%`} w="47%"
+            initial={{ opacity: 0, y: 30, rotate: 0 }}
+            animate={{ opacity: 1, y: 0, rotate: g.rot }}
+            transition={{ duration: 0.9, delay: 0.25 + i * 0.09, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: '50% 50%' }}
+            zIndex={i + 1}>
+            <Box borderRadius="10px" overflow="hidden" boxShadow="0 24px 60px rgba(0,0,0,0.55)"
+              border="1px solid" borderColor="rgba(255,255,255,0.08)"
+              transition={`transform 480ms ${EASE}, box-shadow 480ms ${EASE}`}
+              _groupHover={{ transform: `translateY(${-8 - i * 3}px)`, boxShadow: `0 34px 70px rgba(0,0,0,0.6), 0 0 0 1px ${LIME}55` }}>
+              <Image src={f.image} alt={`${f.name}, sealed by ${f.character}`} w="100%" h="auto" display="block"
+                draggable={false} loading="eager" />
+            </Box>
+          </MotionBox>
+        );
+      })}
+    </Box>
+
+    <HStack justify="center" spacing={3} mt={{ base: 2, md: 4 }} opacity={0.9}
+      transition={`opacity 300ms ${EASE}`} _groupHover={{ opacity: 1 }}>
+      <Box w="5px" h="5px" borderRadius="full" bg={LIME} boxShadow={`0 0 10px ${LIME}`} />
+      <Text fontFamily="mono" fontSize={{ base: '9px', md: '10px' }} letterSpacing="0.2em"
+        textTransform="uppercase" color={colors.text.secondary} textAlign="center">
+        The $2 Clue · four floats · four burros
+      </Text>
+      <Box as={FiArrowRight} boxSize={3} color={LIME} transition={`transform 300ms ${EASE}`}
+        _groupHover={{ transform: 'translateX(3px)' }} />
+    </HStack>
+  </Box>
+);
+
 const BlindLeadHero = ({ onScrollToProducts }) => {
+  const [keeper, setKeeper] = useState(true);
 
   return (
     <Box as="section" position="relative" overflow="hidden"
-      minH={{ base: 'auto', md: '92vh' }} display="flex" alignItems="center"
-      pt={{ base: 28, md: 0 }} pb={{ base: 16, md: 0 }}
+      minH={{ base: 'auto', md: '84vh' }} display="flex" alignItems="center"
+      pt={{ base: 28, md: 24 }} pb={{ base: 14, md: 12 }}
       sx={{ background: `linear-gradient(118deg, ${colors.dark.void} 0%, ${LIME}0C 44%, ${colors.dark.black} 100%)` }}>
 
-      <Box position="absolute" aria-hidden="true" top={{ base: '-8%', md: '6%' }}
-        right={{ base: '-24%', md: '2%' }} w={{ base: '380px', md: '720px' }}
-        h={{ base: '380px', md: '720px' }}
-        sx={{ background: `radial-gradient(circle, ${LIME}1E 0%, ${LIME}08 46%, transparent 72%)`,
+      <Box position="absolute" aria-hidden="true" top={{ base: '-8%', md: '2%' }}
+        right={{ base: '-24%', md: '4%' }} w={{ base: '380px', md: '760px' }}
+        h={{ base: '380px', md: '760px' }}
+        sx={{ background: `radial-gradient(circle, ${LIME}1C 0%, ${LIME}07 46%, transparent 72%)`,
               filter: 'blur(18px)' }} />
 
       <Box px={RAIL} maxW={SHEET} w="100%" position="relative" zIndex={1}>
-        <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
+        <Grid templateColumns={{ base: '1fr', md: '1.05fr 0.95fr' }} gap={{ base: 12, md: 10, lg: 16 }} alignItems="center">
+          <GridItem>
+            <MotionBox initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
 
-          <HStack spacing={3} mb={{ base: 5, md: 7 }}>
-            <Box w="7px" h="7px" borderRadius="full" bg={LIME} flexShrink={0}
-              sx={{ boxShadow: `0 0 12px ${LIME}`,
-                    animation: 'nbFloat 3.4s ease-in-out infinite',
-                    '@keyframes nbFloat': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.35 } } }} />
-            <Text fontFamily="mono" fontSize={{ base: '9px', md: '10px' }} fontWeight="500"
-              letterSpacing="0.24em" textTransform="uppercase" color={LIME}>
-              {HUNT.region}
-            </Text>
-          </HStack>
+              <HStack spacing={3} mb={{ base: 5, md: 6 }}>
+                <Box w="7px" h="7px" borderRadius="full" bg={LIME} flexShrink={0}
+                  sx={{ boxShadow: `0 0 12px ${LIME}`,
+                        animation: 'nbFloat 3.4s ease-in-out infinite',
+                        '@keyframes nbFloat': { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.35 } } }} />
+                <Text fontFamily="mono" fontSize={{ base: '9px', md: '10px' }} fontWeight="500"
+                  letterSpacing="0.24em" textTransform="uppercase" color={LIME}>
+                  {HUNT.region}
+                </Text>
+              </HStack>
 
-          <Heading as="h1" fontWeight="600" letterSpacing="-0.045em" lineHeight="0.9"
-            color={colors.text.primary} fontSize={{ base: '42px', md: '76px', lg: '96px' }}
-            maxW="1100px" mb={{ base: 6, md: 8 }}>
-            Every piece we make
-            <Box as="span" display="block" color={LIME}>carries a clue.</Box>
-          </Heading>
+              <Heading as="h1" fontWeight="600" letterSpacing="-0.04em" lineHeight="0.94"
+                color={colors.text.primary} fontSize={{ base: '40px', md: '56px', lg: '68px' }}
+                maxW="720px" mb={{ base: 5, md: 6 }}>
+                Every piece we make
+                <Box as="span" display="block" color={LIME}>carries a clue.</Box>
+              </Heading>
 
-          <Text fontSize={{ base: 'md', md: 'xl' }} color={colors.text.primary} lineHeight="1.55"
-            maxW="640px" mb={5}>
-            There is real treasure on public land in western Colorado. The cups, the shirts, the
-            two dollar envelope. Each one carries a fragment pointing at it.
-          </Text>
+              <Text fontSize={{ base: 'md', md: 'lg' }} color={colors.text.primary} lineHeight="1.6"
+                maxW="560px" mb={4}>
+                There is real treasure on public land in western Colorado. The cups, the shirts, the
+                two dollar envelope. Each one carries a fragment pointing at it.
+              </Text>
 
-          <Text fontSize={{ base: 'sm', md: 'md' }} color={colors.text.secondary} lineHeight="1.8"
-            maxW="580px" mb={{ base: 9, md: 11 }}>
-            Prospectors call that float. Loose ore you find downstream that proves a vein exists
-            somewhere above you. Follow enough of it and you are standing on {HUNT.name}.
-          </Text>
+              <Text fontSize={{ base: 'sm', md: 'md' }} color={colors.text.secondary} lineHeight="1.8"
+                maxW="520px" mb={{ base: 8, md: 9 }}>
+                Prospectors call that float. Loose ore you find downstream that proves a vein exists
+                somewhere above you. Follow enough of it and you are standing on {HUNT.name}.
+              </Text>
 
-          <HStack spacing={4} flexWrap="wrap" rowGap={3} mb={{ base: 10, md: 14 }}>
-            <Box as={RouterLink} to="/the-blind-lead/" display="inline-flex" alignItems="center"
-              gap="9px" px={7} py={4} borderRadius="full" bg={LIME} color={colors.dark.black}
-              fontWeight="700" fontSize={{ base: 'sm', md: 'md' }} textDecoration="none"
-              transition="transform 0.25s ease, filter 0.25s ease"
-              _hover={{ transform: 'translateY(-2px)', filter: 'brightness(1.08)', textDecoration: 'none' }}>
-              How the hunt works <FiArrowRight />
+              <HStack spacing={4} flexWrap="wrap" rowGap={3}>
+                <Box as={RouterLink} to="/the-blind-lead/" display="inline-flex" alignItems="center"
+                  gap="9px" px={7} py={4} borderRadius="full" bg={LIME} color={colors.dark.black}
+                  fontWeight="700" fontSize={{ base: 'sm', md: 'md' }} textDecoration="none"
+                  transition="transform 0.25s ease, filter 0.25s ease"
+                  _hover={{ transform: 'translateY(-2px)', filter: 'brightness(1.08)', textDecoration: 'none' }}>
+                  How the hunt works <FiArrowRight />
+                </Box>
+                <Box as="button" onClick={onScrollToProducts} display="inline-flex" alignItems="center"
+                  gap="9px" px={7} py={4} borderRadius="full" border="1px solid"
+                  borderColor={colors.ui.border} color={colors.text.secondary} fontWeight="600"
+                  fontSize={{ base: 'sm', md: 'md' }}
+                  transition="border-color 0.25s ease, color 0.25s ease"
+                  _hover={{ borderColor: LIME, color: colors.text.primary }}>
+                  See what carries it <FiArrowDown />
+                </Box>
+              </HStack>
+            </MotionBox>
+          </GridItem>
+
+          <GridItem>
+            <Box position="relative">
+              {keeper && (
+                <Image src={KEEPER_SRC} alt="" aria-hidden="true" onError={() => setKeeper(false)}
+                  position="absolute" inset={0} m="auto" w="78%" h="auto" maxH="100%" objectFit="contain"
+                  opacity={0.9} pointerEvents="none" zIndex={0}
+                  filter="drop-shadow(0 30px 60px rgba(0,0,0,0.5))" />
+              )}
+              <Box position="relative" zIndex={1}>
+                <EnvelopeFan />
+              </Box>
             </Box>
-            <Box as="button" onClick={onScrollToProducts} display="inline-flex" alignItems="center"
-              gap="9px" px={7} py={4} borderRadius="full" border="1px solid"
-              borderColor={colors.ui.border} color={colors.text.secondary} fontWeight="600"
-              fontSize={{ base: 'sm', md: 'md' }}
-              transition="border-color 0.25s ease, color 0.25s ease"
-              _hover={{ borderColor: LIME, color: colors.text.primary }}>
-              See what carries it <FiArrowDown />
-            </Box>
-          </HStack>
-
-        </MotionBox>
+          </GridItem>
+        </Grid>
       </Box>
     </Box>
   );

@@ -1,5 +1,5 @@
 // src/theme/layout.js
-// SENTINEL: NB_SHOP_LAYOUT_V1
+// SENTINEL: NB_SHOP_LAYOUT_V2
 //
 // ── THE INVARIANT, AND IT IS THE SAME ONE ───────────────────────────────────
 //
@@ -27,6 +27,20 @@
 // band. Same geometry, opposite behaviour, and the difference is something a
 // customer feels rather than names.
 //
+// ── THE SADDLEBAG, AND THE GAP IT LIVES IN ─────────────────────────────────
+//
+// The sheet is left aligned and capped at SHEET. On a display wider than that
+// the right hand side is empty on purpose, the same way it is on the studio.
+// The shop puts the cart there. Above DOCK_MIN the saddlebag is a fixed column
+// in that gap, always visible, always current. Below it, the saddlebag is a
+// floating pill in the bottom right that appears the moment something is added
+// and opens the drawer. Same object, two homes, chosen by width alone.
+//
+// DOCK_MIN is SHEET plus the dock plus two rails, exactly. Change SHEET and
+// this has to move with it, which is why it is derived and not typed. It works
+// out to 2100, and a common wide display is 2127 CSS pixels, so do not add
+// breathing room here, add it inside the dock.
+//
 // No oxford commas, no em dashes.
 
 // ── the rail ────────────────────────────────────────────────────────────────
@@ -40,6 +54,13 @@ export const RAIL_PX = { base: 20, md: 40 };
 // right to a wide screen than a paragraph does.
 export const SHEET = '1680px';
 export const SHEET_PX = 1680;
+
+// ── the saddlebag dock ──────────────────────────────────────────────────────
+export const DOCK_W_PX = 340;
+export const DOCK_W = `${DOCK_W_PX}px`;
+export const DOCK_MIN_PX = SHEET_PX + DOCK_W_PX + RAIL_PX.md * 2;
+export const DOCK_MIN = `${DOCK_MIN_PX}px`;
+export const DOCK_MQ = `@media (min-width: ${DOCK_MIN_PX}px)`;
 
 // ── the nav lockup ──────────────────────────────────────────────────────────
 // The tile has 11px of padding and a 1px border, so its box starts 12px before
@@ -95,5 +116,5 @@ export const TILE = {
 export default {
   RAIL, RAIL_PX, SHEET, SHEET_PX, MEASURE, LEDE, BAND_Y, GUTTER, DISPLAY,
   CONTENT_LEFT, NAV_TILE_INSET, NAV_H, NAV_H_TIGHT, NAV_CONDENSE_AFTER,
-  SHADES, EASE, TILE,
+  SHADES, EASE, TILE, DOCK_W, DOCK_W_PX, DOCK_MIN, DOCK_MIN_PX, DOCK_MQ,
 };

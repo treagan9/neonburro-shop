@@ -1,5 +1,5 @@
 // src/components/navigation/ShopNavigation.jsx
-// SENTINEL: NB_SHOP_NAV_V2
+// SENTINEL: NB_SHOP_NAV_V3
 //
 // Full width bar. Same lockup, same rail, same tile surface as neonburro.com,
 // and one deliberate difference in behaviour.
@@ -25,6 +25,12 @@
 // The plumb line under it is the visible proof. If a heading ever drifts, you
 // see it against that hairline without measuring anything.
 //
+// ── THE COUNTER (V3) ────────────────────────────────────────────────────────
+// It still does not pulse forever. It bumps once, on add, keyed on
+// lastAdded.at from the cart context, then sits still. The floating saddlebag
+// pill in the corner does the louder announcing, this is the quiet echo of it
+// up top so both places the eye might be agree that something happened.
+//
 // V1 was 167 lines with its own hardcoded colour object and a Container capped
 // at 1400px, so the shop and the studio disagreed about where the left edge of
 // the world was. Everything geometric now comes from theme/layout.js.
@@ -33,6 +39,7 @@
 
 import { Box, Flex, HStack, Image, Text, Link } from '@chakra-ui/react';
 import { Link as RouterLink } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
@@ -42,11 +49,12 @@ import {
   NAV_CONDENSE_AFTER, EASE, TILE,
 } from '../../theme/layout';
 
+const MotionBox = motion(Box);
 const LIME = colors.accent.signal;
 const MAIN_DOMAIN = 'https://neonburro.com';
 
 const ShopNavigation = () => {
-  const { getCartItemsCount, setIsOpen } = useCart();
+  const { getCartItemsCount, openCart, lastAdded } = useCart();
   const [condensed, setCondensed] = useState(false);
   const count = getCartItemsCount();
 
@@ -152,13 +160,12 @@ const ShopNavigation = () => {
             </Text>
           </HStack>
 
-          {/* ── the cart ──────────────────────────────────────────────────
-              Sits on the right rail. No pulse, no glow. A counter that
-              animates forever is a counter people stop reading. */}
+          {/* ── the saddlebag ─────────────────────────────────────────────
+              Sits on the right rail. Bumps once on add, then still. */}
           <HStack
             as="button"
             type="button"
-            onClick={() => setIsOpen(true)}
+            onClick={openCart}
             spacing={2.5}
             px={3}
             py={2}
@@ -168,10 +175,18 @@ const ShopNavigation = () => {
             transition={`border-color 260ms ${EASE}, background-color 260ms ${EASE}`}
             _hover={{ borderColor: TILE.border, bg: 'rgba(255,255,255,0.04)' }}
             _focusVisible={{ borderColor: LIME, outline: 'none' }}
-            aria-label={count > 0 ? `Cart, ${count} items` : 'Cart, empty'}
+            aria-label={count > 0 ? `Saddlebag, ${count} ${count === 1 ? 'item' : 'items'}` : 'Saddlebag, empty'}
           >
-            <Box as={FiShoppingBag} boxSize={{ base: '19px', md: '20px' }}
-              color={colors.text.primary} />
+            <MotionBox
+              key={lastAdded?.at || 'still'}
+              initial={{ scale: 1.18 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 520, damping: 16 }}
+              display="inline-flex"
+            >
+              <Box as={FiShoppingBag} boxSize={{ base: '19px', md: '20px' }}
+                color={colors.text.primary} />
+            </MotionBox>
             <Text
               fontFamily="mono"
               fontSize="11px"
@@ -194,4 +209,4 @@ const ShopNavigation = () => {
 
 export default ShopNavigation;
 
-/* NB · shop navigation · v2 · full width, same rail, never hides */
+/* NB · shop navigation · v3 · full width, same rail, never hides, bumps once */

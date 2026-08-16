@@ -1,5 +1,5 @@
 // netlify/functions/create-payment-intent.js
-// SENTINEL: NB_SHOP_PAYMENT_INTENT_V2
+// SENTINEL: NB_SHOP_PAYMENT_INTENT_V3
 //
 // Creates the Stripe PaymentIntent for a shop order (and, for the older
 // service invoice path, an invoice payment). The browser calls this from
@@ -9,13 +9,10 @@
 // ── rails ───────────────────────────────────────────────────────────────────
 // automatic_payment_methods is on and payment_method_types is deliberately not
 // sent. That means the Stripe Dashboard decides which methods the Payment
-// Element shows: card, Apple Pay, Google Pay, Link and, once "Stablecoins and
-// Crypto" is approved and enabled in Dashboard > Settings > Payment methods,
-// USDC on Solana, Base, Ethereum or Polygon settled to us in dollars. No code
-// change and no redeploy is needed to turn a rail on here. That is different
-// from neonburro.com's hosted Checkout functions, which list types explicitly
-// and gate crypto behind an env var, because hosted Checkout 400s on a type the
-// account is not approved for while the Payment Element simply hides it.
+// Element shows: card, Apple Pay, Google Pay, Link and, with "Stablecoins and
+// Crypto" enabled in Dashboard > Settings > Payment methods, USDC on Solana,
+// Base, Ethereum or Polygon settled to us in dollars. No code change and no
+// redeploy is needed to turn a rail on here.
 //
 // ── why shipping and contact live on the intent ─────────────────────────────
 // Some rails redirect the customer off our site (stablecoins go to
@@ -24,6 +21,16 @@
 // phone and address are written to `shipping` and to metadata here, at intent
 // creation, before any redirect can happen. The Netlify form post in
 // Checkout/index.jsx is a convenience copy, Stripe is the record.
+//
+// ── digital (V3) ────────────────────────────────────────────────────────────
+// A digital only order has no street address and that is fine. shippingFor
+// returns undefined without one and Stripe accepts an intent with no shipping.
+// metadata.delivery is 'digital', 'ship' or 'mixed' so whoever fulfils can
+// filter. Each item carries d (delivery) and, for a Pay Card reload, r (the
+// card code the shopper typed). Reload codes are also joined into
+// metadata.reload_codes so the Dashboard shows them without decoding JSON.
+// The card ledger that consumes them lives in Pulse and is the next build,
+// until then a reload is applied by hand from this metadata.
 //
 // Stripe metadata is 50 keys and 500 characters per value. items_json is
 // truncated defensively, the per item keys cover the first five for the
@@ -40,9 +47,19 @@ const clip = (value, max = 480) => {
   return s.length > max ? s.slice(0, max) : s;
 };
 
-const shopMetadata = ({ customerEmail, items, customer }) => {
+const deliveryOf = (items, hint) => {
+  const kinds = new Set(items.map((i) => (i.delivery === 'digital' ? 'digital' : 'ship')));
+  if (kinds.size === 2) return 'mixed';
+  if (kinds.has('digital')) return 'digital';
+  if (kinds.has('ship')) return 'ship';
+  return hint === 'digital' ? 'digital' : 'ship';
+};
+
+const shopMetadata = ({ customerEmail, items, customer, delivery }) => {
+  const reloadCodes = items.map((i) => i.reloadCode).filter(Boolean);
   const metadata = {
     type: 'shop_order',
+    delivery,
     customer_email: clip(customerEmail, 200),
     items_count: String(items.length),
     items_json: clip(JSON.stringify(items.map((i) => ({
@@ -51,10 +68,14 @@ const shopMetadata = ({ customerEmail, items, customer }) => {
       p: i.price,
       q: i.quantity,
       s: i.selectedSize || undefined,
-      d: i.selectedDesign || undefined,
+      d: i.delivery === 'digital' ? 'digital' : undefined,
+      v: i.selectedDesign || undefined,
       t: i.selectedTier || undefined,
+      r: i.reloadCode || undefined,
     })))),
   };
+
+  if (reloadCodes.length) metadata.reload_codes = clip(reloadCodes.join(','), 400);
 
   if (customer) {
     if (customer.name) metadata.customer_name = clip(customer.name, 200);
@@ -71,13 +92,14 @@ const shopMetadata = ({ customerEmail, items, customer }) => {
     if (item.selectedSize) metadata[`${prefix}_size`] = clip(item.selectedSize, 40);
     if (item.selectedDesign) metadata[`${prefix}_design`] = clip(item.selectedDesign, 80);
     if (item.selectedTier) metadata[`${prefix}_tier`] = clip(item.selectedTier, 40);
+    if (item.reloadCode) metadata[`${prefix}_reload`] = clip(item.reloadCode, 60);
   });
 
   return metadata;
 };
 
 const shippingFor = (customer) => {
-  if (!customer || !customer.name || !customer.address) return undefined;
+  if (!customer || !customer.name || !String(customer.address || '').trim()) return undefined;
   return {
     name: clip(customer.name, 200),
     phone: customer.phone ? clip(customer.phone, 40) : undefined,
@@ -134,14 +156,16 @@ export const handler = async (event) => {
         };
       }
 
+      const delivery = deliveryOf(items, body.delivery);
+
       const paymentIntent = await stripe.paymentIntents.create({
         amount: cents,
         currency: 'usd',
         automatic_payment_methods: { enabled: true },
         receipt_email: customerEmail,
-        description: `Neon Burro Shop · ${items.length} item${items.length === 1 ? '' : 's'}`,
+        description: `Neon Burro Shop · ${items.length} item${items.length === 1 ? '' : 's'}${delivery === 'digital' ? ' · by email' : ''}`,
         shipping: shippingFor(customer),
-        metadata: shopMetadata({ customerEmail, items, customer }),
+        metadata: shopMetadata({ customerEmail, items, customer, delivery }),
         statement_descriptor_suffix: 'NEONBURRO',
       });
 

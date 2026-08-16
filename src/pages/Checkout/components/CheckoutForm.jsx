@@ -1,23 +1,34 @@
 // src/pages/Checkout/components/CheckoutForm.jsx
-// SENTINEL: NB_SHOP_CHECKOUT_FORM_V2
+// SENTINEL: NB_SHOP_CHECKOUT_FORM_V3
 //
 // Contact and shipping fields, the Stripe Payment Element, the terms gate and
 // one pay button. Lives inside the <Elements> provider that Checkout/index.jsx
 // mounts with the cart total.
 //
-// ── what changed and why ────────────────────────────────────────────────────
+// ── V2, why the Payment Element ─────────────────────────────────────────────
 // This used to be three separate card elements, a radio group and a
 // PaymentRequestButtonElement for Apple Pay and Google Pay, confirmed with
 // stripe.confirmCardPayment. That API can only ever take a card. It could not
 // show Link, it could not show a bank, and it could not show Stripe's
 // stablecoin rail (USDC on Solana, Base, Ethereum or Polygon, settled to us in
-// dollars), which is the reason for the rewrite.
+// dollars), which is the reason for the rewrite. The Payment Element renders
+// every method the Stripe Dashboard has enabled, so there is one form, one
+// submit path and one terms check.
 //
-// The Payment Element renders every method the Stripe Dashboard has enabled
-// for the account, including Apple Pay and Google Pay when the device has
-// them, and stripe.confirmPayment handles whichever one the shopper picked. So
-// there is one form, one submit path and one terms check, instead of three of
-// each. Turning a new rail on is a Dashboard switch, not a deploy.
+// ── V3, digital aware ───────────────────────────────────────────────────────
+// A two dollar clue arrives by email. Asking for a street address to buy it
+// is friction with no purpose, and it was required. When every line in the
+// saddlebag is digital (CartContext.isDigitalItem) the address block becomes
+// optional and says so: "optional, but recommended", because some float
+// ships a physical follow up and a shopper who leaves an address gets it.
+// Name and email stay required, the email IS the delivery address. When any
+// physical line is present everything is required as before.
+//
+// Billing details for the Payment Element are set to 'never' collected by
+// Stripe, so they must be passed in confirmParams. For a digital only order
+// with no address that means billing_details.address is { country: 'US' } and
+// whatever the shopper did fill in. Stripe accepts a partial address on the
+// payment method. shipping is only sent when there is a street to send to.
 //
 // ── the submit sequence, and the order matters ──────────────────────────────
 //   1. our own validation (required fields, terms)
@@ -26,7 +37,8 @@
 //                          the intent is created when using deferred intents.
 //   3. writeStash()        park the typed fields in sessionStorage in case
 //                          step 5 leaves the site. See stash.js.
-//   4. create the PaymentIntent server side, sending contact and shipping so
+//   4. create the PaymentIntent server side, sending contact, shipping when
+//                          present, delivery kind and any reload codes so
 //                          Stripe holds the order before any redirect.
 //   5. stripe.confirmPayment with redirect: 'if_required'
 //        card, wallets, Link   resolve here with a succeeded intent, onSubmit
@@ -34,20 +46,9 @@
 //                              back to /checkout/ with a client secret, and
 //                              Checkout/index.jsx finishes the order.
 //
-// ── billing details ─────────────────────────────────────────────────────────
-// fields.billingDetails is 'never' for name, email, phone and address, because
-// we already collect all of them above the element and asking twice is how a
-// shopper leaves. The trade is that Stripe then REQUIRES them in
-// confirmParams.payment_method_data.billing_details, every time, for every
-// method. If a field is ever made optional above, it must still be sent here
-// or confirmPayment fails with a missing billing detail error. Country is
-// always US, the shop only ships domestically.
-//
-// ── the pay button copy ─────────────────────────────────────────────────────
 // The Payment Element's onChange tells us which method is selected. For a
 // method that leaves the site the button says so and a line under it says
-// what happens next. A shopper who is told they are about to be redirected
-// completes the payment. One who is not closes the tab.
+// what happens next.
 //
 // No oxford commas, no em dashes.
 
@@ -70,6 +71,7 @@ import { useState, useMemo } from 'react';
 import { FiLock, FiAlertCircle } from 'react-icons/fi';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { writeStash } from '../stash';
+import { isDigitalItem } from '../../../context/CartContext';
 
 const MotionBox = motion(Box);
 
@@ -79,7 +81,8 @@ const colors = {
   copper: '#C8893B',
 };
 
-const REQUIRED = ['firstName', 'lastName', 'email', 'address', 'city', 'state', 'zip'];
+const REQUIRED_PHYSICAL = ['firstName', 'lastName', 'email', 'address', 'city', 'state', 'zip'];
+const REQUIRED_DIGITAL = ['firstName', 'lastName', 'email'];
 
 // Methods that take the shopper off the site before the intent settles.
 const REDIRECT_TYPES = new Set(['crypto']);
@@ -101,6 +104,9 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
   const stripe = useStripe();
   const elements = useElements();
   const toast = useToast();
+
+  const digitalOnly = cart.length > 0 && cart.every(isDigitalItem);
+  const required = digitalOnly ? REQUIRED_DIGITAL : REQUIRED_PHYSICAL;
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -149,11 +155,13 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!stripe || !elements || isLoading || isProcessing) return;
 
-    const missing = REQUIRED.filter((k) => !String(formData[k] || '').trim());
+    const missing = required.filter((k) => !String(formData[k] || '').trim());
     if (missing.length > 0) {
       toast({
         title: 'Required fields missing',
-        description: 'Please fill in your name, email and shipping address',
+        description: digitalOnly
+          ? 'Please fill in your name and the email the order should go to'
+          : 'Please fill in your name, email and shipping address',
         status: 'error',
         duration: 3000,
       });
@@ -180,11 +188,12 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
       writeStash({ ...formData, paymentType: selectedType });
 
       const name = `${formData.firstName} ${formData.lastName}`.trim();
+      const hasStreet = !!formData.address.trim();
       const address = {
-        line1: formData.address,
-        city: formData.city,
-        state: formData.state,
-        postal_code: formData.zip,
+        line1: formData.address.trim() || undefined,
+        city: formData.city.trim() || undefined,
+        state: formData.state.trim() || undefined,
+        postal_code: formData.zip.trim() || undefined,
         country: 'US',
       };
 
@@ -195,6 +204,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
           type: 'shop',
           amount: total,
           customerEmail: formData.email,
+          delivery: digitalOnly ? 'digital' : 'ship',
           customer: {
             name,
             phone: formData.phone,
@@ -211,6 +221,8 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
             selectedSize: item.selectedSize || null,
             selectedDesign: item.selectedDesign || null,
             selectedTier: item.selectedTier || null,
+            reloadCode: item.reloadCode || null,
+            delivery: isDigitalItem(item) ? 'digital' : 'ship',
             stripePriceId: item.stripePriceId,
           })),
         }),
@@ -219,26 +231,26 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
       const { clientSecret, error } = await response.json();
       if (error || !clientSecret) throw new Error(error || 'Could not start the payment');
 
-      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        clientSecret,
-        confirmParams: {
-          return_url: `${window.location.origin}/checkout/`,
-          receipt_email: formData.email,
-          payment_method_data: {
-            billing_details: {
-              name,
-              email: formData.email,
-              phone: formData.phone || undefined,
-              address,
-            },
-          },
-          shipping: {
+      const confirmParams = {
+        return_url: `${window.location.origin}/checkout/`,
+        receipt_email: formData.email,
+        payment_method_data: {
+          billing_details: {
             name,
+            email: formData.email,
             phone: formData.phone || undefined,
             address,
           },
         },
+      };
+      if (hasStreet) {
+        confirmParams.shipping = { name, phone: formData.phone || undefined, address };
+      }
+
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams,
         redirect: 'if_required',
       });
 
@@ -281,6 +293,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
   };
 
   const leaving = REDIRECT_TYPES.has(selectedType);
+  const addressRequired = !digitalOnly;
 
   return (
     <Box
@@ -295,118 +308,84 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     >
       <VStack spacing={6} align="stretch">
         <Box>
-          <Text color="white" fontSize="lg" fontWeight="600" mb={4}>
-            Contact & Shipping
+          <Text color="white" fontSize="lg" fontWeight="600" mb={1}>
+            {digitalOnly ? 'Contact' : 'Contact & Shipping'}
           </Text>
+          {digitalOnly && (
+            <Text color="gray.400" fontSize="sm" mb={4} lineHeight="1.6">
+              Everything in the saddlebag arrives by email, so the email is the delivery address.
+            </Text>
+          )}
+          {!digitalOnly && <Box mb={4} />}
           <VStack spacing={4}>
             <HStack spacing={4} width="100%">
               <FormControl isRequired>
                 <FormLabel color="gray.400" fontSize="sm">First Name</FormLabel>
-                <Input
-                  name="firstName"
-                  autoComplete="given-name"
-                  value={formData.firstName}
-                  onChange={handleChange}
-                  placeholder="John"
-                  size="lg"
-                  {...inputStyles}
-                />
+                <Input name="firstName" autoComplete="given-name" value={formData.firstName}
+                  onChange={handleChange} placeholder="John" size="lg" {...inputStyles} />
               </FormControl>
 
               <FormControl isRequired>
                 <FormLabel color="gray.400" fontSize="sm">Last Name</FormLabel>
-                <Input
-                  name="lastName"
-                  autoComplete="family-name"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  placeholder="Doe"
-                  size="lg"
-                  {...inputStyles}
-                />
+                <Input name="lastName" autoComplete="family-name" value={formData.lastName}
+                  onChange={handleChange} placeholder="Doe" size="lg" {...inputStyles} />
               </FormControl>
             </HStack>
 
             <FormControl isRequired>
               <FormLabel color="gray.400" fontSize="sm">Email</FormLabel>
-              <Input
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="john@example.com"
-                size="lg"
-                {...inputStyles}
-              />
+              <Input name="email" type="email" autoComplete="email" value={formData.email}
+                onChange={handleChange} placeholder="john@example.com" size="lg" {...inputStyles} />
             </FormControl>
 
             <FormControl>
               <FormLabel color="gray.400" fontSize="sm">Phone</FormLabel>
-              <Input
-                name="phone"
-                type="tel"
-                autoComplete="tel"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="(555) 123-4567"
-                size="lg"
-                {...inputStyles}
-              />
+              <Input name="phone" type="tel" autoComplete="tel" value={formData.phone}
+                onChange={handleChange} placeholder="(555) 123-4567" size="lg" {...inputStyles} />
             </FormControl>
+          </VStack>
+        </Box>
 
-            <FormControl isRequired>
+        <Box>
+          <HStack justify="space-between" align="baseline" mb={digitalOnly ? 1 : 4} flexWrap="wrap" rowGap={1}>
+            <Text color="white" fontSize="lg" fontWeight="600">
+              {digitalOnly ? 'Mailing address' : 'Shipping address'}
+            </Text>
+            {digitalOnly && (
+              <Text fontFamily="mono" fontSize="10px" letterSpacing="0.14em" textTransform="uppercase" color={colors.teal}>
+                Optional, but recommended
+              </Text>
+            )}
+          </HStack>
+          {digitalOnly && (
+            <Text color="gray.400" fontSize="sm" mb={4} lineHeight="1.6">
+              Some float ships a physical follow up. Leave an address and it can find you.
+            </Text>
+          )}
+          <VStack spacing={4}>
+            <FormControl isRequired={addressRequired}>
               <FormLabel color="gray.400" fontSize="sm">Address</FormLabel>
-              <Input
-                name="address"
-                autoComplete="shipping street-address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="123 Main St"
-                size="lg"
-                {...inputStyles}
-              />
+              <Input name="address" autoComplete="shipping street-address" value={formData.address}
+                onChange={handleChange} placeholder="123 Main St" size="lg" {...inputStyles} />
             </FormControl>
 
             <HStack spacing={4} width="100%">
-              <FormControl isRequired flex={2}>
+              <FormControl isRequired={addressRequired} flex={2}>
                 <FormLabel color="gray.400" fontSize="sm">City</FormLabel>
-                <Input
-                  name="city"
-                  autoComplete="shipping address-level2"
-                  value={formData.city}
-                  onChange={handleChange}
-                  placeholder="Denver"
-                  size="lg"
-                  {...inputStyles}
-                />
+                <Input name="city" autoComplete="shipping address-level2" value={formData.city}
+                  onChange={handleChange} placeholder="Denver" size="lg" {...inputStyles} />
               </FormControl>
 
-              <FormControl isRequired flex={1}>
+              <FormControl isRequired={addressRequired} flex={1}>
                 <FormLabel color="gray.400" fontSize="sm">State</FormLabel>
-                <Input
-                  name="state"
-                  autoComplete="shipping address-level1"
-                  value={formData.state}
-                  onChange={handleChange}
-                  placeholder="CO"
-                  size="lg"
-                  maxLength={2}
-                  {...inputStyles}
-                />
+                <Input name="state" autoComplete="shipping address-level1" value={formData.state}
+                  onChange={handleChange} placeholder="CO" size="lg" maxLength={2} {...inputStyles} />
               </FormControl>
 
-              <FormControl isRequired flex={1}>
+              <FormControl isRequired={addressRequired} flex={1}>
                 <FormLabel color="gray.400" fontSize="sm">ZIP</FormLabel>
-                <Input
-                  name="zip"
-                  autoComplete="shipping postal-code"
-                  value={formData.zip}
-                  onChange={handleChange}
-                  placeholder="80202"
-                  size="lg"
-                  {...inputStyles}
-                />
+                <Input name="zip" autoComplete="shipping postal-code" value={formData.zip}
+                  onChange={handleChange} placeholder="80202" size="lg" {...inputStyles} />
               </FormControl>
             </HStack>
           </VStack>

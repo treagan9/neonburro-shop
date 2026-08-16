@@ -1,3 +1,22 @@
+// src/components/cart/CartDrawer.jsx
+// SENTINEL: NB_SHOP_CART_DRAWER_V2
+//
+// The saddlebag, opened. Slides in from the right on any width. Opened by the
+// bag in the nav, by the floating pill and by "Open the saddlebag" in the dock.
+//
+// V1 was Chakra's default drawer with a cart emoji in it, red remove buttons
+// and colours from the 2025 palette. This one is the house tile surface, the
+// mono kickers and the lime accent, and its contents come from
+// SaddlebagLines.jsx so the drawer, the dock and the /cart/ page cannot drift
+// from one another.
+//
+// The drawer does not auto open on add. The pill and the nav counter do the
+// announcing, and a panel that shoves itself over the product page every time
+// somebody taps plus is a panel people learn to close without reading. Buy Now
+// on the product page skips all of this and goes to checkout.
+//
+// No oxford commas, no em dashes.
+
 import {
   Drawer,
   DrawerBody,
@@ -6,170 +25,77 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  Button,
-  VStack,
   HStack,
   Text,
-  IconButton,
-  Box
+  Box,
 } from '@chakra-ui/react';
-import { FiMinus, FiPlus, FiX, FiShoppingBag } from 'react-icons/fi';
-import { useCart } from '../../context/CartContext';
+import { FiShoppingBag } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../../context/CartContext';
+import { colors } from '../../theme/colors';
+import { TILE } from '../../theme/layout';
+import { SaddlebagLines, SaddlebagEmpty, SaddlebagSummary } from './SaddlebagLines';
+
+const LIME = colors.accent.signal;
 
 const CartDrawer = () => {
   const navigate = useNavigate();
-  const { isOpen, setIsOpen, cart, removeFromCart, updateQuantity, getCartTotal } = useCart();
+  const {
+    isOpen, closeCart, cart, removeFromCart, updateQuantity,
+    getCartTotal, getCartItemsCount, isDigitalOnly,
+  } = useCart();
 
-  const handleCheckout = () => {
-    setIsOpen(false);
-    navigate('/checkout/');
-  };
+  const count = getCartItemsCount();
 
-  const handleViewCart = () => {
-    setIsOpen(false);
-    navigate('/cart/');
+  const go = (path) => {
+    closeCart();
+    navigate(path);
   };
 
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={() => setIsOpen(false)} size="md">
-      <DrawerOverlay />
-      <DrawerContent bg="rgba(10, 10, 10, 0.95)" backdropFilter="blur(20px)">
-        <DrawerCloseButton color="white" />
-        <DrawerHeader color="white">
-          <HStack spacing={2}>
-            <FiShoppingBag />
-            <Text>Your Cart ({cart.length})</Text>
+    <Drawer isOpen={isOpen} placement="right" onClose={closeCart} size="sm">
+      <DrawerOverlay bg="rgba(7, 7, 8, 0.6)" backdropFilter="blur(4px)" />
+      <DrawerContent
+        bg={colors.dark.black}
+        borderLeft="1px solid"
+        borderColor={TILE.border}
+        boxShadow={TILE.shadow}
+        maxW={{ base: '100%', sm: '420px' }}
+      >
+        <DrawerCloseButton color={colors.text.muted} top="18px" right="18px"
+          _hover={{ color: colors.text.primary, bg: 'rgba(255,255,255,0.06)' }} />
+
+        <DrawerHeader pt={5} pb={4} px={6} borderBottom="1px solid" borderColor={colors.ui.border}>
+          <HStack spacing={3} align="center">
+            <Box as={FiShoppingBag} boxSize="18px" color={count > 0 ? LIME : colors.text.muted} />
+            <Text fontFamily="mono" fontSize="11px" fontWeight="500" letterSpacing="0.2em"
+              textTransform="uppercase" color={colors.text.primary}>
+              Saddlebag
+            </Text>
+            <Text fontFamily="mono" fontSize="11px" letterSpacing="0.1em"
+              color={count > 0 ? LIME : colors.text.muted}>
+              {String(count).padStart(2, '0')}
+            </Text>
           </HStack>
         </DrawerHeader>
 
-        <DrawerBody>
+        <DrawerBody px={6} py={2}>
           {cart.length === 0 ? (
-            <VStack spacing={8} justify="center" height="100%">
-              <Text fontSize="6xl">🛒</Text>
-              <Text color="gray.400">Your cart is empty</Text>
-              <Button
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate('/');
-                }}
-                variant="outline"
-                colorScheme="whiteAlpha"
-              >
-                Continue Shopping
-              </Button>
-            </VStack>
+            <SaddlebagEmpty onGo={go} />
           ) : (
-            <VStack spacing={4} align="stretch">
-              {cart.map((item) => (
-                <Box
-                  key={item.cartItemId}
-                  p={4}
-                  bg="whiteAlpha.50"
-                  borderRadius="lg"
-                  border="1px solid"
-                  borderColor="whiteAlpha.100"
-                >
-                  <HStack justify="space-between" mb={2}>
-                    <VStack align="start" spacing={0} flex={1}>
-                      <Text color="white" fontWeight="600" fontSize="sm">
-                        {item.name}
-                      </Text>
-                      {(item.selectedSize || item.selectedDesign || item.selectedTier) && (
-                        <HStack spacing={1} flexWrap="wrap">
-                          {item.selectedSize && (
-                            <Text color="gray.400" fontSize="xs">
-                              {item.selectedSize}
-                            </Text>
-                          )}
-                          {item.selectedDesign && (
-                            <>
-                              {item.selectedSize && <Text color="gray.600" fontSize="xs">•</Text>}
-                              <Text color="gray.400" fontSize="xs" noOfLines={1}>
-                                {item.selectedDesign}
-                              </Text>
-                            </>
-                          )}
-                          {item.selectedTier && (
-                            <>
-                              {(item.selectedSize || item.selectedDesign) && <Text color="gray.600" fontSize="xs">•</Text>}
-                              <Text color="gray.400" fontSize="xs">
-                                {item.selectedTier}
-                              </Text>
-                            </>
-                          )}
-                        </HStack>
-                      )}
-                    </VStack>
-                    <IconButton
-                      size="xs"
-                      icon={<FiX />}
-                      onClick={() => removeFromCart(item.cartItemId)}
-                      variant="ghost"
-                      colorScheme="red"
-                    />
-                  </HStack>
-                  
-                  <HStack justify="space-between">
-                    <HStack spacing={2}>
-                      <IconButton
-                        size="xs"
-                        icon={<FiMinus />}
-                        onClick={() => updateQuantity(item.cartItemId, item.quantity - 1)}
-                        variant="outline"
-                        colorScheme="whiteAlpha"
-                      />
-                      <Text color="white" fontSize="sm" minW="30px" textAlign="center">
-                        {item.quantity}
-                      </Text>
-                      <IconButton
-                        size="xs"
-                        icon={<FiPlus />}
-                        onClick={() => updateQuantity(item.cartItemId, item.quantity + 1)}
-                        variant="outline"
-                        colorScheme="whiteAlpha"
-                      />
-                    </HStack>
-                    <Text color={item.color} fontWeight="700">
-                      ${item.price * item.quantity}
-                    </Text>
-                  </HStack>
-                </Box>
-              ))}
-            </VStack>
+            <SaddlebagLines items={cart} onRemove={removeFromCart} onQty={updateQuantity} />
           )}
         </DrawerBody>
 
         {cart.length > 0 && (
-          <DrawerFooter borderTop="1px solid" borderColor="whiteAlpha.100">
-            <VStack width="100%" spacing={4}>
-              <HStack justify="space-between" width="100%">
-                <Text color="white" fontSize="lg" fontWeight="700">Total</Text>
-                <Text color="#A6B84A" fontSize="xl" fontWeight="800">
-                  ${getCartTotal()}
-                </Text>
-              </HStack>
-              
-              <HStack width="100%" spacing={3}>
-                <Button
-                  flex={1}
-                  variant="outline"
-                  colorScheme="whiteAlpha"
-                  onClick={handleViewCart}
-                >
-                  View Cart
-                </Button>
-                <Button
-                  flex={1}
-                  bg="#A6B84A"
-                  color="black"
-                  fontWeight="700"
-                  onClick={handleCheckout}
-                >
-                  Checkout
-                </Button>
-              </HStack>
-            </VStack>
+          <DrawerFooter px={6} pb={6} pt={2} borderTop="1px solid" borderColor={colors.ui.border}
+            display="block">
+            <SaddlebagSummary
+              total={getCartTotal()}
+              digitalOnly={isDigitalOnly()}
+              onCheckout={() => go('/checkout/')}
+              onView={() => go('/cart/')}
+            />
           </DrawerFooter>
         )}
       </DrawerContent>

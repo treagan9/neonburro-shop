@@ -1,5 +1,5 @@
 // src/context/CartContext.jsx
-// SENTINEL: NB_SHOP_CART_CONTEXT_V2
+// SENTINEL: NB_SHOP_CART_CONTEXT_V3
 //
 // The cart. Held in React state, mirrored to localStorage under
 // 'neonburro-cart' so it survives a reload and a trip to Stripe and back.
@@ -18,15 +18,27 @@
 // an empty cart for one frame. Checkout does exactly that, and Stripe's
 // stablecoin rail returns the shopper to /checkout/ with a HARD load. So the
 // cart is now read once in the useState initialiser, before the first render,
-// and there is only ever a save effect. No window, no double load, and the
-// checkout page can trust the cart on its first render.
+// and there is only ever a save effect.
 //
-// Item identity is id plus the chosen size, tier and design, joined with '::'.
-// The same product in two sizes is two lines.
+// ── lastAdded, the one piece of state that is not the cart ─────────────────
+// Adding to the cart used to be silent. The nav counter ticked from 00 to 01
+// and nothing else moved, and people reported that the cart did not work.
+// lastAdded is { item, at } and is set on every add. The saddlebag pill and
+// the nav read it to bump, flash the name and, on the first add, appear. It
+// is not persisted, a reload should not replay a bump.
+//
+// Item identity is id plus the chosen size, tier, design and reload code,
+// joined with '::'. The same product in two sizes is two lines. A card reload
+// and a new card are two lines.
+//
+// ── digital ─────────────────────────────────────────────────────────────────
+// isDigitalOnly() is what checkout asks to decide whether a shipping address
+// is required. A product is digital when its record says category 'Digital'
+// or room 'sent'. Both are set in data/products-digital.js, keep them in step.
 //
 // No oxford commas, no em dashes.
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 
 const CartContext = createContext();
 
@@ -42,6 +54,9 @@ const readSavedCart = () => {
   }
 };
 
+export const isDigitalItem = (item) =>
+  !!item && (item.category === 'Digital' || item.room === 'sent' || item.delivery === 'digital');
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
@@ -53,6 +68,7 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(readSavedCart);
   const [isOpen, setIsOpen] = useState(false);
+  const [lastAdded, setLastAdded] = useState(null);
 
   useEffect(() => {
     try {
@@ -68,34 +84,33 @@ export const CartProvider = ({ children }) => {
     if (product.selectedSize) parts.push(product.selectedSize);
     if (product.selectedTier) parts.push(product.selectedTier);
     if (product.selectedDesign) parts.push(product.selectedDesign);
+    if (product.reloadCode) parts.push(`reload:${product.reloadCode}`);
     return parts.join('::');
   };
 
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = useCallback((product, quantity = 1) => {
+    const cartItemId = createCartItemId(product);
     setCart((prevCart) => {
-      const cartItemId = createCartItemId(product);
-
-      const existingItem = prevCart.find((item) => createCartItemId(item) === cartItemId);
-
+      const existingItem = prevCart.find((item) => item.cartItemId === cartItemId);
       if (existingItem) {
         return prevCart.map((item) =>
-          createCartItemId(item) === cartItemId
+          item.cartItemId === cartItemId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-
       return [...prevCart, { ...product, cartItemId, quantity }];
     });
-  };
+    setLastAdded({ item: { ...product, cartItemId, quantity }, at: Date.now() });
+  }, []);
 
-  const removeFromCart = (cartItemId) => {
+  const removeFromCart = useCallback((cartItemId) => {
     setCart((prevCart) => prevCart.filter((item) => item.cartItemId !== cartItemId));
-  };
+  }, []);
 
-  const updateQuantity = (cartItemId, quantity) => {
+  const updateQuantity = useCallback((cartItemId, quantity) => {
     if (quantity <= 0) {
-      removeFromCart(cartItemId);
+      setCart((prevCart) => prevCart.filter((item) => item.cartItemId !== cartItemId));
     } else {
       setCart((prevCart) =>
         prevCart.map((item) =>
@@ -103,32 +118,48 @@ export const CartProvider = ({ children }) => {
         )
       );
     }
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
-  };
+  }, []);
 
-  const getCartTotal = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  const openCart = useCallback(() => setIsOpen(true), []);
+  const closeCart = useCallback(() => setIsOpen(false), []);
 
-  const getCartItemsCount = () => {
-    return cart.reduce((total, item) => total + item.quantity, 0);
-  };
+  const getCartTotal = useCallback(
+    () => cart.reduce((total, item) => total + (item.price * item.quantity), 0),
+    [cart]
+  );
+
+  const getCartItemsCount = useCallback(
+    () => cart.reduce((total, item) => total + item.quantity, 0),
+    [cart]
+  );
+
+  const isDigitalOnly = useCallback(
+    () => cart.length > 0 && cart.every(isDigitalItem),
+    [cart]
+  );
+
+  const value = useMemo(() => ({
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getCartTotal,
+    getCartItemsCount,
+    isDigitalOnly,
+    isOpen,
+    setIsOpen,
+    openCart,
+    closeCart,
+    lastAdded,
+  }), [cart, addToCart, removeFromCart, updateQuantity, clearCart, getCartTotal, getCartItemsCount, isDigitalOnly, isOpen, openCart, closeCart, lastAdded]);
 
   return (
-    <CartContext.Provider value={{
-      cart,
-      addToCart,
-      removeFromCart,
-      updateQuantity,
-      clearCart,
-      getCartTotal,
-      getCartItemsCount,
-      isOpen,
-      setIsOpen,
-    }}>
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
