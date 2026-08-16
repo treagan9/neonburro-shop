@@ -1,230 +1,100 @@
-import { 
-  Box, 
-  Container,
-  Heading, 
-  Text, 
-  VStack,
-  HStack,
-  Grid,
-  SimpleGrid
-} from '@chakra-ui/react';
+// src/pages/ProductDetail/components/ProductStory.jsx
+// SENTINEL: NB_SHOP_PRODUCT_STORY_V2
+//
+// The part of a product page under the buy box: the story, the note about
+// the colour when there is one, then materials, care and dimensions.
+//
+// ── V1 was boxes inside a centred box ───────────────────────────────────────
+// A 1200px centred container (the only centred thing on either domain), a
+// tinted plate for the story with a twenty rem letter ghosted behind it, three
+// more plates for materials, care and dimensions, and a final italic plate
+// that said "Built to last. Made to matter." On a phone that was five boxes
+// stacked inside the screen, each one narrowing the text a little more.
+//
+// V2 is text on the page. Left aligned on the same rail as everything else,
+// a mono kicker over each part, hairlines between them, and on desktop the
+// facts (materials, care, dimensions) run in columns to the right of the
+// story. No plates on any width. The italic sign off is gone, the footer says
+// where things are made and says it once.
+//
+// No oxford commas, no em dashes.
+
+import { Box, Container, Grid, GridItem, Text, VStack, HStack } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
+import { colors } from '../../../theme/colors';
+import { RAIL, SHEET } from '../../../theme/layout';
 
 const MotionBox = motion(Box);
+const LIME = colors.accent.signal;
+
+const Kicker = ({ children, color = colors.text.muted }) => (
+  <Text fontFamily="mono" fontSize="10px" fontWeight="500" letterSpacing="0.18em"
+    textTransform="uppercase" color={color} mb={3}>
+    {children}
+  </Text>
+);
 
 const ProductStory = ({ product }) => {
+  const tint = product.color || LIME;
+  const facts = [
+    product.materials && { key: 'materials', label: 'Materials', list: product.materials },
+    product.care && { key: 'care', label: 'Care', body: product.care },
+    product.dimensions && { key: 'dimensions', label: 'Dimensions', body: product.dimensions },
+  ].filter(Boolean);
+
   return (
-    <Box width="100%" py={{ base: 12, md: 16 }} bg="#0B0B0C">
-      <Container maxW="1200px" px={{ base: 4, md: 8 }}>
-        <MotionBox
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <VStack spacing={{ base: 8, md: 12 }} align="stretch">
-            {/* Story Section */}
-            <Box
-              p={{ base: 8, md: 12 }}
-              bg={`radial-gradient(circle at top left, ${product.color}08 0%, transparent 60%)`}
-              borderRadius="2xl"
-              border="1px solid"
-              borderColor={`${product.color}15`}
-              position="relative"
-              overflow="hidden"
-            >
-              {/* Background letter decoration */}
-              <Box
-                position="absolute"
-                top="-20px"
-                right="-20px"
-                fontSize="20rem"
-                opacity={0.03}
-                color={product.color}
-                fontWeight="900"
-                lineHeight="1"
-                pointerEvents="none"
-                fontFamily="mono"
-              >
-                {product.name.charAt(0)}
-              </Box>
-              
-              <VStack spacing={6} align="start" position="relative" zIndex={1}>
-                <Text
-                  color={product.color}
-                  fontSize="sm"
-                  fontWeight="700"
-                  textTransform="uppercase"
-                  letterSpacing="wider"
-                >
-                  The Story
-                </Text>
-                <Text 
-                  color="gray.200" 
-                  fontSize={{ base: "lg", md: "xl" }} 
-                  lineHeight="1.8"
-                >
-                  {product.story}
-                </Text>
-              </VStack>
-            </Box>
+    <Box width="100%" py={{ base: 4, md: 8 }}>
+      <Container maxW={SHEET} px={RAIL} mx={0}>
+        <MotionBox initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }} viewport={{ once: true }}
+          borderTop="1px solid" borderColor={colors.ui.border} pt={{ base: 10, md: 14 }}>
 
-            {/* The natural dye note. This is a promise about variance and it
-                sits above materials on purpose, because somebody who reads it
-                after opening the box feels misled and somebody who reads it
-                here feels let in on something. */}
-            {product.dyeNote && (
-              <Box
-                p={6}
-                mb={6}
-                borderRadius="xl"
-                bg={`${product.color}08`}
-                borderLeft="2px solid"
-                borderColor={product.color}
-              >
-                <Text
-                  color={product.color}
-                  fontWeight="700"
-                  fontSize="sm"
-                  textTransform="uppercase"
-                  letterSpacing="wider"
-                  mb={2}
-                >
-                  About the colour
-                </Text>
-                <Text color="gray.300" fontSize={{ base: 'sm', md: 'md' }} lineHeight="1.7">
-                  {product.dyeNote}
-                </Text>
-              </Box>
-            )}
-
-            {/* Materials & Care Grid */}
-            <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={6}>
-              {/* Materials */}
-              {product.materials && (
-                <Box
-                  p={6}
-                  bg="rgba(255, 255, 255, 0.02)"
-                  borderRadius="xl"
-                  border="1px solid"
-                  borderColor="whiteAlpha.100"
-                  transition="all 0.3s"
-                  _hover={{
-                    bg: `${product.color}05`,
-                    borderColor: `${product.color}20`
-                  }}
-                >
-                  <VStack spacing={4} align="start">
-                    <Text 
-                      color={product.color} 
-                      fontWeight="700" 
-                      fontSize="sm" 
-                      textTransform="uppercase" 
-                      letterSpacing="wider"
-                    >
-                      Materials
-                    </Text>
-                    <VStack spacing={2} align="start">
-                      {product.materials.map((material, index) => (
-                        <HStack key={index} spacing={2}>
-                          <Box
-                            width="4px"
-                            height="4px"
-                            bg={product.color}
-                            borderRadius="full"
-                          />
-                          <Text color="gray.300" fontSize="sm">
-                            {material}
-                          </Text>
-                        </HStack>
-                      ))}
-                    </VStack>
-                  </VStack>
-                </Box>
-              )}
-
-              {/* Care */}
-              {product.care && (
-                <Box
-                  p={6}
-                  bg="rgba(255, 255, 255, 0.02)"
-                  borderRadius="xl"
-                  border="1px solid"
-                  borderColor="whiteAlpha.100"
-                  transition="all 0.3s"
-                  _hover={{
-                    bg: `${product.color}05`,
-                    borderColor: `${product.color}20`
-                  }}
-                >
-                  <VStack spacing={4} align="start">
-                    <Text 
-                      color={product.color} 
-                      fontWeight="700" 
-                      fontSize="sm" 
-                      textTransform="uppercase" 
-                      letterSpacing="wider"
-                    >
-                      Care Instructions
-                    </Text>
-                    <Text color="gray.300" fontSize="sm" lineHeight="1.7">
-                      {product.care}
-                    </Text>
-                  </VStack>
-                </Box>
-              )}
-
-              {/* Dimensions (if exists) */}
-              {product.dimensions && (
-                <Box
-                  p={6}
-                  bg="rgba(255, 255, 255, 0.02)"
-                  borderRadius="xl"
-                  border="1px solid"
-                  borderColor="whiteAlpha.100"
-                  transition="all 0.3s"
-                  _hover={{
-                    bg: `${product.color}05`,
-                    borderColor: `${product.color}20`
-                  }}
-                >
-                  <VStack spacing={4} align="start">
-                    <Text 
-                      color={product.color} 
-                      fontWeight="700" 
-                      fontSize="sm" 
-                      textTransform="uppercase" 
-                      letterSpacing="wider"
-                    >
-                      Dimensions
-                    </Text>
-                    <Text color="gray.300" fontSize="sm" lineHeight="1.7">
-                      {product.dimensions}
-                    </Text>
-                  </VStack>
-                </Box>
-              )}
-            </Grid>
-
-            {/* Philosophy Footer - Simple and understated */}
-            <Box
-              p={{ base: 6, md: 8 }}
-              bg="rgba(0, 0, 0, 0.3)"
-              borderRadius="xl"
-              border="1px solid"
-              borderColor="whiteAlpha.100"
-              textAlign="center"
-            >
-              <Text 
-                color="gray.400" 
-                fontSize={{ base: "sm", md: "md" }} 
-                lineHeight="1.8"
-                fontStyle="italic"
-              >
-                Built to last. Made to matter. Crafted in Ridgway, Colorado.
+          <Grid templateColumns={{ base: '1fr', lg: '1.15fr 0.85fr' }} gap={{ base: 10, lg: 20 }} alignItems="start">
+            <GridItem>
+              <Kicker color={tint}>The story</Kicker>
+              <Text color={colors.text.primary} fontSize={{ base: 'md', md: 'lg' }} lineHeight="1.75" maxW="680px">
+                {product.story}
               </Text>
-            </Box>
-          </VStack>
+
+              {/* The natural dye note. A promise about variance, and it sits
+                  here on purpose. Somebody who reads it after opening the box
+                  feels misled, somebody who reads it here feels let in. */}
+              {product.dyeNote && (
+                <Box mt={{ base: 8, md: 10 }} pl={4} borderLeft="2px solid" borderColor={tint}>
+                  <Kicker color={tint}>About the colour</Kicker>
+                  <Text color={colors.text.secondary} fontSize={{ base: 'sm', md: 'md' }} lineHeight="1.7" maxW="600px">
+                    {product.dyeNote}
+                  </Text>
+                </Box>
+              )}
+            </GridItem>
+
+            {facts.length > 0 && (
+              <GridItem>
+                <VStack align="stretch" spacing={{ base: 7, md: 8 }} pt={{ base: 2, lg: 0 }}
+                  borderTop={{ base: '1px solid', lg: 'none' }} borderColor={colors.ui.border}
+                  mt={{ base: 2, lg: 0 }} sx={{ '& > *:first-of-type': { pt: { base: 7, lg: 0 } } }}>
+                  {facts.map((f) => (
+                    <Box key={f.key}>
+                      <Kicker>{f.label}</Kicker>
+                      {f.list ? (
+                        <VStack align="start" spacing={2}>
+                          {f.list.map((item) => (
+                            <HStack key={item} spacing={3} align="start">
+                              <Box mt="8px" w="4px" h="4px" borderRadius="full" bg={tint} flexShrink={0} />
+                              <Text color={colors.text.secondary} fontSize="sm" lineHeight="1.6">{item}</Text>
+                            </HStack>
+                          ))}
+                        </VStack>
+                      ) : (
+                        <Text color={colors.text.secondary} fontSize="sm" lineHeight="1.7">{f.body}</Text>
+                      )}
+                    </Box>
+                  ))}
+                </VStack>
+              </GridItem>
+            )}
+          </Grid>
         </MotionBox>
       </Container>
     </Box>

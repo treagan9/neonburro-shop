@@ -135,16 +135,14 @@ const BlindLeadHero = ({ onScrollToProducts }) => {
                 <Box as="span" display="block" color={LIME}>carries a clue.</Box>
               </Heading>
 
-              <Text fontSize={{ base: 'md', md: 'lg' }} color={colors.text.primary} lineHeight="1.6"
-                maxW="560px" mb={4}>
+              {/* One paragraph, one voice. V2 stacked a bright lede over a
+                  smaller grey paragraph and the two read as two typefaces. */}
+              <Text fontSize={{ base: 'md', md: 'lg' }} color={colors.text.secondary} lineHeight="1.7"
+                maxW="560px" mb={{ base: 8, md: 9 }}>
                 There is real treasure on public land in western Colorado. The cups, the shirts, the
-                two dollar envelope. Each one carries a fragment pointing at it.
-              </Text>
-
-              <Text fontSize={{ base: 'sm', md: 'md' }} color={colors.text.secondary} lineHeight="1.8"
-                maxW="520px" mb={{ base: 8, md: 9 }}>
-                Prospectors call that float. Loose ore you find downstream that proves a vein exists
-                somewhere above you. Follow enough of it and you are standing on {HUNT.name}.
+                two dollar envelope, each one carries a fragment pointing at it. Prospectors call that
+                float, loose ore found downstream that proves a vein exists somewhere above you.
+                Follow enough of it and you are standing on {HUNT.name}.
               </Text>
 
               <HStack spacing={4} flexWrap="wrap" rowGap={3}>

@@ -1,581 +1,295 @@
-import {
-  Box,
-  Container,
-  VStack,
-  HStack,
-  Text,
-  Link,
-  IconButton,
-  Button,
-  Divider,
-  Image,
-  SimpleGrid,
-  keyframes
-} from '@chakra-ui/react';
+// src/components/common/Footer.jsx
+// SENTINEL: NB_SHOP_FOOTER_V2
+//
+// The shop's close. Same skeleton as neonburro.com's footer (wordmark spine,
+// Ridgway and altitude, link columns edge to edge, lime hairline, the sign off
+// row that says whose property this is) so a visitor crossing domains feels
+// one house. Three things are the shop's own:
+//
+// ── the wordmark goes home ──────────────────────────────────────────────────
+// On the studio the wordmark reloads the studio. Here it leaves for
+// neonburro.com. The shop is a room in the yard, and the way out of a room is
+// through the door you came in.
+//
+// ── the vending row ─────────────────────────────────────────────────────────
+// Above the link columns, three slots labelled the way a machine labels its
+// shelf: A1, A2, A3. The Map (which is the hunt this whole store hangs off),
+// The Vending Network (the studio's row of machines that talk back) and
+// NEONBURRO on Solana (the record). It is the yard dispensing what it is
+// building, one line each, and it is the only place on the shop that says the
+// studio makes more than shirts. On desktop the three sit side by side under
+// one hairline shelf. On a phone they stack, hairlines between, no boxes.
+//
+// ── what is gone ────────────────────────────────────────────────────────────
+// V1 said "© AetherLabs" in the sign off. Nobody here is AetherLabs. It also
+// carried a gradient link for the lounge, cyan and Solana green link colours,
+// and a "Powered by" lockup. All of that was the 2025 site. One accent, lime,
+// spent on the dot and the hairline.
+//
+// The scroll to top button sits above the saddlebag pill, not on top of it.
+// The pill owns the bottom right corner on every page that has a cart.
+//
+// No oxford commas, no em dashes.
+
+import { Box, VStack, HStack, Text, Link, IconButton, SimpleGrid, Grid, GridItem } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  FiGithub,
-  FiLinkedin,
-  FiArrowUp,
-  FiMail,
-  FiMapPin,
-  FiMessageCircle,
-  FiPhone,
-  FiInstagram
-} from 'react-icons/fi';
+import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
+import { FiGithub, FiLinkedin, FiArrowUp, FiInstagram, FiArrowRight, FiArrowUpRight } from 'react-icons/fi';
 import { RiTwitterXLine } from 'react-icons/ri';
 import { useState, useEffect } from 'react';
+import { colors } from '../../theme/colors';
+import { RAIL, EASE } from '../../theme/layout';
 
 const MotionBox = motion(Box);
+const LIME = colors.accent.signal;
+const MAIN = 'https://neonburro.com';
 
-const colors = {
-  brand: {
-    primary: '#C5D957',
-    teal: '#14F195',
-  },
-  accent: {
-    neon: '#A6B84A',
-    banana: '#FFE500',
-    warm: '#C8893B',
-    purple: '#8B5CF6',
-    indigo: '#6366F1',
-    pink: '#FF00FF',
-    cyan: '#00FFFF'
-  },
-  dark: {
-    black: '#0B0B0C',
-    space: '#141416',
-  }
+const Kicker = ({ children, color = colors.text.muted, mb = 4 }) => (
+  <Text fontFamily="mono" fontSize="10px" fontWeight="500" letterSpacing="0.16em"
+    textTransform="uppercase" color={color} mb={mb}>
+    {children}
+  </Text>
+);
+
+// One link component for both internal routes and the studio. Internal ones
+// go through the router so the cart context survives, external ones are plain
+// anchors in the same tab. The shop and the studio are one house, opening a
+// new tab between rooms is odd.
+const FooterLink = ({ href, to, onClick, children }) => {
+  const style = {
+    fontSize: 'sm', fontWeight: '500', color: colors.text.secondary, display: 'inline-block',
+    transition: `color 220ms ${EASE}`, _hover: { color: colors.text.primary, textDecoration: 'none' },
+  };
+  if (onClick) return <Box as="button" type="button" textAlign="left" onClick={onClick} {...style}>{children}</Box>;
+  if (to) return <Link as={RouterLink} to={to} {...style}>{children}</Link>;
+  return <Link href={href} {...style}>{children}</Link>;
 };
 
-const glow = keyframes`
-  0%, 100% {
-    filter: drop-shadow(0 0 20px rgba(197, 217, 87, 0.6)) brightness(1.2);
-  }
-  50% {
-    filter: drop-shadow(0 0 35px rgba(197, 217, 87, 0.9)) brightness(1.4);
-  }
-`;
+const SLOTS = [
+  {
+    slot: 'A1',
+    title: 'The Map',
+    line: 'One map, two views. The airship reads the country from above, the characters walk it from the ground. This store hangs off it.',
+    to: '/the-blind-lead/',
+    cta: 'the board',
+  },
+  {
+    slot: 'A2',
+    title: 'The Vending Network',
+    line: 'A short row of machines that talk back. One or two ingredients per can, nothing that needs a paragraph to explain itself.',
+    href: `${MAIN}/lab/`,
+    cta: 'in the lab',
+  },
+  {
+    slot: 'A3',
+    title: 'NEONBURRO on Solana',
+    line: 'One mint, one steward, one narrow promise. Value moves. History remains. The record is public and Epoch keeps it.',
+    href: `${MAIN}/token/neonburro/`,
+    cta: 'the record',
+  },
+];
 
-const pulseGlow = keyframes`
-  0%, 100% {
-    filter: drop-shadow(0 0 15px rgba(166, 184, 74, 0.5));
-    transform: scale(1);
-  }
-  50% {
-    filter: drop-shadow(0 0 30px rgba(166, 184, 74, 0.8));
-    transform: scale(1.05);
-  }
-`;
-
-const MAIN_DOMAIN = 'https://neonburro.com';
+const Slot = ({ s }) => {
+  const Inner = (
+    <VStack align="start" spacing={3} py={{ base: 6, md: 0 }} px={{ md: 0 }} h="100%" role="group">
+      <HStack spacing={3} align="baseline">
+        <Text fontFamily="mono" fontSize="10px" letterSpacing="0.2em" color={LIME}>{s.slot}</Text>
+        <Text fontSize="md" fontWeight="600" letterSpacing="-0.02em" color={colors.text.primary}
+          transition={`color 220ms ${EASE}`} _groupHover={{ color: LIME }}>
+          {s.title}
+        </Text>
+      </HStack>
+      <Text fontSize="sm" color={colors.text.secondary} lineHeight="1.7" maxW="360px">{s.line}</Text>
+      <HStack spacing={2} color={colors.text.muted} transition={`color 220ms ${EASE}`} _groupHover={{ color: LIME }}>
+        <Text fontFamily="mono" fontSize="10px" letterSpacing="0.16em" textTransform="uppercase">{s.cta}</Text>
+        <Box as={s.href ? FiArrowUpRight : FiArrowRight} boxSize={3} transition={`transform 220ms ${EASE}`}
+          _groupHover={{ transform: s.href ? 'translate(2px, -2px)' : 'translateX(3px)' }} />
+      </HStack>
+    </VStack>
+  );
+  const shared = { display: 'block', textDecoration: 'none', _hover: { textDecoration: 'none' } };
+  return s.to
+    ? <Box as={RouterLink} to={s.to} {...shared}>{Inner}</Box>
+    : <Box as="a" href={s.href} {...shared}>{Inner}</Box>;
+};
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const mainLinks = [
-    { label: 'Home', href: `${MAIN_DOMAIN}/` },
-    { label: 'Services', href: `${MAIN_DOMAIN}/services/` },
-    { label: 'Work', href: `${MAIN_DOMAIN}/work/` },
-    { label: 'Lab', href: `${MAIN_DOMAIN}/lab/` },
-    { label: 'About', href: `${MAIN_DOMAIN}/about/` },
-    { label: 'Blog', href: `${MAIN_DOMAIN}/blog/` },
-    { label: 'Contact', href: `${MAIN_DOMAIN}/contact/` }
-  ];
-
-  const serviceLinks = [
-    {
-      label: 'Fuel Up Hours',
-      href: `${MAIN_DOMAIN}/invoice/`,
-      color: 'white',
-      hoverColor: '#FFFFFF'
-    },
-    {
-      label: 'Build Subscriptions',
-      href: `${MAIN_DOMAIN}/subscription/`,
-      color: colors.accent.warm,
-      hoverColor: '#FF8533'
-    },
-    {
-      label: 'Hosting Services',
-      href: `${MAIN_DOMAIN}/hosting/`,
-      color: colors.accent.banana,
-      hoverColor: '#FFEE33'
-    }
-  ];
-
-  const networkLinks = [
-    {
-      label: 'Order Local Food',
-      href: 'https://order.neonburro.com',
-      color: colors.accent.warm,
-      hoverColor: '#FF8533',
-      external: true
-    },
-    {
-      label: 'Lounge Access',
-      href: 'https://lounge.neonburro.com',
-      gradient: 'linear(to-r, #14F195, #8B5CF6)',
-      external: true
-    },
-    {
-      label: 'Pulse Dashboard',
-      href: 'https://pulse.neonburro.com',
-      color: colors.brand.primary,
-      hoverColor: '#D2E26B',
-      external: true
-    }
-  ];
-
-  const communityLinks = [
-    {
-      label: 'The Burros',
-      href: `${MAIN_DOMAIN}/collective/`,
-      gradient: 'linear(to-r, #6366F1, #8B5CF6, #FFE500)'
-    },
-    {
-      label: 'How NBR Works',
-      href: `${MAIN_DOMAIN}/how-it-works/`,
-      color: colors.accent.cyan,
-      hoverColor: '#33FFFF'
-    },
-    {
-      label: 'NBR Token',
-      href: `${MAIN_DOMAIN}/nbr/`,
-      color: colors.brand.teal,
-      hoverColor: '#2AFFAA'
-    },
-    {
-      label: 'Join the Herd',
-      href: `${MAIN_DOMAIN}/apply-to-burro/`,
-      color: colors.accent.neon,
-      hoverColor: '#4DFF2E'
-    }
-  ];
-
-  const legalLinks = [
-    { label: 'FAQ', href: `${MAIN_DOMAIN}/faq/` },
-    { label: 'Privacy', href: `${MAIN_DOMAIN}/privacy/` },
-    { label: 'Terms', href: `${MAIN_DOMAIN}/terms/` },
-    { label: 'Sitemap', href: `${MAIN_DOMAIN}/sitemap/` }
-  ];
-
-  const socialLinks = [
-    { icon: FiInstagram, href: 'https://www.instagram.com/neonburro', label: 'Instagram' },
-    { icon: RiTwitterXLine, href: 'https://x.com/neonburro', label: 'X' },
-    { icon: FiGithub, href: 'https://github.com/tylerburrowbridge', label: 'GitHub' },
-    { icon: FiLinkedin, href: 'https://linkedin.com/company/neonburro', label: 'LinkedIn' }
-  ];
-
-  const SectionHeading = ({ children }) => (
-    <Text
-      color="white"
-      fontSize="xs"
-      fontWeight="700"
-      textTransform="uppercase"
-      letterSpacing="wider"
-      mb={4}
-    >
-      {children}
-    </Text>
-  );
-
-  const FooterLink = ({ href, children, color, hoverColor, gradient, external = false }) => {
-    const linkProps = {
-      href,
-      fontSize: "sm",
-      fontWeight: gradient ? "700" : "600",
-      color: gradient ? undefined : (color || "gray.400"),
-      bgGradient: gradient,
-      bgClip: gradient ? "text" : undefined,
-      _hover: {
-        color: !gradient ? (hoverColor || 'white') : undefined,
-        textDecoration: 'none',
-        transform: 'translateX(4px)',
-        filter: gradient ? 'drop-shadow(0 0 12px rgba(99, 102, 241, 0.6))' : undefined
-      },
-      transition: "all 0.2s"
-    };
-
-    if (external) {
-      linkProps.target = "_blank";
-      linkProps.rel = "noopener noreferrer";
-    }
-
-    return <Link {...linkProps}>{children}</Link>;
+  // Rooms live on the home page as id="room-{id}". From anywhere else, go
+  // home first, then scroll once the grid has mounted.
+  const goToRoom = (id) => () => {
+    const scroll = () => document.getElementById(`room-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (pathname === '/') { scroll(); return; }
+    navigate('/');
+    setTimeout(scroll, 420);
   };
 
+  const columns = [
+    {
+      heading: 'The shop',
+      links: [
+        { label: 'Worn', onClick: goToRoom('worn') },
+        { label: 'Carried', onClick: goToRoom('carried') },
+        { label: 'Sent', onClick: goToRoom('sent') },
+        { label: 'The $2 Clue', to: '/product/two-dollar-clue/' },
+        { label: 'The Pay Card', to: '/product/digital-gift-card/' },
+        { label: 'Saddlebag', to: '/cart/' },
+      ],
+    },
+    {
+      heading: 'The hunt',
+      links: [
+        { label: 'How it works', to: '/the-blind-lead/' },
+        { label: 'The board', to: '/the-blind-lead/' },
+        { label: 'The rules', to: '/the-blind-lead/' },
+        { label: 'Four floats, two dollars', to: '/product/two-dollar-clue/' },
+      ],
+    },
+    {
+      heading: 'The yard',
+      links: [
+        { label: 'neonburro.com', href: `${MAIN}/` },
+        { label: 'The Lab', href: `${MAIN}/lab/` },
+        { label: 'The Burros', href: `${MAIN}/burros/` },
+        { label: 'Pulse', href: 'https://pulse.neonburro.com/' },
+        { label: 'Order local food', href: 'https://order.neonburro.com/' },
+        { label: 'Have one built', href: `${MAIN}/contact/` },
+      ],
+    },
+    {
+      heading: 'Legal',
+      links: [
+        { label: 'FAQ', href: `${MAIN}/faq/` },
+        { label: 'Privacy', href: `${MAIN}/privacy/` },
+        { label: 'Terms', href: `${MAIN}/terms/` },
+      ],
+    },
+  ];
+
+  const socials = [
+    { Icon: FiInstagram, href: 'https://www.instagram.com/neonburro', label: 'Instagram' },
+    { Icon: RiTwitterXLine, href: 'https://x.com/neonburro', label: 'X' },
+    { Icon: FiGithub, href: 'https://github.com/neonburro', label: 'GitHub' },
+    { Icon: FiLinkedin, href: 'https://linkedin.com/company/neonburro', label: 'LinkedIn' },
+  ];
+
   return (
-    <Box
-      as="footer"
-      bg={colors.dark.black}
-      borderTop="1px solid"
-      borderColor="whiteAlpha.100"
-      position="relative"
-      overflow="hidden"
-      mt={20}
-    >
-      {/* Background gradients */}
-      <Box
-        position="absolute"
-        bottom="-200px"
-        left="-100px"
-        width="400px"
-        height="400px"
-        opacity={0.03}
-        bg={`radial-gradient(circle, ${colors.accent.banana} 0%, transparent 70%)`}
-        pointerEvents="none"
-      />
-      <Box
-        position="absolute"
-        top="-100px"
-        right="-100px"
-        width="300px"
-        height="300px"
-        opacity={0.03}
-        bg={`radial-gradient(circle, ${colors.accent.purple} 0%, transparent 70%)`}
-        pointerEvents="none"
-      />
+    <Box as="footer" bg={colors.dark.void} borderTop="1px solid" borderColor={colors.ui.border} position="relative">
+      <Box px={RAIL} py={{ base: 14, md: 20 }}>
 
-      <Container
-        maxW="1400px"
-        px={{ base: 4, md: 8 }}
-        py={{ base: 12, md: 16 }}
-        position="relative"
-      >
-        <SimpleGrid
-          columns={{ base: 1, sm: 2, md: 3, lg: 6 }}
-          spacing={{ base: 8, md: 6, lg: 8 }}
-          mb={12}
-        >
-          {/* Brand Column */}
-          <Box gridColumn={{ base: "1", sm: "1 / -1", lg: "1" }}>
-            <VStack align="flex-start" spacing={6}>
-              <Box>
-                <Image
-                  src="/logo-main.png"
-                  alt="neonburro"
-                  height="40px"
-                  width="auto"
-                  filter="brightness(1.1)"
-                  cursor="pointer"
-                  onClick={() => window.location.href = MAIN_DOMAIN}
-                  _hover={{
-                    filter: 'brightness(1.3)',
-                    animation: `${pulseGlow} 2s ease-in-out infinite`
-                  }}
-                  transition="filter 0.3s"
-                />
-              </Box>
-              
-              <VStack align="flex-start" spacing={2}>
-                <HStack spacing={2} color="gray.500" fontSize="sm">
-                  <FiMapPin size={16} />
-                  <Text>Ridgway, Colorado</Text>
-                </HStack>
-                
-                <Link
-                  href="mailto:hello@neonburro.com"
-                  display="flex"
-                  alignItems="center"
-                  gap={2}
-                  color="gray.500"
-                  fontSize="sm"
-                  _hover={{
-                    color: colors.brand.primary,
-                    textDecoration: 'none'
-                  }}
-                  transition="color 0.2s"
-                >
-                  <FiMail size={16} />
-                  hello@neonburro.com
-                </Link>
-                
-                <Link
-                  href="tel:+19709738550"
-                  display="flex"
-                  alignItems="center"
-                  gap={2}
-                  color="gray.500"
-                  fontSize="sm"
-                  _hover={{
-                    color: colors.brand.primary,
-                    textDecoration: 'none'
-                  }}
-                  transition="color 0.2s"
-                >
-                  <FiPhone size={16} />
-                  (970) 973-8550
-                </Link>
-              </VStack>
-            </VStack>
-          </Box>
-
-          {/* Navigation Column */}
-          <Box>
-            <VStack align="flex-start" spacing={3}>
-              <SectionHeading>Navigate</SectionHeading>
-              {mainLinks.map((link) => (
-                <FooterLink key={link.label} href={link.href}>
-                  {link.label}
-                </FooterLink>
-              ))}
-            </VStack>
-          </Box>
-
-          {/* Services Column */}
-          <Box>
-            <VStack align="flex-start" spacing={3}>
-              <SectionHeading>Services</SectionHeading>
-              <FooterLink
-                href={`${MAIN_DOMAIN}/contact/`}
-                color={colors.accent.neon}
-                hoverColor="#4DFF2E"
-              >
-                Start a Project
-              </FooterLink>
-              {serviceLinks.map((link) => (
-                <FooterLink
-                  key={link.label}
-                  href={link.href}
-                  color={link.color}
-                  hoverColor={link.hoverColor}
-                >
-                  {link.label}
-                </FooterLink>
-              ))}
-            </VStack>
-          </Box>
-
-          {/* Network Column */}
-          <Box>
-            <VStack align="flex-start" spacing={3}>
-              <SectionHeading>Network</SectionHeading>
-              {networkLinks.map((link) => (
-                <FooterLink
-                  key={link.label}
-                  href={link.href}
-                  color={link.color}
-                  hoverColor={link.hoverColor}
-                  gradient={link.gradient}
-                  external={link.external}
-                >
-                  {link.label}
-                </FooterLink>
-              ))}
-            </VStack>
-          </Box>
-
-          {/* Community Column */}
-          <Box>
-            <VStack align="flex-start" spacing={3}>
-              <SectionHeading>Community</SectionHeading>
-              {communityLinks.map((link) => (
-                <FooterLink
-                  key={link.label}
-                  href={link.href}
-                  color={link.color}
-                  hoverColor={link.hoverColor}
-                  gradient={link.gradient}
-                >
-                  {link.label}
-                </FooterLink>
-              ))}
-            </VStack>
-          </Box>
-
-          {/* Connect Column */}
-          <Box>
-            <VStack align="flex-start" spacing={4}>
-              <SectionHeading>Connect</SectionHeading>
-              
-              <HStack spacing={1} flexWrap="wrap">
-                {socialLinks.map((social) => (
-                  <IconButton
-                    key={social.label}
-                    icon={<social.icon size={18} />}
-                    variant="ghost"
-                    size="sm"
-                    color="gray.400"
-                    aria-label={social.label}
-                    onClick={() => window.open(social.href, '_blank')}
-                    borderRadius="lg"
-                    border="1px solid"
-                    borderColor="whiteAlpha.100"
-                    _hover={{
-                      color: colors.brand.primary,
-                      bg: `${colors.brand.primary}11`,
-                      borderColor: `${colors.brand.primary}44`,
-                      transform: 'translateY(-2px)'
-                    }}
-                    transition="all 0.2s"
-                  />
-                ))}
-              </HStack>
-              
-              <Button
-                size="sm"
-                width="full"
-                variant="outline"
-                borderColor={`${colors.accent.neon}44`}
-                color={colors.accent.neon}
-                borderRadius="full"
-                fontWeight="700"
-                fontSize="sm"
-                leftIcon={<FiMessageCircle size={16} />}
-                onClick={() => window.open('sms:+19709738550', '_self')}
-                bg={`${colors.accent.neon}08`}
-                _hover={{
-                  borderColor: colors.accent.neon,
-                  bg: `${colors.accent.neon}15`,
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 5px 20px ${colors.accent.neon}33`
-                }}
-                transition="all 0.3s"
-              >
-                Text Us
-              </Button>
-
-              <VStack align="flex-start" spacing={2} pt={2}>
-                <Text fontSize="xs" color="gray.600" fontWeight="600">Legal</Text>
-                {legalLinks.map((link) => (
-                  <FooterLink
-                    key={link.label}
-                    href={link.href}
-                  >
-                    {link.label}
-                  </FooterLink>
-                ))}
-              </VStack>
-            </VStack>
-          </Box>
-        </SimpleGrid>
-
-        <Divider borderColor="whiteAlpha.100" opacity={0.3} />
-
-        <Box pt={8}>
-          <VStack spacing={4}>
-            {/* THE DEMO LINE
-                This store is hand built. It takes a card and it takes a token,
-                it runs its own inventory out of the same database as the back
-                office, and there is a treasure hunt on top of it. Nobody needs
-                telling we could build them one, they are standing in it. Do not
-                soften this into "powered by", that was a vendor credit and this
-                is the argument. */}
-            <VStack spacing={2} maxW="620px">
-              <Text color="gray.300" fontSize={{ base: 'sm', md: 'md' }} fontWeight="600"
-                textAlign="center" lineHeight="1.7">
-                You are standing in a demo.
+        {/* ── brand and the vending row ─────────────────────────────────── */}
+        <Grid templateColumns={{ base: '1fr', lg: '320px 1fr' }} gap={{ base: 12, lg: 20 }} mb={{ base: 12, md: 16 }}>
+          <GridItem>
+            <Box as="a" href={MAIN} aria-label="neonburro, back to the studio" display="block" mb={5}
+              _hover={{ '& .nb-dot': { transform: 'scale(1.25)' }, textDecoration: 'none' }}>
+              <Text fontFamily="heading" fontSize={{ base: '4xl', md: '5xl' }} fontWeight="600" letterSpacing="-0.04em"
+                lineHeight="1" color={colors.text.primary} display="inline-flex" alignItems="flex-end">
+                neonburro
+                <Box as="span" className="nb-dot" display="inline-block" w="0.16em" h="0.16em" borderRadius="full"
+                  bg={LIME} ml="0.03em" mb="0.08em" transition={`transform 300ms ${EASE}`} />
               </Text>
-              <Text color="gray.500" fontSize="sm" textAlign="center" lineHeight="1.7">
-                Every part of this store was built by hand. The checkout, the inventory,
-                the token pricing and the hunt underneath it. We do the same thing for
-                small and mid sized businesses who would rather their software worked
-                than worked around them.
-              </Text>
-              <Link
-                href={`${MAIN_DOMAIN}/contact/`}
-                color={colors.brand.primary}
-                fontSize="sm"
-                fontWeight="700"
-                mt={1}
-                _hover={{ textDecoration: 'none', color: '#D2E26B' }}
-              >
-                Have one built &rarr;
+            </Box>
+            <Kicker mb={1}>Ridgway, Colorado</Kicker>
+            <Kicker color={LIME} mb={6}>Built at altitude · the shop</Kicker>
+
+            <Text fontSize="sm" color={colors.text.secondary} lineHeight="1.7" maxW="300px" mb={6}>
+              You are standing in a demo. Every part of this store was built by hand by the studio, the checkout,
+              the inventory, the saddlebag, the hunt. It sells real things and it is also the pitch.
+            </Text>
+
+            <VStack align="flex-start" spacing={2}>
+              <Link href="mailto:hello@neonburro.com" fontSize="sm" fontWeight="500" color={colors.text.secondary}
+                _hover={{ color: colors.text.primary, textDecoration: 'none' }} transition={`color 220ms ${EASE}`}>
+                hello@neonburro.com
+              </Link>
+              <Link href="tel:+19709738550" fontSize="sm" fontWeight="500" color={colors.text.secondary}
+                _hover={{ color: colors.text.primary, textDecoration: 'none' }} transition={`color 220ms ${EASE}`}>
+                (970) 973-8550
               </Link>
             </VStack>
+          </GridItem>
 
-            <HStack spacing={3} align="center" flexWrap="wrap" justify="center" pt={2}>
-              <Text
-                color="gray.400"
-                fontSize="sm"
-                fontWeight="700"
-                letterSpacing="wide"
-              >
-                Powered by
-              </Text>
-              <Box
-                as="a"
-                href={MAIN_DOMAIN}
-                display="inline-flex"
-                alignItems="center"
-                position="relative"
-                _hover={{
-                  '& > img': {
-                    animation: `${glow} 2s ease-in-out infinite`,
-                  }
-                }}
-              >
-                <Image
-                  src="/logo-main.png"
-                  alt="neonburro"
-                  height="32px"
-                  width="auto"
-                  filter="brightness(1.3) drop-shadow(0 0 15px rgba(197, 217, 87, 0.4))"
-                  transition="all 0.3s"
-                />
-              </Box>
-              <Text
-                color="gray.400"
-                fontSize="sm"
-                fontWeight="700"
-                letterSpacing="wide"
-              >
-                to drive growth
-              </Text>
-            </HStack>
-            
-            <Text color="gray.600" fontSize="xs" textAlign="center" letterSpacing="wide">
-              © {currentYear} AetherLabs. All rights reserved.
+          <GridItem>
+            <Kicker>The yard, dispensing</Kicker>
+            <Box borderTop="1px solid" borderColor={`${LIME}55`} pt={{ md: 6 }}>
+              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={{ base: 0, md: 10 }}
+                sx={{ '& > *:not(:last-of-type)': { borderBottom: { base: '1px solid', md: 'none' }, borderColor: colors.ui.border } }}>
+                {SLOTS.map((s) => <Slot key={s.slot} s={s} />)}
+              </SimpleGrid>
+            </Box>
+          </GridItem>
+        </Grid>
+
+        {/* ── link columns ─────────────────────────────────────────────── */}
+        <SimpleGrid columns={{ base: 2, md: 4 }} spacingX={{ base: 6, md: 8 }} spacingY={{ base: 10, md: 8 }}
+          pt={{ base: 10, md: 12 }} borderTop="1px solid" borderColor={colors.ui.border}>
+          {columns.map((col) => (
+            <Box key={col.heading}>
+              <Kicker>{col.heading}</Kicker>
+              <VStack align="flex-start" spacing={2.5}>
+                {col.links.map((l) => (
+                  <FooterLink key={l.label} href={l.href} to={l.to} onClick={l.onClick}>{l.label}</FooterLink>
+                ))}
+              </VStack>
+              {col.heading === 'Legal' && (
+                <HStack spacing={4} mt={7}>
+                  {socials.map(({ Icon, href, label }) => (
+                    <Box key={label} as="a" href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                      color={colors.text.muted} lineHeight={0} transition={`color 220ms ${EASE}`} _hover={{ color: LIME }}>
+                      <Icon size={16} />
+                    </Box>
+                  ))}
+                </HStack>
+              )}
+            </Box>
+          ))}
+        </SimpleGrid>
+
+        {/* ── lime hairline and the sign off ───────────────────────────── */}
+        <Box h="1px" bg={LIME} opacity={0.35} mt={{ base: 12, md: 16 }} mb={6} />
+        <Box display="flex" flexDirection={{ base: 'column', md: 'row' }} justifyContent="space-between"
+          alignItems={{ base: 'flex-start', md: 'center' }} gap={{ base: 3, md: 6 }}>
+          <Text fontFamily="mono" fontSize="10px" fontWeight="500" letterSpacing="0.16em" color={colors.text.muted}>
+            neonburro shop · v.{year}
+          </Text>
+          <HStack spacing={2} align="center">
+            <Box w="4px" h="4px" borderRadius="full" bg={LIME} aria-hidden="true" />
+            <Text fontFamily="mono" fontSize="10px" fontWeight="500" letterSpacing="0.16em" textTransform="uppercase"
+              color={colors.text.muted}>
+              A property of <Box as="span" color={colors.text.secondary}>The Burroship</Box>
             </Text>
-          </VStack>
+          </HStack>
+          <Text fontFamily="mono" fontSize="10px" fontWeight="500" letterSpacing="0.16em" textTransform="uppercase"
+            color={colors.text.muted}>
+            © {year} · All rights reserved
+          </Text>
         </Box>
+      </Box>
 
-        {/* Scroll to Top Button */}
-        <AnimatePresence>
-          {showScrollTop && (
-            <MotionBox
-              position="fixed"
-              bottom={6}
-              right={6}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.2 }}
-              zIndex={1000}
-            >
-              <IconButton
-                icon={<FiArrowUp size={18} />}
-                aria-label="Scroll to top"
-                size="md"
-                borderRadius="full"
-                bg="whiteAlpha.100"
-                backdropFilter="blur(10px)"
-                color="white"
-                border="1px solid"
-                borderColor="whiteAlpha.200"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                _hover={{
-                  bg: 'whiteAlpha.200',
-                  transform: 'translateY(-2px)',
-                  borderColor: colors.brand.primary
-                }}
-                transition="all 0.2s"
-              />
-            </MotionBox>
-          )}
-        </AnimatePresence>
-      </Container>
+      <AnimatePresence>
+        {showScrollTop && (
+          <MotionBox position="fixed" bottom={{ base: '84px', md: '96px' }} right={{ base: 5, md: 10 }}
+            initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.85 }}
+            transition={{ duration: 0.2 }} zIndex={999}>
+            <IconButton icon={<FiArrowUp size={16} />} aria-label="Scroll to top" size="md" w="40px" h="40px" minW="40px"
+              borderRadius="full" bg={`${colors.dark.black}E6`} color={colors.text.muted} border="1px solid" borderColor={colors.ui.border}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              _hover={{ borderColor: LIME, color: LIME, bg: colors.dark.black }}
+              transition={`border-color 220ms ${EASE}, color 220ms ${EASE}, background 220ms ${EASE}`}
+              sx={{ backdropFilter: 'blur(8px)' }} />
+          </MotionBox>
+        )}
+      </AnimatePresence>
     </Box>
   );
 };

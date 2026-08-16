@@ -1,14 +1,23 @@
 // src/pages/Home/index.jsx
-// SENTINEL: NB_SHOP_HOME_V2
+// SENTINEL: NB_SHOP_HOME_V3
 //
 // The shop, reframed. Hunt first, goods second, and a quiet band between them
 // that explains what float is so nobody arrives at a ninety nine dollar pair of
 // chopsticks without a reason.
 //
-// The old hero sold the store. This one sells the reason the store exists, which
-// is a real thing hidden on real ground in western Colorado. The product grid is
-// unchanged and still four hundred pixels down. It has not lost its job. It has
-// stopped being the argument.
+// ── no containers on a phone ────────────────────────────────────────────────
+// V2 put the closing "no purchase necessary" band inside a bordered, tinted
+// box. On a desktop that is a plate on a table. On a phone it is a box inside
+// the screen's box, and it narrows the buttons until they wrap and it makes a
+// long headline into a tall one. So on base the band is just a section: a
+// hairline above, the copy, the buttons, full width of the rail. The plate
+// returns at md where it has room. Every content section in the shop follows
+// this rule now, and the product tiles follow it too (see ProductCard.jsx).
+//
+// The old hero sold the store. This one sells the reason the store exists,
+// which is a real thing hidden on real ground in western Colorado. The product
+// grid is still a screen down. It has not lost its job. It has stopped being
+// the argument.
 //
 // No oxford commas, no em dashes.
 
@@ -24,6 +33,20 @@ import { RAIL, SHEET } from '../../theme/layout';
 
 const LIME = colors.accent.signal;
 
+const Pill = ({ to, solid = false, children }) => (
+  <Box as={RouterLink} to={to} display="inline-flex" alignItems="center" gap="8px"
+    px={{ base: 5, md: 7 }} py={{ base: 3, md: 3.5 }} borderRadius="full" fontWeight={solid ? '700' : '600'}
+    fontSize="sm" textDecoration="none" whiteSpace="nowrap"
+    bg={solid ? LIME : 'transparent'} color={solid ? colors.dark.black : colors.text.secondary}
+    border="1px solid" borderColor={solid ? LIME : colors.ui.border}
+    transition="transform 0.25s ease, filter 0.25s ease, border-color 0.25s ease, color 0.25s ease"
+    _hover={solid
+      ? { transform: 'translateY(-2px)', filter: 'brightness(1.08)', textDecoration: 'none' }
+      : { borderColor: LIME, color: colors.text.primary, textDecoration: 'none' }}>
+    {children}
+  </Box>
+);
+
 const Home = () => {
   const productsRef = useRef(null);
 
@@ -37,7 +60,7 @@ const Home = () => {
       <BlindLeadHero onScrollToProducts={scrollToProducts} />
 
       {/* ── what float is, before anybody sees a price ──────────────── */}
-      <Box as="section" px={RAIL} py={{ base: 14, md: 20 }} maxW={SHEET}
+      <Box as="section" px={RAIL} py={{ base: 12, md: 20 }} maxW={SHEET}
         borderTop="1px solid" borderColor={colors.ui.border}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={{ base: 8, md: 10 }}>
           {HOW_IT_WORKS.map((s, i) => (
@@ -69,9 +92,9 @@ const Home = () => {
       </Box>
 
       {/* ── the goods ───────────────────────────────────────────────── */}
-      <Box as="section" px={RAIL} pt={{ base: 12, md: 18 }} maxW={SHEET}>
+      <Box as="section" px={RAIL} maxW={SHEET}>
         <HStack justify="space-between" align="baseline" flexWrap="wrap" rowGap={3}
-          pb={{ base: 6, md: 8 }} borderTop="1px solid" borderColor={colors.ui.border} pt={{ base: 12, md: 16 }}>
+          borderTop="1px solid" borderColor={colors.ui.border} pt={{ base: 12, md: 16 }}>
           <Heading as="h2" fontSize={{ base: '26px', md: '40px' }} fontWeight="600"
             letterSpacing="-0.03em" color={colors.text.primary} lineHeight="1.05">
             Everything here carries float.
@@ -85,17 +108,22 @@ const Home = () => {
 
       <ProductGrid ref={productsRef} />
 
-      {/* ── the cheapest door ───────────────────────────────────────── */}
-      <Box as="section" px={RAIL} pb={{ base: 20, md: 32 }} pt={{ base: 4, md: 8 }}
-        maxW={SHEET}>
-        <Box borderRadius="xl" p={{ base: 8, md: 14 }} border="1px solid"
+      {/* ── the cheapest door. A plate on desktop, a plain section on a phone. */}
+      <Box as="section" px={RAIL} pb={{ base: 16, md: 32 }} pt={{ base: 4, md: 8 }} maxW={SHEET}>
+        <Box
+          borderRadius={{ base: 0, md: 'xl' }}
+          p={{ base: 0, md: 14 }}
+          pt={{ base: 10, md: 14 }}
+          border={{ base: 'none', md: '1px solid' }}
+          borderTop="1px solid"
           borderColor={colors.ui.border}
-          background={`linear-gradient(120deg, ${colors.dark.gray} 0%, ${LIME}0E 60%, ${colors.dark.void} 100%)`}>
+          background={{ base: 'none', md: `linear-gradient(120deg, ${colors.dark.gray} 0%, ${LIME}0E 60%, ${colors.dark.void} 100%)` }}
+        >
           <Text fontFamily="mono" fontSize="9px" fontWeight="500" letterSpacing="0.24em"
             textTransform="uppercase" color={LIME} mb={5}>
             No purchase necessary
           </Text>
-          <Heading as="h2" fontSize={{ base: '24px', md: '40px' }} fontWeight="600"
+          <Heading as="h2" fontSize={{ base: '26px', md: '40px' }} fontWeight="600"
             letterSpacing="-0.03em" lineHeight="1.1" color={colors.text.primary} maxW="760px" mb={5}>
             Buying a piece buys you a head start. It never buys access.
           </Heading>
@@ -105,22 +133,9 @@ const Home = () => {
             {' '}{HUNT.freeDelayDays} days. You can follow the whole hunt without spending a dollar,
             and you would be about a month behind. That is the entire difference.
           </Text>
-          <HStack spacing={4} flexWrap="wrap" rowGap={3}>
-            <Box as={RouterLink} to="/the-blind-lead/" display="inline-flex" alignItems="center"
-              gap="8px" px={7} py={3.5} borderRadius="full" bg={LIME} color={colors.dark.black}
-              fontWeight="700" fontSize="sm" textDecoration="none"
-              transition="transform 0.25s ease, filter 0.25s ease"
-              _hover={{ transform: 'translateY(-2px)', filter: 'brightness(1.08)', textDecoration: 'none' }}>
-              The board <FiArrowRight />
-            </Box>
-            <Box as={RouterLink} to="/product/two-dollar-clue/" display="inline-flex"
-              alignItems="center" gap="8px" px={7} py={3.5} borderRadius="full" border="1px solid"
-              borderColor={colors.ui.border} color={colors.text.secondary} fontWeight="600"
-              fontSize="sm" textDecoration="none"
-              transition="border-color 0.25s ease, color 0.25s ease"
-              _hover={{ borderColor: LIME, color: colors.text.primary, textDecoration: 'none' }}>
-              Start with two dollars
-            </Box>
+          <HStack spacing={3} flexWrap="wrap" rowGap={3}>
+            <Pill to="/the-blind-lead/" solid>The board <FiArrowRight /></Pill>
+            <Pill to="/product/two-dollar-clue/">Start with two dollars</Pill>
           </HStack>
         </Box>
       </Box>

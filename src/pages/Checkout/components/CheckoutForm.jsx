@@ -75,8 +75,10 @@ import { isDigitalItem } from '../../../context/CartContext';
 
 const MotionBox = motion(Box);
 
+// Lime, lime dim and the copper warning. The old key was called teal for a
+// value that has been lime since the repaint, which confused everybody.
 const colors = {
-  teal: '#C5D957',
+  lime: '#C5D957',
   green: '#A6B84A',
   copper: '#C8893B',
 };
@@ -287,8 +289,8 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
     color: 'white',
     _hover: { borderColor: 'whiteAlpha.300' },
     _focus: {
-      borderColor: colors.teal,
-      boxShadow: `0 0 0 1px ${colors.teal}`,
+      borderColor: colors.lime,
+      boxShadow: `0 0 0 1px ${colors.lime}`,
     },
   };
 
@@ -352,7 +354,7 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
               {digitalOnly ? 'Mailing address' : 'Shipping address'}
             </Text>
             {digitalOnly && (
-              <Text fontFamily="mono" fontSize="10px" letterSpacing="0.14em" textTransform="uppercase" color={colors.teal}>
+              <Text fontFamily="mono" fontSize="10px" letterSpacing="0.14em" textTransform="uppercase" color={colors.lime}>
                 Optional, but recommended
               </Text>
             )}
@@ -430,26 +432,26 @@ const CheckoutForm = ({ onSubmit, isProcessing, cart, total }) => {
                 if (termsError) setTermsError(false);
               }}
               size="lg"
-              colorScheme="cyan"
+              colorScheme="green"
               iconColor={colors.green}
               sx={{
                 '.chakra-checkbox__control': {
-                  borderColor: agreeToTerms ? colors.teal : 'whiteAlpha.300',
-                  bg: agreeToTerms ? colors.teal : 'transparent',
+                  borderColor: agreeToTerms ? colors.lime : 'whiteAlpha.300',
+                  bg: agreeToTerms ? colors.lime : 'transparent',
                   _checked: {
-                    bg: colors.teal,
-                    borderColor: colors.teal,
+                    bg: colors.lime,
+                    borderColor: colors.lime,
                   },
                 },
               }}
             >
               <Text color="gray.300" fontSize="sm">
                 I agree to{' '}
-                <Link href="https://neonburro.com/terms/" color={colors.teal} isExternal fontWeight="600">
+                <Link href="https://neonburro.com/terms/" color={colors.lime} isExternal fontWeight="600">
                   Terms of Service
                 </Link>
                 {' '}and{' '}
-                <Link href="https://neonburro.com/privacy/" color={colors.teal} isExternal fontWeight="600">
+                <Link href="https://neonburro.com/privacy/" color={colors.lime} isExternal fontWeight="600">
                   Privacy Policy
                 </Link>
               </Text>

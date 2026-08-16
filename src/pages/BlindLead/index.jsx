@@ -202,9 +202,11 @@ const BlindLead = () => {
 
       {/* ── the cheapest door ───────────────────────────────────────── */}
       <Box as="section" px={RAIL} pb={{ base: 20, md: 32 }} maxW={SHEET}>
-        <Box borderRadius="xl" overflow="hidden" p={{ base: 8, md: 14 }}
-          border="1px solid" borderColor={colors.ui.border}
-          background={`linear-gradient(120deg, ${colors.dark.gray} 0%, ${LIME}0E 60%, ${colors.dark.void} 100%)`}>
+        {/* A plate on desktop, a plain section on a phone. Same rule as the
+            home page band, no containers around content on mobile. */}
+        <Box borderRadius={{ base: 0, md: 'xl' }} overflow="hidden" p={{ base: 0, md: 14 }} pt={{ base: 10, md: 14 }}
+          border={{ base: 'none', md: '1px solid' }} borderTop="1px solid" borderColor={colors.ui.border}
+          background={{ base: 'none', md: `linear-gradient(120deg, ${colors.dark.gray} 0%, ${LIME}0E 60%, ${colors.dark.void} 100%)` }}>
           <Kicker mb={5}>Two dollars</Kicker>
           <Heading as="h2" fontSize={{ base: '26px', md: '44px' }} fontWeight="600"
             letterSpacing="-0.03em" lineHeight="1.08" color={colors.text.primary} maxW="720px" mb={5}>

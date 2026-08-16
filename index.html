@@ -3,74 +3,80 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <!-- Primary Meta Tags -->
-    <title>Shop • Curated Goods from the Mountains | NeonBurro</title>
-    <meta name="title" content="Shop • Curated Goods from the Mountains | NeonBurro" />
-    <meta name="description" content="Thoughtfully crafted pieces from the San Juan Mountains. Limited drops, premium goods, built to last. No mass production, just quality." />
-    
-    <!-- Fonts -->
-    
-    <!-- Favicons -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <title>Shop • Every piece carries a clue | neonburro</title>
+    <meta name="title" content="Shop • Every piece carries a clue | neonburro" />
+    <meta name="description" content="Small runs made in Ridgway, Colorado. Shirts, caps, a titanium cup, a two dollar clue. Every piece carries a fragment of The Blind Lead, a real hunt on public land in western Colorado." />
+
+    <!--
+      Favicons. The files are byte for byte the same set neonburro.com ships,
+      the lime burro on black. The ?v=3 exists because browsers cache favicons
+      for a very long time and this shop wore the old teal mark for months
+      after the files changed. Bump the number when the icon changes again.
+    -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico?v=3">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=3">
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=3">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3">
     <link rel="manifest" href="/site.webmanifest">
-    
-    <!-- Open Graph / Facebook -->
+
+    <!--
+      Theme colour. This is what phones paint behind the address bar and in the
+      app switcher. It was #00E5E5, the retired teal, which is why the shop
+      looked like a different brand on a phone. Same lime as neonburro.com and
+      as site.webmanifest, keep the three in step.
+    -->
+    <meta name="theme-color" content="#C5D957" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://shop.neonburro.com/" />
-    <meta property="og:site_name" content="NeonBurro Shop" />
-    <meta property="og:title" content="NeonBurro Shop • Goods from the Mountains" />
-    <meta property="og:description" content="Limited drops. Premium goods. Built to last. From the San Juan Mountains." />
-    <meta property="og:image" content="https://shop.neonburro.com/shop-hero-sms.png" />
+    <meta property="og:site_name" content="neonburro shop" />
+    <meta property="og:title" content="neonburro shop • Every piece carries a clue" />
+    <meta property="og:description" content="Small runs made in Ridgway, Colorado. Every piece carries a fragment of The Blind Lead." />
+    <meta property="og:image" content="https://shop.neonburro.com/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="NeonBurro Shop - Curated Goods from the Mountains" />
-    
+    <meta property="og:image:alt" content="neonburro shop" />
+    <meta property="og:locale" content="en_US" />
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://shop.neonburro.com/" />
-    <meta property="twitter:title" content="NeonBurro Shop • Goods from the Mountains" />
-    <meta property="twitter:description" content="Limited drops. Premium goods. Built to last. From the San Juan Mountains." />
-    <meta property="twitter:image" content="https://shop.neonburro.com/shop-hero-sms.png" />
-    
-    <!-- SMS / iMessage specific -->
-    <meta property="og:site_name" content="NeonBurro Shop" />
-    <meta property="og:locale" content="en_US" />
-    
+    <meta property="twitter:title" content="neonburro shop • Every piece carries a clue" />
+    <meta property="twitter:description" content="Small runs made in Ridgway, Colorado. Every piece carries a fragment of The Blind Lead." />
+    <meta property="twitter:image" content="https://shop.neonburro.com/og-image.png" />
+
     <!-- Additional SEO -->
-    <meta name="keywords" content="NeonBurro shop, curated goods, limited drops, San Juan Mountains, Ridgway Colorado, premium goods, small batch products, craft goods, quality over quantity" />
-    <meta name="author" content="NeonBurro" />
+    <meta name="keywords" content="neonburro shop, Ridgway Colorado, small runs, organic cotton, titanium cup, treasure hunt, The Blind Lead, San Juan Mountains" />
+    <meta name="author" content="neonburro" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://shop.neonburro.com/" />
-    
-    <!-- Schema.org Structured Data for Shop -->
+
+    <!-- Schema.org -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Store",
-      "name": "NeonBurro Shop",
-      "description": "Curated goods and limited drops from the San Juan Mountains. Thoughtfully crafted, premium quality, built to last.",
+      "name": "neonburro shop",
+      "description": "Small runs made in Ridgway, Colorado. Every piece carries a fragment of The Blind Lead, a real hunt on public land in western Colorado.",
       "url": "https://shop.neonburro.com/",
-      "image": "https://shop.neonburro.com/shop-hero-sms.png",
+      "image": "https://shop.neonburro.com/og-image.png",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Ridgway",
         "addressRegion": "CO",
         "addressCountry": "US"
       },
-      "priceRange": "$$-$$$",
-      "paymentAccepted": ["Credit Card", "Cryptocurrency"],
+      "priceRange": "$-$$$",
+      "paymentAccepted": ["Credit Card", "Apple Pay", "Google Pay", "Cryptocurrency"],
       "openingHours": "Mo-Su 00:00-23:59"
     }
     </script>
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#00E5E5" />
-    
+
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QH750KY0CL"></script>
     <script>
@@ -81,37 +87,36 @@
     </script>
   </head>
   <body>
-    <!-- 
-    ================================================
-    NETLIFY FORMS - HIDDEN FORMS FOR BUILD DETECTION
-    ================================================
+    <!--
+      Netlify Forms. This hidden form is how Netlify learns the shape of the
+      shop-order post that src/pages/Checkout/index.jsx sends after a payment.
+      Only fields declared here are stored. paymentMethod, paymentIntentId and
+      delivery were added when checkout learned about digital goods and rails.
     -->
-    
-    <!-- Shop Order Form -->
     <form name="shop-order" netlify netlify-honeypot="bot-field" hidden>
       <input type="text" name="form-name" value="shop-order" />
       <input type="text" name="bot-field" />
-      
-      <!-- Customer Info -->
+
       <input type="text" name="firstName" />
       <input type="text" name="lastName" />
       <input type="email" name="email" />
       <input type="text" name="phone" />
-      
-      <!-- Shipping Address -->
+
       <input type="text" name="address" />
       <input type="text" name="city" />
       <input type="text" name="state" />
       <input type="text" name="zip" />
       <input type="text" name="country" />
-      
-      <!-- Order Details -->
+
+      <input type="text" name="paymentMethod" />
+      <input type="text" name="paymentIntentId" />
+      <input type="text" name="delivery" />
       <input type="text" name="items" />
       <input type="text" name="total" />
       <input type="text" name="timestamp" />
       <textarea name="notes"></textarea>
     </form>
-    
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
