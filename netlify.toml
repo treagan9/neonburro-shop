@@ -22,6 +22,16 @@
 [functions."solana-pay-sweep"]
   schedule = "*/5 * * * *"
 
+# Apple Pay domain verification. Stripe fetches this file to verify
+# shop.neonburro.com for Apple Pay in the Express Checkout Element. Without it
+# the SPA catch all served index.html here and verification failed quietly.
+# The file is Stripe's own, https://stripe.com/files/apple-pay/apple-developer-merchantid-domain-association
+[[headers]]
+  for = "/.well-known/apple-developer-merchantid-domain-association"
+  [headers.values]
+    Content-Type = "text/plain"
+    Cache-Control = "public, max-age=31536000"
+
 # Specific redirect for invoice page to use the custom HTML with proper meta tags
 [[redirects]]
   from = "/invoice"
