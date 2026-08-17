@@ -306,7 +306,7 @@ export const notify = async (row) => {
     method: 'POST',
     headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: process.env.NOTIFY_FROM || 'neonburro shop <shop@neonburro.com>',
+      from: process.env.NOTIFY_FROM || 'neonburro. <shop@neonburro.com>',
       to: [to],
       subject: `Direct Solana payment · ${money(row.amount_usd)} in ${row.currency}${customer.name ? ` · ${customer.name}` : ''}`,
       html,
