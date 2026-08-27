@@ -24,7 +24,10 @@ export const CRAFT_PRODUCTS = {
     room: 'carried',
     floatWeight: 2,
     price: 99,
-    stripePriceId: 'price_TEMP_NIBBLE_WANDS',
+    // Matched to the live catalog 2026-08-27, product prod_TAy6Dg0Uo8JfTq.
+    // Bookkeeping only, checkout runs on payment intents, see
+    // netlify/functions/create-payment-intent.js.
+    stripePriceId: 'price_1SEcAjGWJVsbrWy8RNCgIPnj',
     featuredImage: '/images/shop/nibble-wands/nibble-wands-case.webp',
     color: '#C5D957',
     description: 'Titanium, copper and wood in one pair. Heavy enough to feel deliberate, light enough to forget you are holding them.',
@@ -44,7 +47,11 @@ export const CRAFT_PRODUCTS = {
     room: 'carried',
     floatWeight: 3,
     price: 75,
-    stripePriceId: 'price_TEMP_HALFWAY_NOOK',
+    // Two Stripe products, one per metal, matched 2026-08-27. The product
+    // level id carries titanium, the copper id is
+    // price_1SEcCNGWJVsbrWy8AU4clk3Q on prod_TAy8TO342axm1l. Bookkeeping
+    // only, checkout runs on payment intents.
+    stripePriceId: 'price_1SEcBmGWJVsbrWy8KeZPDfrZ',
     featuredImage: '/images/shop/halfway-nook/halfway-nook-titanium.webp',
     color: '#C0C0C0',
     description: 'One vessel, split across the middle. The lid comes off and it is a second cup, which is the only feature it has and the only one it needs.',

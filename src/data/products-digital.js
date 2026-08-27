@@ -84,7 +84,7 @@ export const PAY_CARD_TIERS = [
     label: 'Solo',
     subtitle: 'A balance of $999',
     price: 999,
-    stripePriceId: 'price_TEMP_GIFT_CARD_SOLO',
+    stripePriceId: 'price_1SEc3AGWJVsbrWy8oqi3ix3g',
     description: 'Enough for a small build or a focused fix. One developer, daily updates.',
   },
   {
@@ -92,7 +92,7 @@ export const PAY_CARD_TIERS = [
     label: 'Team',
     subtitle: 'A balance of $1,999',
     price: 1999,
-    stripePriceId: 'price_TEMP_GIFT_CARD_TEAM',
+    stripePriceId: 'price_1SEc4rGWJVsbrWy8RUpd8wZo',
     description: 'A designer and a developer working together, weekly sprint reviews.',
     featured: true,
   },
@@ -101,7 +101,7 @@ export const PAY_CARD_TIERS = [
     label: 'Accelerated',
     subtitle: 'A balance of $2,999',
     price: 2999,
-    stripePriceId: 'price_TEMP_GIFT_CARD_ACCELERATED',
+    stripePriceId: 'price_1SEc56GWJVsbrWy8peaOhfB4',
     description: 'A full team with a project manager on it. Built for a deadline.',
   },
   {
@@ -109,7 +109,7 @@ export const PAY_CARD_TIERS = [
     label: 'Unlimited',
     subtitle: 'A balance of $5,000',
     price: 5000,
-    stripePriceId: 'price_TEMP_GIFT_CARD_UNLIMITED',
+    stripePriceId: 'price_1SEc5TGWJVsbrWy8zdk6DecO',
     description: 'The whole yard on call. Continuous sprints for a vision that keeps moving.',
   },
 ];
